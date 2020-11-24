@@ -1,0 +1,2 @@
+DEPARTMENT,EMAIL,FIRSTNAME,ID,LASTNAME,LOGIN,PASSWORD,TOKEN,TYPEOFEMPLOYEE
+FullStack,employee@sfedu.ru,Employee1,1,Employee_sec_name,Employee_Login,admin,Employee_personal_token,Developer

@@ -9,14 +9,4 @@
       <department>FullStack</department>
       <typeOfEmployee>Developer</typeOfEmployee>
    </object>
-   <object class="ru.sfedu.groupappcontrol.models.Employee" id="2">
-      <firstName>Employee2</firstName>
-      <lastName>Employee_sec_name</lastName>
-      <login>Employee_Login</login>
-      <password>admin</password>
-      <email>employee@sfedu.ru</email>
-      <token>Employee_personal_token</token>
-      <department>FullStack</department>
-      <typeOfEmployee>Developer</typeOfEmployee>
-   </object>
 </main>

@@ -28,9 +28,9 @@ class DataProviderXMLTest extends TestEmployee{
 //        employeeList.add(employee4);
 //        employeeList.add(employee5);
 //        employeeList.add(employee6);
-        instance.insertEmployee(employeeList,false);
+        instance.insert(Employee.class,employeeList,false);
 
-        assertEquals(employee1, instance.getEmployeeByID(1));
+        assertEquals(employee1, instance.getByID(Employee.class,1).getData());
     }
     @Test
     public void insertEmployeeFail() throws Exception {
@@ -49,8 +49,7 @@ class DataProviderXMLTest extends TestEmployee{
 //        employeeList.add(employee4);
 //        employeeList.add(employee5);
 //        employeeList.add(employee6);
-        instance.insertEmployee(employeeList,false);
-        //Exeption
-        assertNotEquals(null, instance.getEmployeeByID(2));
+        instance.insert(Employee.class,employeeList,true);
+        assertNotEquals(null, instance.getByID(Employee.class,1).getData());
     }
 }

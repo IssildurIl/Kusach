@@ -12,7 +12,9 @@ public class Result<T> {
         this.answer = answer;
         this.data = data;
     }
-
+    public Result(Outcomes status){
+        this.status = status;
+    }
     public T getData() {
         return data;
     }

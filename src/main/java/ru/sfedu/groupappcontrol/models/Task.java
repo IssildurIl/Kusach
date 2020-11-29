@@ -1,6 +1,8 @@
 package ru.sfedu.groupappcontrol.models;
 
 
+import com.opencsv.bean.CsvBindByName;
+import org.simpleframework.xml.Attribute;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 
@@ -18,6 +20,8 @@ public class Task extends BaseClass{
   private Double money;
   private Employee scrumMaster;
   private TypeOfCompletion status;
+  @Attribute
+  @CsvBindByName
   private List<Employee> team;
   private String createdDate;
   private String deadline;

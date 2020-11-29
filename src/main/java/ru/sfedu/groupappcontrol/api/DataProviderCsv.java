@@ -9,9 +9,12 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import ru.sfedu.groupappcontrol.Result;
-import ru.sfedu.groupappcontrol.models.BaseClass;
+import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
-import ru.sfedu.groupappcontrol.models.enums.Outcomes;
+import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
+import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfTester;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 import java.io.File;
@@ -24,6 +27,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Complete;
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Fail;
 
-public class DataProviderCsv implements IDataProvider {
+public class DataProviderCsv implements DataProvider {
 
     private final String PATH = ConfigurationUtil.getConfigurationEntry("CSV_PATH");
 
@@ -60,9 +64,8 @@ public class DataProviderCsv implements IDataProvider {
             file.createNewFile();
         }
     }
-
-
-    public <T extends BaseClass> Result<T> getByID(Class cl, int id) throws IOException {
+//ВОЗВРАТ ОБЪЕКТА
+    public <T extends BaseClass> Result<T> getByID(Class cl, long id) throws IOException {
         Result list = this.select(cl);
         if (list.getStatus() == Fail) {
             return list;
@@ -77,23 +80,23 @@ public class DataProviderCsv implements IDataProvider {
         }
     }
 
-    public <T extends BaseClass> Result<T> delete(Class cl, int id) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+    public <T extends BaseClass> Result<T> delete(Class<T> cl, long id) throws IOException {
         Result list = select(cl);
         List<T> listData = (List<T>) list.getData();
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insert(cl, listData, false);
-        return new Result(Complete, Constants.IS_INSERTED, listData);
+        return new Result(Complete);
     }
 
-    public <T extends BaseClass> Result<T> update(Class cl, int id) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+    public <T extends BaseClass> Result<T> update(Class<T> cl, long id) throws IOException {
         delete(cl, id);
         List<T> list = new ArrayList<T>();
         list.addAll(list);
         insert(cl, list, true);
-        return new Result(Complete, Constants.IS_INSERTED, list);
+        return new Result(Complete);
     }
 
-    public <T> Result<T> select(Class cl) throws IOException {
+    public <T> Result<T> select(Class<T> cl) throws IOException {
         String path = getPath(cl);
         FileReader file = new FileReader(path);
         CSVReader reader = new CSVReader(file);
@@ -106,8 +109,7 @@ public class DataProviderCsv implements IDataProvider {
         return new Result(Complete, Constants.IS_INSERTED, list);
     }
 
-
-    public <T extends BaseClass> Result<T> insert(Class cl, List<T> list, boolean append) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
+    public <T extends BaseClass> Result<Void> insert(Class<T> cl, List<T> list, boolean append) {
         try {
             String path = getPath(cl);
             createFile(path);
@@ -116,7 +118,7 @@ public class DataProviderCsv implements IDataProvider {
                 if (oldList != null && oldList.size() > 0) {
                     int id = (int) list.get(0).getId();
                     if (oldList.stream().anyMatch(el -> el.getId() == id)) {
-                        return new Result<>(Fail, Constants.IS_FAILED, null);
+                        return new Result<>(Fail);
                     }
                     list = Stream
                             .concat(list.stream(), oldList.stream())
@@ -130,9 +132,194 @@ public class DataProviderCsv implements IDataProvider {
                     .build();
             beanToCsv.write(list);
             writer.close();
-        } catch (IndexOutOfBoundsException ex) {
+        } catch (IndexOutOfBoundsException | IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException ex) {
             return new Result<>(Fail, Constants.IS_EMPTY, null);
         }
-        return new Result(Complete, Constants.IS_INSERTED, list);
+        return new Result(Complete);
+    }
+
+
+    @Override
+    public Result<Employee> changeProfileInfo(Employee editedEmployee) {
+        try {
+            Result<Employee> employeeList = this.select(Employee.class);
+            List<Employee> listRes = (List<Employee>) employeeList.getData();
+            Optional<Employee> optionalUser = listRes.stream()
+                    .filter(user -> user.getId() == editedEmployee.getId())
+                    .findFirst();
+            listRes.remove(optionalUser.get());
+            listRes.add(editedEmployee);
+            insert(Employee.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
+        }
+
+    }
+
+    @Override
+    public Result changeTaskStatus(Task task, long id) {
+        return null;
+    }
+
+    @Override
+    public Result writeComment(Task task, String comment) {
+        return null;
+    }
+
+    @Override
+    public Result writeComment(DevelopersTask developersTask, String comment) {
+        return null;
+    }
+
+    @Override
+    public Result writeComment(TestersTask testersTask, String comment) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskInfoList(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskList(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskInfo(long userId, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTask(long userId, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result calculateTaskCost(Task task) {
+        return null;
+    }
+
+    @Override
+    public Result calculateDeveloperTaskCost(Task task) {
+        return null;
+    }
+
+    @Override
+    public Result calculateTesterTaskCost(Task task) {
+        return null;
+    }
+
+    @Override
+    public Result getProjectStatistic(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getProject(long userId, long projectId) {
+        return null;
+    }
+
+    @Override
+    public Result calculateProjectCost(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result calculateProjectTime(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result createTask(long userId, String taskDescription, Double money, String deadline) {
+        return null;
+    }
+
+    @Override
+    public Result createTask(long userId, String taskDescription, Double money, String deadline, DeveloperTaskType taskType) {
+        return null;
+    }
+
+    @Override
+    public Result deleteTask(Task task) {
+        return null;
+    }
+
+    @Override
+    public Result getTask(Employee employee, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskById(Employee employee, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskListById(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result deleteProject(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result updateProject(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result createProject(String title, String takeIntoDevelopment) {
+        return null;
+    }
+
+    @Override
+    public Result getProject(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result getProjectById(Employee employee, long projectId) {
+        return null;
+    }
+
+    @Override
+    public Result getProjecListById(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result correctEmployeeParameters(Employee editedEmployee) {
+        return null;
+    }
+
+    @Override
+    public Result addEmployeeToTask(Task task, Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result deleteEmployeeFromTask(Task task, Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfTester typeOfTester, TypeOfDevelopers status, ProgrammingLanguage language) {
+        return null;
     }
 }

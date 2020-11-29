@@ -1,9 +1,5 @@
 package ru.sfedu.groupappcontrol.api;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import com.opencsv.bean.CsvToBean;
-import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
@@ -14,7 +10,6 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.BaseClass;
-import ru.sfedu.groupappcontrol.models.Employee;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
 import ru.sfedu.groupappcontrol.models.constants.WrapperXML;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
@@ -27,7 +22,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -36,7 +30,7 @@ import java.util.stream.Stream;
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Complete;
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Fail;
 
-public class DataProviderXML implements IDataProvider{
+public class DataProviderXML implements DataProvider {
     private final String PATH = ConfigurationUtil.getConfigurationEntry("XML_PATH");
 
     private final String FILE_EXTENSION_XML ="FILE_EXTENSION_XML";

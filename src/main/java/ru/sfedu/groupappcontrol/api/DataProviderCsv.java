@@ -188,11 +188,10 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
-
     @Override
-    public Result getUserTaskInfoList(long userId) {
+    public Result getUserInfoList(long userId) {
         try {
-            List<Task> list = select(Task.class);
+            List<Employee> list = select(Employee.class);
             if(list.isEmpty()){
                 return new Result(Fail);
             }
@@ -201,12 +200,24 @@ public class DataProviderCsv implements DataProvider {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     @Override
     public Result getTaskList(long userId) {
         return null;
     }
+
+//    @Override
+//    public Result getTaskList(long userId) {
+//        try {
+//            List<Task> listRes = select(Task.class);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 
     @Override
     public Result getTaskInfo(long userId, long taskId) {

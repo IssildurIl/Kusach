@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.sfedu.groupappcontrol.models.Employee;
 import ru.sfedu.groupappcontrol.models.Task;
-import ru.sfedu.groupappcontrol.models.TestersTask;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
@@ -123,5 +122,36 @@ class DataProviderCsvTest extends TestEmployee {
         //assertEquals(task2, instance.getByID(Employee.class,1).getData());
 
     }
+    @Test
+    public void getUserTaskInfoList() throws IOException {
+        DataProviderCsv instance = new DataProviderCsv();
+        List<Task> taskList=new ArrayList<>();
+        List<Employee> employeeList=new ArrayList<>();
+//        Employee employee1= createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+//        Employee employee2= createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+//        //Employee employee3= createUser(3,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+//        employeeList.add(employee1);
+//        employeeList.add(employee2);
+        System.out.println(instance.getUserInfoList(1).getData().toString());
 
+
+    }
+//    @Test
+//    public void getTaskList() throws IOException {
+//        DataProviderCsv instance = new DataProviderCsv();
+//        List<Task> taskList=new ArrayList<>();
+//        List<Employee> employeeList=new ArrayList<>();
+//        Employee employee1= createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+//        Employee employee2= createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+//        //Employee employee3= createUser(3,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+//        employeeList.add(employee1);
+//        employeeList.add(employee2);
+//        //employeeList.add(employee3);
+//        Task task1 = createTask(1, "Desc",1000.0, employee1, TypeOfCompletion.DEVELOPING, employeeList,"30-11-20","5-12-20","30-11-20", TaskTypes.BASE_TASK);
+//        Task task2 = createTask(2, "Desc_1",2000.0, employee1, TypeOfCompletion.DEVELOPING, employeeList,"30-11-20","5-12-20","30-11-20", TaskTypes.BASE_TASK);
+//        taskList.add(task1);
+//        taskList.add(task2);
+//        instance.insert(Task.class,taskList,true);
+//        System.out.println(instance.getTaskList(1).getData());
+//    }
 }

@@ -20,7 +20,7 @@ public interface DataProvider {
     public Result writeComment(long id, String comment);
 //    ScrumMaster.taskAnalysis
 
-    public Result getUserTaskInfoList(long userId);
+    public Result getUserInfoList(long userId);
     public Result getTaskList(long userId);
     public Result getTaskInfo(long userId, long taskId);
     public Result getUserTask(long userId, long taskId);

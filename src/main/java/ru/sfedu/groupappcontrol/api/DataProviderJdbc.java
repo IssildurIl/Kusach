@@ -110,7 +110,7 @@ public class DataProviderJdbc implements DataProvider {
 
 
     @Override
-    public Result getUserTaskInfoList(long userId) {
+    public Result getUserInfoList(long userId) {
         return null;
     }
 

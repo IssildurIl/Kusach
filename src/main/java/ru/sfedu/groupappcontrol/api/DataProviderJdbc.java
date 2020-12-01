@@ -3,7 +3,8 @@ package ru.sfedu.groupappcontrol.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.groupappcontrol.Result;
-import ru.sfedu.groupappcontrol.models.Employee;
+import ru.sfedu.groupappcontrol.models.*;
+import ru.sfedu.groupappcontrol.models.enums.*;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 import java.io.IOException;
@@ -34,7 +35,8 @@ public class DataProviderJdbc implements DataProvider {
 
     public void insertEmployee(Employee employee) throws SQLException, IOException, ClassNotFoundException {
         System.out.println(String.format(DB_INSERT,employee.getClass().getSimpleName().toLowerCase(),employee.getId(),employee.getFirstName(), employee.getLastName(), employee.getLogin(), employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),employee.getTypeOfEmployee()));
-        this.execute(String.format(DB_INSERT,employee.getClass().getSimpleName().toLowerCase(),employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),employee.getTypeOfEmployee()));
+        this.execute(String.format(DB_INSERT,employee.getClass().getSimpleName().toLowerCase(),employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),employee.getTypeOfEmployee().toString()));
+
     }
     public Employee getUserById(long id) throws SQLException, IOException, ClassNotFoundException {
         ResultSet set = getResultSet(String.format(DB_SELECT,Employee.class.getSimpleName().toLowerCase(),id));
@@ -67,12 +69,14 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     public void execute(String sql) throws SQLException, IOException, ClassNotFoundException {
+        log.info(sql);
         PreparedStatement statement = getConnection().prepareStatement(sql);
         statement.executeUpdate();
         statement.close();
     }
 
     public ResultSet select (String sql) {
+        log.info(sql);
         try {
             PreparedStatement statement = getConnection().prepareStatement(sql);
             getConnection().close();
@@ -87,5 +91,157 @@ public class DataProviderJdbc implements DataProvider {
         ResultSet set = statement.executeQuery();
         statement.close();
         return set;
+    }
+
+    @Override
+    public Result changeProfileInfo(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result changeTaskStatus(long id, String status) {
+        return null;
+    }
+
+    @Override
+    public Result writeComment(long id, String comment) {
+        return null;
+    }
+
+
+    @Override
+    public Result getUserTaskInfoList(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskList(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskInfo(long userId, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getUserTask(long userId, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result calculateTaskCost(Task task) {
+        return null;
+    }
+
+
+    @Override
+    public Result getProjectStatistic(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getProject(long userId, long projectId) {
+        return null;
+    }
+
+    @Override
+    public Result calculateProjectCost(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result calculateProjectTime(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result createTask(long userId, String taskDescription, Double money, String deadline) {
+        return null;
+    }
+
+    @Override
+    public Result createTask(long userId, String taskDescription, Double money, String deadline, DeveloperTaskType taskType) {
+        return null;
+    }
+
+    @Override
+    public Result deleteTask(Task task) {
+        return null;
+    }
+
+    @Override
+    public Result getTask(Employee employee, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskById(Employee employee, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskListById(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result deleteProject(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result updateProject(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result createProject(String title, String takeIntoDevelopment) {
+        return null;
+    }
+
+    @Override
+    public Result getProject(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result getProjectById(Employee employee, long projectId) {
+        return null;
+    }
+
+    @Override
+    public Result getProjecListById(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result correctEmployeeParameters(Employee editedEmployee) {
+        return null;
+    }
+
+    @Override
+    public Result addEmployeeToTask(Task task, Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result deleteEmployeeFromTask(Task task, Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfTester typeOfTester, TypeOfDevelopers status, ProgrammingLanguage language) {
+        return null;
     }
 }

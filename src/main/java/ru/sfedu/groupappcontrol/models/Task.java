@@ -2,9 +2,12 @@ package ru.sfedu.groupappcontrol.models;
 
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.CsvRecurse;
 import org.simpleframework.xml.Attribute;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
+import ru.sfedu.groupappcontrol.utils.EmployeeListConverter;
 
 import java.util.List;
 
@@ -16,16 +19,24 @@ public class Task extends BaseClass{
   //
   // Fields
   //
+  @CsvBindByName
   private String taskDescription;
+  @CsvBindByName
   private Double money;
+  @CsvRecurse
   private Employee scrumMaster;
+  @CsvBindByName
   private TypeOfCompletion status;
   @Attribute
-  @CsvBindByName
+  @CsvCustomBindByName(converter = EmployeeListConverter.class)
   private List<Employee> team;
+  @CsvBindByName
   private String createdDate;
+  @CsvBindByName
   private String deadline;
+  @CsvBindByName
   private String lastUpdate;
+  @CsvBindByName
   private TaskTypes taskType;
 
   //

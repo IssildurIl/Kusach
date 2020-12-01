@@ -8,13 +8,11 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+import org.apache.commons.io.input.TailerListener;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
-import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
-import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
-import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
-import ru.sfedu.groupappcontrol.models.enums.TypeOfTester;
+import ru.sfedu.groupappcontrol.models.enums.*;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 import java.io.File;
@@ -64,13 +62,9 @@ public class DataProviderCsv implements DataProvider {
             file.createNewFile();
         }
     }
-//ВОЗВРАТ ОБЪЕКТА
+
     public <T extends BaseClass> Result<T> getByID(Class cl, long id) throws IOException {
-        Result list = this.select(cl);
-        if (list.getStatus() == Fail) {
-            return list;
-        }
-        List<T> listRes = (List<T>) list.getData();
+        List<T> listRes = select(cl);
         try {
             T element = listRes.stream().filter(el -> el.getId() == id).findFirst().get();
             return new Result(Complete, Constants.IS_INSERTED, element);
@@ -81,8 +75,7 @@ public class DataProviderCsv implements DataProvider {
     }
 
     public <T extends BaseClass> Result<T> delete(Class<T> cl, long id) throws IOException {
-        Result list = select(cl);
-        List<T> listData = (List<T>) list.getData();
+        List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insert(cl, listData, false);
         return new Result(Complete);
@@ -96,7 +89,7 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete);
     }
 
-    public <T> Result<T> select(Class<T> cl) throws IOException {
+    public <T> List<T> select(Class<T> cl) throws IOException {
         String path = getPath(cl);
         FileReader file = new FileReader(path);
         CSVReader reader = new CSVReader(file);
@@ -106,14 +99,14 @@ public class DataProviderCsv implements DataProvider {
                 .build();
         List<T> list = csvToBean.parse();
         reader.close();
-        return new Result(Complete, Constants.IS_INSERTED, list);
+        return list;
     }
 
     public <T extends BaseClass> Result<Void> insert(Class<T> cl, List<T> list, boolean append) {
         try {
             String path = getPath(cl);
             createFile(path);
-            List<T> oldList = (List<T>) this.select(cl).getData();
+            List<T> oldList = (List<T>) this.select(cl);
             if (append) {
                 if (oldList != null && oldList.size() > 0) {
                     int id = (int) list.get(0).getId();
@@ -142,11 +135,8 @@ public class DataProviderCsv implements DataProvider {
     @Override
     public Result<Employee> changeProfileInfo(Employee editedEmployee) {
         try {
-            Result<Employee> employeeList = this.select(Employee.class);
-            List<Employee> listRes = (List<Employee>) employeeList.getData();
-            Optional<Employee> optionalUser = listRes.stream()
-                    .filter(user -> user.getId() == editedEmployee.getId())
-                    .findFirst();
+            List<Employee> listRes = select(Employee.class);
+            Optional<Employee> optionalUser = search(listRes,editedEmployee.getId());
             listRes.remove(optionalUser.get());
             listRes.add(editedEmployee);
             insert(Employee.class, listRes, false);
@@ -159,28 +149,58 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result changeTaskStatus(Task task, long id) {
-        return null;
+    public Result changeTaskStatus(long id, String status) {
+        try {
+            List<Task> listRes = select(Task.class);
+            Optional<Task> optionalTask = search(listRes,id);
+            if(optionalTask.isEmpty()){
+                return new Result<>(Fail);
+            }
+            Task editedTask = optionalTask.get();
+            listRes.remove(optionalTask.get());
+            editedTask.setStatus(TypeOfCompletion.valueOf(status));
+            listRes.add(editedTask);
+            insert(Task.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
+        }
     }
 
     @Override
-    public Result writeComment(Task task, String comment) {
-        return null;
+    public Result writeComment(long id, String comment) {
+        try {
+            List<Task> listRes = select(Task.class);
+            Optional<Task> optionalTask = search(listRes,id);
+            if(optionalTask.isEmpty()){
+                return new Result<>(Fail);
+            }
+            Task editedTask = optionalTask.get();
+            listRes.remove(optionalTask.get());
+            editedTask.setTaskDescription(comment);
+            listRes.add(editedTask);
+            insert(Task.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
+        }
     }
 
-    @Override
-    public Result writeComment(DevelopersTask developersTask, String comment) {
-        return null;
-    }
 
     @Override
-    public Result writeComment(TestersTask testersTask, String comment) {
-        return null;
-    }
-
-    @Override
-    public Result getTaskInfoList(long userId) {
-        return null;
+    public Result getUserTaskInfoList(long userId) {
+        try {
+            List<Task> list = select(Task.class);
+            if(list.isEmpty()){
+                return new Result(Fail);
+            }
+            list.removeIf(el->el.getId()!=userId);
+            return new Result(Complete,String.valueOf(list));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -194,22 +214,12 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result getTask(long userId, long taskId) {
+    public Result getUserTask(long userId, long taskId) {
         return null;
     }
 
     @Override
     public Result calculateTaskCost(Task task) {
-        return null;
-    }
-
-    @Override
-    public Result calculateDeveloperTaskCost(Task task) {
-        return null;
-    }
-
-    @Override
-    public Result calculateTesterTaskCost(Task task) {
         return null;
     }
 
@@ -321,5 +331,13 @@ public class DataProviderCsv implements DataProvider {
     @Override
     public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfTester typeOfTester, TypeOfDevelopers status, ProgrammingLanguage language) {
         return null;
+    }
+
+
+    public <T extends BaseClass> Optional<T> search(List<T> listRes,long id) throws IOException {
+        Optional<T> optionalTask = listRes.stream()
+                .filter(user -> user.getId() == id)
+                .findFirst();
+        return optionalTask;
     }
 }

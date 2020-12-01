@@ -3,10 +3,7 @@ package ru.sfedu.groupappcontrol.api;
 
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
-import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
-import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
-import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
-import ru.sfedu.groupappcontrol.models.enums.TypeOfTester;
+import ru.sfedu.groupappcontrol.models.enums.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,21 +16,15 @@ public interface DataProvider {
     public Result changeProfileInfo(Employee employee);
 
 //    Developer, Tester
-
-    public Result changeTaskStatus(Task task, long id);
-    public Result writeComment(Task task,String comment);
-    public Result writeComment(DevelopersTask developersTask,String comment);
-    public Result writeComment(TestersTask testersTask, String comment);
-
+    public Result changeTaskStatus(long id, String status);
+    public Result writeComment(long id, String comment);
 //    ScrumMaster.taskAnalysis
 
-    public Result getTaskInfoList(long userId);
+    public Result getUserTaskInfoList(long userId);
     public Result getTaskList(long userId);
     public Result getTaskInfo(long userId, long taskId);
-    public Result getTask(long userId, long taskId);
+    public Result getUserTask(long userId, long taskId);
     public Result calculateTaskCost(Task task);
-    public Result calculateDeveloperTaskCost(Task task);
-    public Result calculateTesterTaskCost(Task task);
 
 //    ScrumMaster.projectAnalysis
     public Result getProjectStatistic(long userId);

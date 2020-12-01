@@ -9,9 +9,10 @@ import org.apache.logging.log4j.Logger;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import ru.sfedu.groupappcontrol.Result;
-import ru.sfedu.groupappcontrol.models.BaseClass;
+import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
 import ru.sfedu.groupappcontrol.models.constants.WrapperXML;
+import ru.sfedu.groupappcontrol.models.enums.*;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 import java.io.File;
@@ -76,19 +77,6 @@ public class DataProviderXML implements DataProvider {
 
 
 
-//    public Employee getEmployeeByID(int id) throws Exception {
-//        List<Employee> employeeList = select(Employee.class);
-//        try{
-//            Employee employee = employeeList.stream()
-//                    .filter(el->el.getId()==id)
-//                    .limit(1)
-//                    .findFirst().get();
-//            return employee;
-//        }catch (NoSuchElementException e){
-//            log.error(e);
-//            return new Employee();
-//        }
-//    }
 
     public <T extends BaseClass> Result<T> insert(Class cl, List<T> list, boolean append) throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {
         try {
@@ -123,37 +111,6 @@ public class DataProviderXML implements DataProvider {
         return new Result(Complete, Constants.IS_INSERTED, list);
     }
 
-//    public void insertEmployee(List<Employee> listEmployee, boolean append) throws IOException {
-//        try {
-//            List<Employee> oldEmployeeList=this.getEmployees();
-//            oldEmployeeList.addAll(listEmployee);
-//            (new File(this.getPath(Employee.class))).createNewFile();
-//            //Подключаемся к потоку записи файла
-//            FileWriter writer = new FileWriter(this.getPath(Employee.class), false);
-//            //Определяем сериалайзер
-//            Serializer serializer = new Persister();
-//
-//            //Определяем контейнер, в котором будут находиться все объекты
-//            WrapperXML<Employee> xml = new WrapperXML<Employee>();
-//            //Записываем список объектов в котнейнер
-//
-//            if (append){
-//                xml.setList(oldEmployeeList);
-//                serializer.write(xml, writer);
-//            }
-//            else{
-//                xml.setList(listEmployee);
-//                serializer.write(xml, writer);
-//            }
-//            writer.close();
-//        }catch (IndexOutOfBoundsException e){
-//            log.error("List is empty.");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
     public <T extends BaseClass> Result<T> delete(Class cl, int id) throws Exception {
         Result list = select(cl);
         List<T> listData = (List<T>) list.getData();
@@ -162,11 +119,7 @@ public class DataProviderXML implements DataProvider {
         return new Result(Complete, Constants.IS_INSERTED, listData);
     }
 
-//    public void deleteEmployee(int id) throws Exception {
-//        List<Employee> employeeList=getEmployees();
-//        employeeList = employeeList.stream().filter(el->el.getId()!=id).collect(Collectors.toList());
-//        insertEmployee(employeeList,false);
-//    }
+
 
     public <T extends BaseClass> Result<T> update(Class cl, int id) throws Exception {
         delete(cl, id);
@@ -176,12 +129,6 @@ public class DataProviderXML implements DataProvider {
         return new Result(Complete, Constants.IS_INSERTED, list);
     }
 
-//    public void updateEmployee(Employee employee) throws Exception {
-//        deleteEmployee((int) employee.getId());
-//        List<Employee> employeeList= new ArrayList<Employee>();
-//        employeeList.add(employee);
-//        insertEmployee(employeeList,true);
-//    }
 
     public <T> Result<T> select(Class cl) throws Exception {
         String path = getPath(cl);
@@ -189,6 +136,158 @@ public class DataProviderXML implements DataProvider {
         Serializer serializer = new Persister();
         WrapperXML xml = serializer.read(WrapperXML.class, file);
         return new Result(Complete, Constants.IS_INSERTED, xml.list);
+    }
+
+    @Override
+    public Result changeProfileInfo(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result changeTaskStatus(long id, String status) {
+        return null;
+    }
+
+    @Override
+    public Result writeComment(long id, String comment) {
+        return null;
+    }
+
+
+    @Override
+    public Result getUserTaskInfoList(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskList(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskInfo(long userId, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getUserTask(long userId, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result calculateTaskCost(Task task) {
+        return null;
+    }
+
+
+    @Override
+    public Result getProjectStatistic(long userId) {
+        return null;
+    }
+
+    @Override
+    public Result getProject(long userId, long projectId) {
+        return null;
+    }
+
+    @Override
+    public Result calculateProjectCost(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result calculateProjectTime(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result createTask(long userId, String taskDescription, Double money, String deadline) {
+        return null;
+    }
+
+    @Override
+    public Result createTask(long userId, String taskDescription, Double money, String deadline, DeveloperTaskType taskType) {
+        return null;
+    }
+
+    @Override
+    public Result deleteTask(Task task) {
+        return null;
+    }
+
+    @Override
+    public Result getTask(Employee employee, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskById(Employee employee, long taskId) {
+        return null;
+    }
+
+    @Override
+    public Result getTaskListById(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result deleteProject(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result updateProject(Project project) {
+        return null;
+    }
+
+    @Override
+    public Result createProject(String title, String takeIntoDevelopment) {
+        return null;
+    }
+
+    @Override
+    public Result getProject(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result getProjectById(Employee employee, long projectId) {
+        return null;
+    }
+
+    @Override
+    public Result getProjecListById(Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result correctEmployeeParameters(Employee editedEmployee) {
+        return null;
+    }
+
+    @Override
+    public Result addEmployeeToTask(Task task, Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result deleteEmployeeFromTask(Task task, Employee employee) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+        return null;
+    }
+
+    @Override
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfTester typeOfTester, TypeOfDevelopers status, ProgrammingLanguage language) {
+        return null;
     }
 
 //    public <T> List<T> select(Class cl) throws Exception {

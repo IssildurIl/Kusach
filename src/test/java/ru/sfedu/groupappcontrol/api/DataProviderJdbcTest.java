@@ -32,9 +32,9 @@ class DataProviderJdbcTest extends TestEmployee{
         System.out.println("Insert employee success");
 
         DataProviderJdbc db = new DataProviderJdbc();
-        Employee employee1 = createUser(19,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        Employee employee1 = createUser(2,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
         db.insertEmployee(employee1);
-        assertEquals(employee1, db.getUserById(19));
+        assertEquals(employee1, db.getUserById(2));
     }
 //    @Test
 //    public void insertEmployeeFail() throws IOException, CsvDataTypeMismatchException, CsvRequiredFieldEmptyException {

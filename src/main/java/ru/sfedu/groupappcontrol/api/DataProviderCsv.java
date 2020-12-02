@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -89,17 +89,23 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete);
     }
 
-    public <T> List<T> select(Class<T> cl) throws IOException {
-        String path = getPath(cl);
-        FileReader file = new FileReader(path);
-        CSVReader reader = new CSVReader(file);
-        CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
-                .withType(cl)
-                .withIgnoreLeadingWhiteSpace(true)
-                .build();
-        List<T> list = csvToBean.parse();
-        reader.close();
-        return list;
+    public <T> List<T> select(Class<T> cl) {
+        try {
+            String path = getPath(cl);
+            FileReader file = new FileReader(path);
+            CSVReader reader = new CSVReader(file);
+            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
+                    .withType(cl)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build();
+            List<T> list = csvToBean.parse();
+            reader.close();
+            return (List<T>) list;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+
     }
 
     public <T extends BaseClass> Result<Void> insert(Class<T> cl, List<T> list, boolean append) {
@@ -190,53 +196,106 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result getUserInfoList(long userId) {
-        try {
             List<Employee> list = select(Employee.class);
             if(list.isEmpty()){
                 return new Result(Fail);
             }
             list.removeIf(el->el.getId()!=userId);
             return new Result(Complete,String.valueOf(list));
+    }
+
+    @Override
+    public Result getTaskList(long taskId) {
+            List<Task> listRes = select(Task.class);
+        return new Result(Complete,listRes);
+    }
+//тесты
+    @Override
+    public Result getTaskInfo(long taskId) {
+        try {
+            List<Task> list = select(Task.class);
+            list.removeIf(l -> l.getId() != taskId);
+            if (list.isEmpty()) {
+                return new Result(Fail);
+            } else {
+                return new Result<>(Complete, String.valueOf(list));
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Fail);
+    }
+
+    @Override
+    public Result getTask(long userId, long taskId) {
+        try {
+            List<Task> listRes = select(Task.class);
+            Optional<Task> optionalTask=search(listRes,taskId);
+            Task findedTask = optionalTask.get();
+            findedTask.getScrumMaster().getId();
+            List<Employee> listEmpRes = select(Employee.class);
+            Optional<Employee> optionalUser = search(listEmpRes,userId);
+            Employee findedEmployee = optionalUser.get();
+            if(findedTask.getScrumMaster().getId()==findedEmployee.getId()){
+                return new Result(Complete,findedTask);
+            }
+            else {
+                return new Result<>(Fail);
+            }
         } catch (IOException e) {
             e.printStackTrace();
+            return new Result<>(Fail);
         }
-        return null;
-    }
-
-    @Override
-    public Result getTaskList(long userId) {
-        return null;
-    }
-
-//    @Override
-//    public Result getTaskList(long userId) {
-//        try {
-//            List<Task> listRes = select(Task.class);
-//
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
-
-    @Override
-    public Result getTaskInfo(long userId, long taskId) {
-        return null;
-    }
-
-    @Override
-    public Result getUserTask(long userId, long taskId) {
-        return null;
     }
 
     @Override
     public Result calculateTaskCost(Task task) {
-        return null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
+            Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
+            Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
+            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            return new Result<>(Complete,diff*task.getMoney());
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
+        }
     }
 
     @Override
     public Result getProjectStatistic(long userId) {
-        return null;
+        try {
+            //Emp
+            List<Employee> listEmpRes = select(Employee.class);
+            Optional<Employee> optionalUser = search(listEmpRes,userId);
+            Employee findedEmployee = optionalUser.get();
+            //Task
+            List<Task> listRes = select(Task.class);
+            List<Task> findedTaskList = listRes.stream()
+                    .filter(el -> el.getScrumMaster().getId() == findedEmployee.getId())
+                    .collect(Collectors.toList());
+            List<Task> findedTask = findedTaskList;
+            //Project
+            List<Project> listProject = select(Project.class);
+            List<Project> optionalProject = listProject.stream()
+                    .filter(project -> {
+                        boolean isContains=false;
+                        for(Task task:findedTaskList){
+                            if(project.getTask().contains(task)){
+                             isContains=true;
+                             break;
+                            }
+                        }
+                        return isContains;
+                    })
+                    .collect(Collectors.toList());
+            return new Result<>(Complete,optionalProject);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
+        }
+        
     }
 
     @Override
@@ -336,7 +395,7 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
-        return null;
+     return null;
     }
 
     @Override
@@ -346,9 +405,10 @@ public class DataProviderCsv implements DataProvider {
 
 
     public <T extends BaseClass> Optional<T> search(List<T> listRes,long id) throws IOException {
-        Optional<T> optionalTask = listRes.stream()
-                .filter(user -> user.getId() == id)
+        Optional<T> optional = listRes.stream()
+                .filter(el -> el.getId() == id)
                 .findFirst();
-        return optionalTask;
+        return optional;
     }
+
 }

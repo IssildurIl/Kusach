@@ -22,8 +22,8 @@ public interface DataProvider {
 
     public Result getUserInfoList(long userId);
     public Result getTaskList(long userId);
-    public Result getTaskInfo(long userId, long taskId);
-    public Result getUserTask(long userId, long taskId);
+    public Result getTaskInfo(long taskId);
+    public Result getTask(long userId, long taskId);
     public Result calculateTaskCost(Task task);
 
 //    ScrumMaster.projectAnalysis

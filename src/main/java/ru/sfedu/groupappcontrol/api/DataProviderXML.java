@@ -165,12 +165,12 @@ public class DataProviderXML implements DataProvider {
     }
 
     @Override
-    public Result getTaskInfo(long userId, long taskId) {
+    public Result getTaskInfo(long taskId) {
         return null;
     }
 
     @Override
-    public Result getUserTask(long userId, long taskId) {
+    public Result getTask(long userId, long taskId) {
         return null;
     }
 

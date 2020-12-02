@@ -5,6 +5,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.sfedu.groupappcontrol.TestEmployee;
 import ru.sfedu.groupappcontrol.models.Employee;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
@@ -17,7 +18,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-class DataProviderJdbcTest extends TestEmployee{
+class DataProviderJdbcTest extends TestEmployee {
 
     @BeforeEach
     void setUp() {

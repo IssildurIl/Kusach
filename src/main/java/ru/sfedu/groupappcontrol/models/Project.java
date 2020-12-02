@@ -2,61 +2,29 @@ package ru.sfedu.groupappcontrol.models;
 
 
 import java.util.List;
+import java.util.Objects;
 
-/**
- * Class Project
- */
+
 public class Project extends BaseClass{
 
-  //
-  // Fields
-  //
   private String title;
   private String takeIntoDevelopment;
   private List<Task> task;
 
-  //
-  // Constructors
-  //
   public Project () { };
 
-  //
-  // Methods
-  //
-
-
-  //
-  // Accessor methods
-  //
-
-  /**
-   * Set the value of title
-   * @param newVar the new value of title
-   */
   public void setTitle (String newVar) {
     title = newVar;
   }
 
-  /**
-   * Get the value of title
-   * @return the value of title
-   */
   public String getTitle () {
     return title;
   }
 
-  /**
-   * Set the value of takeIntoDevelopment
-   * @param newVar the new value of takeIntoDevelopment
-   */
   public void setTakeIntoDevelopment (String newVar) {
     takeIntoDevelopment = newVar;
   }
 
-  /**
-   * Get the value of takeIntoDevelopment
-   * @return the value of takeIntoDevelopment
-   */
   public String getTakeIntoDevelopment () {
     return takeIntoDevelopment;
   }
@@ -69,8 +37,27 @@ public class Project extends BaseClass{
     this.task = task;
   }
 
-//
-  // Other methods
-  //
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Project project = (Project) o;
+    return Objects.equals(title, project.title) &&
+            Objects.equals(takeIntoDevelopment, project.takeIntoDevelopment) &&
+            Objects.equals(task, project.task);
+  }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(title, takeIntoDevelopment, task);
+  }
+
+  @Override
+  public String toString() {
+    return "Project{" +
+            "title='" + title + '\'' +
+            ", takeIntoDevelopment='" + takeIntoDevelopment + '\'' +
+            ", task=" + task +
+            '}';
+  }
 }

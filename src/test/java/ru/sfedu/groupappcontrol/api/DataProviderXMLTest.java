@@ -1,6 +1,7 @@
 package ru.sfedu.groupappcontrol.api;
 
 import org.junit.jupiter.api.Test;
+import ru.sfedu.groupappcontrol.TestEmployee;
 import ru.sfedu.groupappcontrol.models.Employee;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DataProviderXMLTest extends TestEmployee{
+class DataProviderXMLTest extends TestEmployee {
 
     @Test
     public void insertEmployeeSuccess() throws Exception {

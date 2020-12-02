@@ -3,13 +3,16 @@ package ru.sfedu.groupappcontrol.models;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.CsvDate;
 import com.opencsv.bean.CsvRecurse;
 import org.simpleframework.xml.Attribute;
+import ru.sfedu.groupappcontrol.models.constants.Constants;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 import ru.sfedu.groupappcontrol.utils.EmployeeListConverter;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Class Task
@@ -158,40 +161,60 @@ public class Task extends BaseClass{
     return deadline;
   }
 
-  /**
-   * Set the value of lastUpdate
-   * @param newVar the new value of lastUpdate
-   */
+
   public void setLastUpdate (String newVar) {
     lastUpdate = newVar;
   }
 
-  /**
-   * Get the value of lastUpdate
-   * @return the value of lastUpdate
-   */
+
   public String getLastUpdate () {
     return lastUpdate;
   }
 
-  /**
-   * Set the value of taskType
-   * @param newVar the new value of taskType
-   */
   public void setTaskType (TaskTypes newVar) {
     taskType = newVar;
   }
 
-  /**
-   * Get the value of taskType
-   * @return the value of taskType
-   */
+
   public TaskTypes getTaskType () {
     return taskType;
   }
 
-  //
-  // Other methods
-  //
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Task task = (Task) o;
+    return Objects.equals(taskDescription, task.taskDescription) &&
+            Objects.equals(money, task.money) &&
+            Objects.equals(scrumMaster, task.scrumMaster) &&
+            status == task.status &&
+            Objects.equals(team, task.team) &&
+            Objects.equals(createdDate, task.createdDate) &&
+            Objects.equals(deadline, task.deadline) &&
+            Objects.equals(lastUpdate, task.lastUpdate) &&
+            taskType == task.taskType;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate, taskType);
+  }
+
+  @Override
+  public String toString() {
+    return "Task{" +
+            "id=" + id +
+            "taskDescription='" + taskDescription + '\'' +
+            ", money=" + money +
+            ", scrumMaster=" + scrumMaster +
+            ", status=" + status +
+            ", team=" + team +
+            ", createdDate='" + createdDate + '\'' +
+            ", deadline='" + deadline + '\'' +
+            ", lastUpdate='" + lastUpdate + '\'' +
+            ", taskType=" + taskType +
+            '}';
+  }
 
 }

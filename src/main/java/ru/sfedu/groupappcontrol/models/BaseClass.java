@@ -1,6 +1,7 @@
 package ru.sfedu.groupappcontrol.models;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvBindByPosition;
 import org.simpleframework.xml.Attribute;
 
 import java.io.Serializable;

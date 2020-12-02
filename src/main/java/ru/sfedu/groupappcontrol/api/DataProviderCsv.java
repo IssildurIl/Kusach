@@ -389,17 +389,27 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department) {
-        return null;
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee) {
+        Employee employee = new Employee();
+        employee.setFirstName(firstName);
+        employee.setLastName(lastName);
+        employee.setLogin(login);
+        employee.setPassword(password);
+        employee.setEmail(email);
+        employee.setToken(token);
+        employee.setDepartment(department);
+        employee.setTypeOfEmployee(typeOfEmployee);
+        return new Result<>(Complete,employee);
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language) {
      return null;
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfTester typeOfTester, TypeOfDevelopers status, ProgrammingLanguage language) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
+        Employee testerEmployee = new Employee();
         return null;
     }
 

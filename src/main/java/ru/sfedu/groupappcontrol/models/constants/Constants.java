@@ -19,6 +19,6 @@ public class Constants {
     public static final String USER_TYPE_OF_EMPLOYEE="typeOfEmployee";
     public static final String USER_FIELDS=USER_NAME;
     public static final String ID="id";
-    public static final String DATE_FORMAT = "dd/mm/yyyy";
+    public static final String DATE_FORMAT = "dd-mm-yyyy";
 
 }

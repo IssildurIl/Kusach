@@ -231,17 +231,17 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee){
         return null;
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language) {
         return null;
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email, String department, TypeOfTester typeOfTester, TypeOfDevelopers status, ProgrammingLanguage language) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
         return null;
     }
 }

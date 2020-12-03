@@ -1,5 +1,5 @@
 package ru.sfedu.groupappcontrol.models.enums;
 
 public enum TypeOfDevelopers {
-    JUNIOR,MIDDLE,SENIOR
+    JUNIOR,MIDDLE,SENIOR,CUSTOM
 }

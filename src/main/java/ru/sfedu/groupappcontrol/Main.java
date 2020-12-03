@@ -4,7 +4,7 @@ package ru.sfedu.groupappcontrol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.groupappcontrol.api.DataProviderCsv;
-import ru.sfedu.groupappcontrol.api.DataProviderXML;
+//import ru.sfedu.groupappcontrol.api.DataProviderXML;
 import ru.sfedu.groupappcontrol.models.Employee;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
@@ -26,7 +26,7 @@ public class Main  extends TestEmployee{
         DataProviderCsv dataProviderCsv = new DataProviderCsv();
         dataProviderCsv.insert(Employee.class,employeeList,false);
         dataProviderCsv.delete(Employee.class,1);
-        DataProviderXML dataProviderXML = new DataProviderXML();
-        dataProviderXML.insert(Employee.class,employeeList,false);
+//        DataProviderXML dataProviderXML = new DataProviderXML();
+//        dataProviderXML.insert(Employee.class,employeeList,false);
     }
 }

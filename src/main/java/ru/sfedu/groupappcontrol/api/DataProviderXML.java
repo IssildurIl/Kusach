@@ -276,17 +276,17 @@ public class DataProviderXML implements DataProvider {
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee){
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department){
         return null;
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
         return null;
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
         return null;
     }
 

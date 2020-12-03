@@ -4,6 +4,8 @@ package ru.sfedu.groupappcontrol.models;
 import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
 
+import java.util.Objects;
+
 /**
  * Class Developer
  */
@@ -14,6 +16,14 @@ public class Developer extends Employee {
 
   public Developer () { };
 
+  public TypeOfDevelopers getStatus() {
+    return status;
+  }
+
+  public void setStatus(TypeOfDevelopers status) {
+    this.status = status;
+  }
+
   public ProgrammingLanguage getProgrammingLanguage() {
     return programmingLanguage;
   }
@@ -22,22 +32,26 @@ public class Developer extends Employee {
     this.programmingLanguage = programmingLanguage;
   }
 
-  public void setStatus (TypeOfDevelopers newVar) {
-    status = newVar;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    Developer developer = (Developer) o;
+    return status == developer.status &&
+            programmingLanguage == developer.programmingLanguage;
   }
 
-  public TypeOfDevelopers getStatus () {
-    return status;
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), status, programmingLanguage);
   }
 
-
-  public void setProgramming_language (ProgrammingLanguage newVar) {
-    programmingLanguage = newVar;
+  @Override
+  public String toString() {
+    return "Developer{" +
+            "status=" + status +
+            ", programmingLanguage=" + programmingLanguage +
+            '}';
   }
-
-
-  public ProgrammingLanguage getProgramming_language () {
-    return programmingLanguage;
-  }
-
 }

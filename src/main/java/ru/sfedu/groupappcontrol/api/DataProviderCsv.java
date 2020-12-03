@@ -81,11 +81,12 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete);
     }
 
-    public <T extends BaseClass> Result<T> update(Class<T> cl, long id) throws IOException {
-        delete(cl, id);
+    public <T extends BaseClass> Result<T> update(Class<T> cl, T updElement) throws IOException {
+        delete(cl,updElement.getId());
         List<T> list = new ArrayList<T>();
         list.addAll(list);
-        insert(cl, list, true);
+        list.add(updElement);
+        insert(cl, list,true);
         return new Result(Complete);
     }
 
@@ -136,7 +137,6 @@ public class DataProviderCsv implements DataProvider {
         }
         return new Result(Complete);
     }
-
 
     @Override
     public Result<Employee> changeProfileInfo(Employee editedEmployee) {
@@ -375,21 +375,33 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result correctEmployeeParameters(Employee editedEmployee) {
-        return null;
+        try {
+            update(Employee.class, editedEmployee);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
+        }
     }
 
     @Override
     public Result addEmployeeToTask(Task task, Employee employee) {
-        return null;
+        List<Employee> employeeList = task.getTeam();
+        employeeList.addAll(Collections.singleton(employee));
+        task.setTeam(employeeList);
+        return new Result<>(Complete);
     }
 
     @Override
     public Result deleteEmployeeFromTask(Task task, Employee employee) {
-        return null;
+            List<Employee> employeeList = task.getTeam();
+            employeeList.remove(employee.getId());
+            task.setTeam(employeeList);
+        return new Result<>(Complete);
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee) {
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department) {
         Employee employee = new Employee();
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
@@ -398,19 +410,27 @@ public class DataProviderCsv implements DataProvider {
         employee.setEmail(email);
         employee.setToken(token);
         employee.setDepartment(department);
-        employee.setTypeOfEmployee(typeOfEmployee);
+        employee.setTypeOfEmployee(TypeOfEmployee.Employee);
         return new Result<>(Complete,employee);
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language) {
-     return null;
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+        Developer developer= (Developer)createEmployee(firstName,lastName,login,password,email,token,department).getData();
+        developer.setTypeOfEmployee(TypeOfEmployee.Developer);
+        developer.setStatus(status);
+        developer.setProgrammingLanguage(language);
+        return new Result<>(Complete,developer);
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfEmployee typeOfEmployee, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
-        Employee testerEmployee = new Employee();
-        return null;
+    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
+        Tester tester= (Tester)createEmployee(firstName,lastName,login,password,email,token,department).getData();
+        tester.setTypeOfEmployee(TypeOfEmployee.Tester);
+        tester.setStatus(status);
+        tester.setProgrammingLanguage(language);
+        tester.setTypeOfTester(typeOfTester);
+        return new Result<>(Complete,tester);
     }
 
 
@@ -420,5 +440,8 @@ public class DataProviderCsv implements DataProvider {
                 .findFirst();
         return optional;
     }
+
+
+
 
 }

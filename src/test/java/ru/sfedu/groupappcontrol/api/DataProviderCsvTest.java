@@ -13,7 +13,7 @@ import ru.sfedu.groupappcontrol.models.Task;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
-
+import ru.sfedu.groupappcontrol.api.DataProviderCsv.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -156,5 +156,28 @@ class DataProviderCsvTest extends TestEmployee {
         instance.insert(Task.class,taskList,true);
         System.out.println(instance.getTaskList(1).getData());
     }
+
+    @Test
+    public void testCorrectEmployeeParameters() throws IOException {
+        List<Employee> employeeList = new ArrayList<>();
+        DataProviderCsv instance = new DataProviderCsv();
+        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
+        employeeList.add(employee1);
+        employeeList.add(employee2);
+        employeeList.add(employee3);
+        employeeList.add(employee4);
+        employeeList.add(employee5);
+        //employeeList.add(employee6);
+        instance.insert(Employee.class,employeeList,false);
+        instance.correctEmployeeParameters(employee6);
+        //System.out.println(instance.select(Employee.class));
+        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+    }
+
 
 }

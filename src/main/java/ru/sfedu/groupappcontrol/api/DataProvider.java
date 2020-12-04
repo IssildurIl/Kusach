@@ -21,7 +21,9 @@ public interface DataProvider {
 //    ScrumMaster.taskAnalysis
 
     public Result getUserInfoList(long userId);
-    public Result getTaskList(long userId);
+    public Result getDevelopersList(long taskId);
+    public Result getTestersList(long taskId);
+    public Result getBaseTaskList(long taskId);
     public Result getTaskInfo(long taskId);
     public Result getTask(long userId, long taskId);
     public Result calculateTaskCost(Task task);
@@ -34,9 +36,9 @@ public interface DataProvider {
 //    ScrumMaster.TaskControl
     public Result createTask(String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate,TaskTypes taskType);
     public Result deleteTask(Task task);
-    public Result getTask(Employee employee, long taskId);
+    public Result getTaskWorker(Employee employee, long taskId);
     public Result getTaskById( long taskId);
-    public Result getTaskListById(Employee employee);
+    public Result getTaskListById(long id);
 //    ScrumMaster.ProjectControl
     public Result deleteProject(Project project);
     public Result updateProject(Project project);
@@ -47,5 +49,5 @@ public interface DataProvider {
     public Result correctEmployeeParameters(Employee editedEmployee);
     public Result addEmployeeToTask(Task task, Employee employee);
     public Result deleteEmployeeFromTask(Task task, Employee employee);
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee);
+    public Result createEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee);
     }

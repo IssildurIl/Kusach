@@ -1,14 +1,22 @@
 package ru.sfedu.groupappcontrol.models;
 
 
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
+import ru.sfedu.groupappcontrol.utils.EmployeeConverter;
+import ru.sfedu.groupappcontrol.utils.TaskListConverter;
+
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 
-public class Project extends BaseClass{
-
+public class Project extends BaseClass implements Serializable {
+  @CsvBindByName
   private String title;
+  @CsvBindByName
   private String takeIntoDevelopment;
+  @CsvCustomBindByName(converter = TaskListConverter.class)
   private List<Task> task;
 
   public Project () { };

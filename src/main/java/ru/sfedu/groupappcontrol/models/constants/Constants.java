@@ -20,5 +20,8 @@ public class Constants {
     public static final String USER_FIELDS=USER_NAME;
     public static final String ID="id";
     public static final String DATE_FORMAT = "dd-mm-yyyy";
+    public static final String FILE_EXTENSION_CSV = "FILE_EXTENSION_CSV";
+    public static final String BaseComment = "FILE_EXTENSION_CSV";
+    public static final String CSV_PATH ="CSV_PATH";
 
 }

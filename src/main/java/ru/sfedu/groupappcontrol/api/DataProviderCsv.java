@@ -37,9 +37,8 @@ import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Fail;
 
 public class DataProviderCsv implements DataProvider {
 
-    private final String PATH = ConfigurationUtil.getConfigurationEntry("CSV_PATH");
+    private final String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
 
-    private final String FILE_EXTENSION_CSV = "FILE_EXTENSION_CSV";
     private Logger log = LogManager.getLogger(DataProviderCsv.class);
 
     public DataProviderCsv() throws IOException {
@@ -51,7 +50,7 @@ public class DataProviderCsv implements DataProvider {
     }
 
     public String getPath(Class cl) throws IOException {
-        return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(FILE_EXTENSION_CSV);
+        return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
     }
 
     public void createFile(String path) throws IOException {
@@ -69,7 +68,7 @@ public class DataProviderCsv implements DataProvider {
             T element = listRes.stream().filter(el -> el.getId() == id).findFirst().get();
             return new Result(Complete, Constants.IS_INSERTED, element);
         } catch (NoSuchElementException e) {
-            log.error("There is no element with this id");
+            log.error(e);
             return new Result(Fail, Constants.IS_FAILED, null);
         }
     }
@@ -185,14 +184,14 @@ public class DataProviderCsv implements DataProvider {
         DevelopersTask developersTask= (DevelopersTask) createBaseTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
         developersTask.setTaskType(TaskTypes.DEVELOPERS_TASK);
         developersTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
-        developersTask.setDeveloperComments("developerComments");
+        developersTask.setDeveloperComments(Constants.BaseComment);
         return new Result(Complete,developersTask);
     }
     public Result createTestersTask( String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline,String lastUpdate) {
         TestersTask testersTask= (TestersTask) createBaseTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
         testersTask.setTaskType(TaskTypes.TESTERS_TASK);
         testersTask.setBugStatus(BugStatus.IN_WORK);
-        testersTask.setBugDescription("bugDescription");
+        testersTask.setBugDescription(Constants.BaseComment);
         return new Result(Complete,testersTask);
     }
 
@@ -206,26 +205,27 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee){
+    public Result createEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee){
         if(firstName.isEmpty() || lastName.isEmpty() || login.isEmpty()||password.isEmpty()||email.isEmpty()||department.isEmpty()||typeOfEmployee.toString().isEmpty()){
             return new Result(Fail);
         }
         switch (typeOfEmployee){
             case Employee:
-                Task baseEmployee = (Task) createBaseEmployee(firstName, lastName, login, password, email, token, department).getData();
+                Employee baseEmployee = (Employee) createBaseEmployee(id,firstName, lastName, login, password, email, token, department).getData();
                 return new Result<>(Complete,baseEmployee);
             case Developer:
-                DevelopersTask developersEmployee = (DevelopersTask) createDeveloperEmployee(firstName, lastName, login, password, email, token, department).getData();
-                return new Result<>(Complete,developersEmployee);
+                Developer developerEmployee = (Developer) createDeveloperEmployee(id,firstName, lastName, login, password, email, token, department).getData();
+                return new Result<>(Complete,developerEmployee);
             case Tester:
-                TestersTask testersEmployee = (TestersTask) createTesterEmployee(firstName, lastName, login, password, email, token, department).getData();
-                return new Result<>(Complete,testersEmployee);
+                Tester testerEmployee = (Tester) createTesterEmployee(id,firstName, lastName, login, password, email, token, department).getData();
+                return new Result<>(Complete,testerEmployee);
             default:
                 return new Result(Fail);
         }
     }
-    public Result createBaseEmployee(String firstName, String lastName, String login, String password, String email,String token, String department) {
+    public Result createBaseEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department) {
         Employee employee = new Employee();
+        employee.setId(id);
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
         employee.setLogin(login);
@@ -236,27 +236,58 @@ public class DataProviderCsv implements DataProvider {
         employee.setTypeOfEmployee(TypeOfEmployee.Employee);
         return new Result<>(Complete,employee);
     }
-    public Result createDeveloperEmployee(String firstName, String lastName, String login, String password, String email,String token, String department) {
-        Developer developer= (Developer)createBaseEmployee(firstName,lastName,login,password,email,token,department).getData();
+    public Result createDeveloperEmployee(long id, String firstName, String lastName, String login, String password, String email,String token, String department) {
+        Developer developer= new Developer();
+        developer.setId(id);
+        developer.setFirstName(firstName);
+        developer.setLastName(lastName);
+        developer.setLogin(login);
+        developer.setPassword(password);
+        developer.setEmail(email);
+        developer.setToken(token);
+        developer.setDepartment(department);
         developer.setTypeOfEmployee(TypeOfEmployee.Developer);
         developer.setStatus(TypeOfDevelopers.CUSTOM);
         developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
         return new Result<>(Complete,developer);
     }
-    public Result createTesterEmployee(String firstName, String lastName, String login, String password, String email,String token, String department) {
-        Tester tester= (Tester)createBaseEmployee(firstName,lastName,login,password,email,token,department).getData();
-        tester.setTypeOfEmployee(TypeOfEmployee.Tester);
+    public Result createTesterEmployee(long id, String firstName, String lastName, String login, String password, String email,String token, String department) {
+        Tester tester= new Tester();
+        tester.setId(id);
+        tester.setFirstName(firstName);
+        tester.setLastName(lastName);
+        tester.setLogin(login);
+        tester.setPassword(password);
+        tester.setEmail(email);
+        tester.setToken(token);
+        tester.setDepartment(department);tester.setTypeOfEmployee(TypeOfEmployee.Tester);
         tester.setStatus(TypeOfDevelopers.CUSTOM);
         tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
         tester.setTypeOfTester(TypeOfTester.Custom);
         return new Result<>(Complete,tester);
     }
 //  Get
+
+    public <T extends BaseClass> Result<T> getTaskList(Class<T> cl,long taskid){
+        List<T> listRes = select(cl);
+        return new Result(Complete, listRes);
+    }
+
     @Override
-    public Result getTaskList(long taskId) {
-    List<Task> listRes = select(Task.class);
-    return new Result(Complete, listRes);
-}
+    public Result getBaseTaskList(long taskId) {
+        List<Task> taskList= (List<Task>) getTaskList(Task.class, taskId);
+        return new Result<>(Complete,taskList);
+    }
+    @Override
+    public Result getDevelopersList(long taskId) {
+        List<DevelopersTask> listDev = (List<DevelopersTask>) getTaskList(DevelopersTask.class, taskId);
+        return new Result(Complete, listDev);
+    }
+    @Override
+    public Result getTestersList(long taskId) {
+        List<TestersTask> listTask = (List<TestersTask>) getTaskList(TestersTask.class, taskId);
+        return new Result(Complete, listTask);
+    }
 
     @Override
     public Result getTaskInfo(long taskId) {
@@ -304,6 +335,7 @@ public class DataProviderCsv implements DataProvider {
         list.removeIf(el -> el.getId() != userId);
         return new Result(Complete, String.valueOf(list));
     }
+
 
     @Override
     public Result getProjectStatistic(long userId) {
@@ -366,14 +398,14 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result getTaskListById(Employee employee) {
+    public Result getTaskListById(long id) {
         try {
             List<Employee> listEmpRes = select(Employee.class);
-            Optional<Employee> optionalUser = search(listEmpRes, employee.getId());
+            Optional<Employee> optionalUser = search(listEmpRes, id);
             Employee findedEmployee = optionalUser.get();
             List<Task> listRes = select(Task.class);
             List<Task> listTask = listRes.stream()
-                    .filter(el -> el.getTeam().contains(employee.getId()))
+                    .filter(el -> el.getScrumMaster().getId()==id)
                     .collect(Collectors.toList());
             return new Result(Complete, listTask);
         } catch (IOException e) {
@@ -429,7 +461,7 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result getTask(Employee employee, long taskId) {
+    public Result getTaskWorker(Employee employee, long taskId) {
         //Task
         List<Task> listRes = select(Task.class);
         List<Task> findedTaskList = listRes.stream()
@@ -523,7 +555,7 @@ public class DataProviderCsv implements DataProvider {
     @Override
     public Result calculateTaskCost(Task task) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
+            SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
             Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
             long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
@@ -541,7 +573,7 @@ public class DataProviderCsv implements DataProvider {
             List<Task> taskList = project.getTask();
             double projectCost = 0;
             for (Task task: taskList) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
+                SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
                 Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
                 Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
                 long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
@@ -561,7 +593,7 @@ public class DataProviderCsv implements DataProvider {
             List<Task> taskList = project.getTask();
             long resulttime = 0;
             for (Task task: taskList) {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
+                SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
                 Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
                 Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
                 long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
@@ -578,6 +610,9 @@ public class DataProviderCsv implements DataProvider {
 //  Correct
     @Override
     public Result writeComment(long id, String comment) {
+        if(comment.isEmpty()){
+            return new Result<>(Fail);
+        }
         try {
             List<Task> listRes = select(Task.class);
             Optional<Task> optionalTask = search(listRes, id);

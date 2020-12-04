@@ -1,6 +1,7 @@
 package ru.sfedu.groupappcontrol.models;
 
 
+import com.opencsv.bean.CsvBindByName;
 import ru.sfedu.groupappcontrol.models.enums.BugStatus;
 
 import java.util.Objects;
@@ -13,8 +14,9 @@ public class TestersTask extends Task{
   //
   // Fields
   //
-
+  @CsvBindByName
   private BugStatus bugStatus;
+  @CsvBindByName
   private String bugDescription;
 
   //

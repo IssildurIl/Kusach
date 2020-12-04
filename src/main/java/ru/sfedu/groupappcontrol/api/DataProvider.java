@@ -17,7 +17,7 @@ public interface DataProvider {
 
 //    Developer, Tester
     public Result changeTaskStatus(long id, String status);
-    public Result writeComment(long id, String comment);
+    public <T extends Task> Result<T> writeComment(Class cl, long id, String comment);
 //    ScrumMaster.taskAnalysis
 
     public Result getUserInfoList(long userId);
@@ -34,10 +34,10 @@ public interface DataProvider {
     public Result calculateProjectCost(Project project);
     public Result calculateProjectTime(Project project);
 //    ScrumMaster.TaskControl
-    public Result createTask(String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate,TaskTypes taskType);
+    public Result createTask(long id,String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate,TaskTypes taskType);
     public Result deleteTask(Task task);
     public Result getTaskWorker(Employee employee, long taskId);
-    public Result getTaskById( long taskId);
+    public <T extends Task> Result<T> getTaskById(Class cl, long taskId);
     public Result getTaskListById(long id);
 //    ScrumMaster.ProjectControl
     public Result deleteProject(Project project);

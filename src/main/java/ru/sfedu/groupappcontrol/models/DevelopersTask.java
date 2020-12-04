@@ -1,7 +1,10 @@
 package ru.sfedu.groupappcontrol.models;
 
 
+import com.opencsv.bean.CsvBindByName;
 import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
+
+import java.util.Objects;
 
 /**
  * Class DevelopersTask
@@ -11,8 +14,9 @@ public class DevelopersTask extends Task{
   //
   // Fields
   //
-
+  @CsvBindByName
   private String developerComments;
+  @CsvBindByName
   private DeveloperTaskType developerTaskType;
 
   //
@@ -28,6 +32,21 @@ public class DevelopersTask extends Task{
   //
   // Accessor methods
   //
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    DevelopersTask that = (DevelopersTask) o;
+    return Objects.equals(developerComments, that.developerComments) &&
+            developerTaskType == that.developerTaskType;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), developerComments, developerTaskType);
+  }
 
   /**
    * Set the value of developerComments
@@ -64,5 +83,13 @@ public class DevelopersTask extends Task{
   //
   // Other methods
   //
+
+  @Override
+  public String toString() {
+    return "DevelopersTask{" +
+            "developerComments='" + developerComments + '\'' +
+            ", developerTaskType=" + developerTaskType +
+            '}';
+  }
 
 }

@@ -42,7 +42,7 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
             builder.delete(builder.length() - 1, builder.length());
         }
         builder.append("]");
-        log.debug(builder.toString());
+        //log.debug(builder.toString());
         return builder.toString();
     }
 }

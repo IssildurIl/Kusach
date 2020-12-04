@@ -11,7 +11,7 @@ import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Main  extends TestEmployee{
+public class Main extends TestEmployee{
     private static Logger log = LogManager.getLogger(Main.class);
     public static void main(String[] args) throws Exception{
         log.info("Info");

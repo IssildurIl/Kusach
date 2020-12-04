@@ -23,7 +23,6 @@ public class Task extends BaseClass{
   private String taskDescription;
   @CsvBindByName
   private Double money;
-  //@CsvRecurse
   @CsvCustomBindByName(converter = EmployeeConverter.class)
   private Employee scrumMaster;
   @CsvBindByName

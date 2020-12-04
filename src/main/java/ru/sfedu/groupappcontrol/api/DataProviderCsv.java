@@ -8,7 +8,6 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import org.apache.commons.io.input.TailerListener;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
@@ -39,7 +38,7 @@ public class DataProviderCsv implements DataProvider {
 
     private final String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
 
-    private Logger log = LogManager.getLogger(DataProviderCsv.class);
+    private static Logger log = LogManager.getLogger(DataProviderCsv.class);
 
     public DataProviderCsv() throws IOException {
     }
@@ -144,26 +143,27 @@ public class DataProviderCsv implements DataProvider {
 //  Create
 
     @Override
-    public Result createTask( String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate,TaskTypes taskType){
+    public Result createTask( long id, String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate,TaskTypes taskType){
         if(taskDescription.isEmpty() || money.isNaN() || scrumMaster.toString().isEmpty()||status.toString().isEmpty()||team.isEmpty()||createdDate.isEmpty()||deadline.isEmpty()||lastUpdate.isEmpty()||taskType.toString().isEmpty()){
             return new Result(Fail);
         }
         switch (taskType){
         case BASE_TASK:
-            Task baseTask = (Task) createBaseTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
+            Task baseTask = (Task) createBaseTask(id,taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
             return new Result<>(Complete,baseTask);
         case DEVELOPERS_TASK:
-            DevelopersTask developersTask = (DevelopersTask) createDevelopersTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
+            DevelopersTask developersTask = (DevelopersTask) createDevelopersTask(id,taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
             return new Result<>(Complete,developersTask);
         case TESTERS_TASK:
-            TestersTask testersTask = (TestersTask) createTestersTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
+            TestersTask testersTask = (TestersTask) createTestersTask(id,taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
             return new Result<>(Complete,testersTask);
         default:
             return new Result(Fail);
     }
 }
-    public Result createBaseTask( String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate) {
+    public Result createBaseTask(long id, String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate) {
         Task task = new Task();
+        task.setId(id);
         task.setTaskDescription(taskDescription);
         task.setMoney(money);
         task.setScrumMaster(scrumMaster);
@@ -175,15 +175,33 @@ public class DataProviderCsv implements DataProvider {
         task.setTaskType(TaskTypes.BASE_TASK);
         return new Result(Complete,task);
     }
-    public Result createDevelopersTask( String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline, String lastUpdate) {
-        DevelopersTask developersTask= (DevelopersTask) createBaseTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
+    public Result createDevelopersTask(long id, String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline, String lastUpdate) {
+        DevelopersTask developersTask= new DevelopersTask();
+        developersTask.setId(id);
+        developersTask.setTaskDescription(taskDescription);
+        developersTask.setMoney(money);
+        developersTask.setScrumMaster(scrumMaster);
+        developersTask.setStatus(status);
+        developersTask.setTeam(team);
+        developersTask.setCreatedDate(createdDate);
+        developersTask.setDeadline(deadline);
+        developersTask.setLastUpdate(lastUpdate);
         developersTask.setTaskType(TaskTypes.DEVELOPERS_TASK);
         developersTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
         developersTask.setDeveloperComments(Constants.BaseComment);
         return new Result(Complete,developersTask);
     }
-    public Result createTestersTask( String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline,String lastUpdate) {
-        TestersTask testersTask= (TestersTask) createBaseTask(taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
+    public Result createTestersTask(long id, String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline,String lastUpdate) {
+        TestersTask testersTask= new TestersTask();
+        testersTask.setId(id);
+        testersTask.setTaskDescription(taskDescription);
+        testersTask.setMoney(money);
+        testersTask.setScrumMaster(scrumMaster);
+        testersTask.setStatus(status);
+        testersTask.setTeam(team);
+        testersTask.setCreatedDate(createdDate);
+        testersTask.setDeadline(deadline);
+        testersTask.setLastUpdate(lastUpdate);
         testersTask.setTaskType(TaskTypes.TESTERS_TASK);
         testersTask.setBugStatus(BugStatus.IN_WORK);
         testersTask.setBugDescription(Constants.BaseComment);
@@ -338,12 +356,19 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result getUserInfoList(long userId) {
-        List<Employee> list = select(Employee.class);
-        if (list.isEmpty()) {
+        try {
+            List<Employee> list = select(Employee.class);
+            if (list.isEmpty()) {
+                return new Result(Fail);
+            }
+            Optional<Employee> optionalEmployee=search(list,userId);
+            Employee employee= optionalEmployee.get();
+            return new Result(Complete, employee);
+        } catch (IOException e) {
+            log.error(e);
             return new Result(Fail);
         }
-        list.removeIf(el -> el.getId() != userId);
-        return new Result(Complete, String.valueOf(list));
+
     }
 
 
@@ -396,11 +421,12 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result getTaskById( long taskId) {
+    public <T extends Task> Result<T> getTaskById(Class cl, long taskId) {
         try {
-            List<Task> listTaskRes = select(Task.class);
-            Optional<Task> task= search(listTaskRes,taskId);
-            return new Result<>(Complete,task);
+            List<T> listTaskRes = select(cl);
+            Optional<T> optionalTask= search(listTaskRes,taskId);
+            T task=optionalTask.get();
+            return new Result<>(Complete, task);
         } catch (IOException e) {
             log.error(e);
             return new Result<>(Fail);
@@ -544,6 +570,9 @@ public class DataProviderCsv implements DataProvider {
     @Override
     public Result changeTaskStatus(long id, String status) {
         try {
+            if(status.isEmpty()){
+                return new Result<>(Fail);
+            }
             List<Task> listRes = select(Task.class);
             Optional<Task> optionalTask = search(listRes, id);
             if (optionalTask.isEmpty()) {
@@ -619,21 +648,21 @@ public class DataProviderCsv implements DataProvider {
 
 //  Correct
     @Override
-    public Result writeComment(long id, String comment) {
+    public <T extends Task> Result<T> writeComment(Class cl, long id, String comment) {
         if(comment.isEmpty()){
             return new Result<>(Fail);
         }
         try {
-            List<Task> listRes = select(Task.class);
-            Optional<Task> optionalTask = search(listRes, id);
+            List<T> listRes = select(cl);
+            Optional<T> optionalTask = search(listRes, id);
             if (optionalTask.isEmpty()) {
                 return new Result<>(Fail);
             }
-            Task editedTask = optionalTask.get();
+            T editedTask = (T) optionalTask.get();
             listRes.remove(optionalTask.get());
             editedTask.setTaskDescription(comment);
             listRes.add(editedTask);
-            insert(Task.class, listRes, false);
+            insert(cl, listRes, false);
             return new Result<>(Complete);
         } catch (IOException e) {
             log.error(e);

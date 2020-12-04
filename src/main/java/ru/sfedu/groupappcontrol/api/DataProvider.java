@@ -50,4 +50,5 @@ public interface DataProvider {
     public Result addEmployeeToTask(Task task, Employee employee);
     public Result deleteEmployeeFromTask(Task task, Employee employee);
     public Result createEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee);
-    }
+    public <T> Result<T> deleteRecord(Class<T> cl);
+}

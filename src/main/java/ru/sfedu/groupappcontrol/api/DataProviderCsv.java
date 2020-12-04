@@ -44,11 +44,6 @@ public class DataProviderCsv implements DataProvider {
     public DataProviderCsv() throws IOException {
     }
 
-    public void createDirectories(String pathString) throws IOException {
-        Path path = Paths.get(pathString);
-        Files.createDirectories(path);
-    }
-
     public String getPath(Class cl) throws IOException {
         return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
     }
@@ -223,6 +218,21 @@ public class DataProviderCsv implements DataProvider {
                 return new Result(Fail);
         }
     }
+
+    @Override
+    public <T> Result<T> deleteRecord(Class<T> cl) {
+        try {
+            String path = getPath(cl);
+            File file = new File(path);
+            file.delete();
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+
+    }
+
     public Result createBaseEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department) {
         Employee employee = new Employee();
         employee.setId(id);

@@ -40,9 +40,9 @@ public interface DataProvider {
 //    ScrumMaster.ProjectControl
     public Result deleteProject(Project project);
     public Result updateProject(Project project);
-    public Result createProject(String title, String takeIntoDevelopment, List<Task> tasks);
+    public Result createProject(long id,String title, String takeIntoDevelopment, List<Task> tasks);
     public Result getProjectById(Employee employee, long projectId);
-    public Result getProjecListById(Employee employee);
+    public Result getProjectListById(Employee employee);
 //    ScrumMaster.EmployeeControl
     public Result correctEmployeeParameters(Employee editedEmployee);
     public Result addEmployeeToTask(Task task, Employee employee);

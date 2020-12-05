@@ -15,11 +15,9 @@ public class EmployeeConverter extends AbstractBeanField<Employee, Integer> {
     @Override
     protected Object convert(String s) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
         String indexString = s.substring(1, s.length() - 1);
-        //List<Employee> indexEmployeeList = new ArrayList<>();
         Employee employee = new Employee();
             if (!indexString.isEmpty()) {
                 employee.setId(Long.parseLong(indexString));
-                //indexEmployeeList.add(employee);
             }
         return employee;
     }
@@ -31,7 +29,7 @@ public class EmployeeConverter extends AbstractBeanField<Employee, Integer> {
             builder.append(",");
             builder.delete(builder.length() - 1, builder.length());
             builder.append("]");
-        log.debug(builder.toString());
+        //log.debug(builder.toString());
         return builder.toString();
     }
 }

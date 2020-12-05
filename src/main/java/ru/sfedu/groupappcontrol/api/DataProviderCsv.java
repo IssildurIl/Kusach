@@ -43,10 +43,19 @@ public class DataProviderCsv implements DataProvider {
     public DataProviderCsv() throws IOException {
     }
 
+    /**
+     * @param cl
+     * @return
+     * @throws IOException
+     */
     public String getPath(Class cl) throws IOException {
         return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
     }
 
+    /**
+     * @param path
+     * @throws IOException
+     */
     public void createFile(String path) throws IOException {
         File file = new File(path);
         if (!file.exists()) {
@@ -56,6 +65,13 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param cl
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Task> Result<T> getTaskByID(Class cl, long id) throws IOException {
         try {
             List<T> listRes = select(cl);
@@ -66,6 +82,14 @@ public class DataProviderCsv implements DataProvider {
             return new Result(Fail);
         }
     }
+
+    /**
+     * @param cl
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Employee> Result<T> getEmployeeByID(Class cl, long id) throws IOException {
         try {
             List<T> listRes = select(cl);
@@ -77,6 +101,13 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param cl
+     * @param list
+     * @param append
+     * @param <T>
+     * @return
+     */
     public <T extends Task> Result<Void> insertJenericTask(Class<T> cl, List<T> list, boolean append) {
         try{
             String path = getPath(cl);
@@ -107,10 +138,21 @@ public class DataProviderCsv implements DataProvider {
         }
 
     }
+
+    /**
+     * @param cl
+     * @param list
+     * @param append
+     * @param <T>
+     * @return
+     */
     public <T extends Employee> Result<Void> insertJenericEmployee(Class<T> cl, List<T> list, boolean append) {
         try {
             String path = getPath(cl);
             createFile(path);
+            if(list.isEmpty()){
+                return new Result<>(Fail);
+            }
             List<T> oldList = (List<T>) this.select(cl);
             if (append) {
                 if (oldList != null && oldList.size() > 0) {
@@ -137,6 +179,14 @@ public class DataProviderCsv implements DataProvider {
         }
 
     }
+
+    /**
+     * @param cl
+     * @param list
+     * @param append
+     * @param <T>
+     * @return
+     */
     public <T extends Project> Result<Void> insertJenericProject(Class<T> cl, List<T> list, boolean append) {
         try {
             String path = getPath(cl);
@@ -168,18 +218,41 @@ public class DataProviderCsv implements DataProvider {
 
     }
 
+    /**
+     * @param cl
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Task> Result<T> deleteJenericTask(Class<T> cl, long id) throws IOException {
         List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insertJenericTask(cl, listData, false);
         return new Result(Complete);
     }
+
+    /**
+     * @param cl
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Employee> Result<T> deleteJenericEmployee(Class<T> cl, long id) throws IOException {
         List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insertJenericEmployee(cl, listData, false);
         return new Result(Complete);
     }
+
+    /**
+     * @param cl
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Project> Result<T> deleteJenericProject(Class<T> cl, long id) throws IOException {
         List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
@@ -187,6 +260,13 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete);
     }
 
+    /**
+     * @param cl
+     * @param updElement
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Task> Result<T> updateJenericTask(Class<T> cl, T updElement) throws IOException {
         deleteJenericTask(cl, updElement.getId());
         List<T> list = new ArrayList<T>();
@@ -195,6 +275,14 @@ public class DataProviderCsv implements DataProvider {
         insertJenericTask(cl, list, true);
         return new Result(Complete);
     }
+
+    /**
+     * @param cl
+     * @param updElement
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Employee> Result<T> updateJenericEmployee(Class<T> cl, T updElement) throws IOException {
         deleteJenericEmployee(cl, updElement.getId());
         List<T> list = new ArrayList<T>();
@@ -203,6 +291,14 @@ public class DataProviderCsv implements DataProvider {
         insertJenericEmployee(cl, list, true);
         return new Result(Complete);
     }
+
+    /**
+     * @param cl
+     * @param updElement
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Project> Result<T> updateJenericProject(Class<T> cl, T updElement) throws IOException {
         deleteJenericProject(cl, updElement.getId());
         List<T> list = new ArrayList<T>();
@@ -212,6 +308,11 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete);
     }
 
+    /**
+     * @param cl
+     * @param <T>
+     * @return
+     */
     public <T> List<T> select(Class<T> cl) {
         try {
             String path = getPath(cl);
@@ -232,19 +333,41 @@ public class DataProviderCsv implements DataProvider {
     }
 
 
-
+    /**
+     * @param listRes
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Task> Optional<T> searchTask(List<T> listRes,long id) throws IOException {
         Optional<T> optional = listRes.stream()
                 .filter(el -> el.getId() == id)
                 .findFirst();
         return optional;
     }
+
+    /**
+     * @param listRes
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Employee> Optional<T> searchEmployee(List<T> listRes,long id) throws IOException {
         Optional<T> optional = listRes.stream()
                 .filter(el -> el.getId() == id)
                 .findFirst();
         return optional;
     }
+
+    /**
+     * @param listRes
+     * @param id
+     * @param <T>
+     * @return
+     * @throws IOException
+     */
     public <T extends Project> Optional<T> searchProject(List<T> listRes,long id) throws IOException {
         Optional<T> optional = listRes.stream()
                 .filter(el -> el.getId() == id)
@@ -254,6 +377,19 @@ public class DataProviderCsv implements DataProvider {
 
 //  Create
 
+    /**
+     * @param id
+     * @param taskDescription
+     * @param money
+     * @param scrumMaster
+     * @param status
+     * @param team
+     * @param createdDate
+     * @param deadline
+     * @param lastUpdate
+     * @param taskType
+     * @return
+     */
     @Override
     public Result createTask( long id, String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate,TaskTypes taskType){
         if(taskDescription.isEmpty() || money.isNaN() || scrumMaster.toString().isEmpty()||status.toString().isEmpty()||team.isEmpty()||createdDate.isEmpty()||deadline.isEmpty()||lastUpdate.isEmpty()||taskType.toString().isEmpty()){
@@ -273,6 +409,19 @@ public class DataProviderCsv implements DataProvider {
             return new Result(Fail);
     }
 }
+
+    /**
+     * @param id
+     * @param taskDescription
+     * @param money
+     * @param scrumMaster
+     * @param status
+     * @param team
+     * @param createdDate
+     * @param deadline
+     * @param lastUpdate
+     * @return
+     */
     public Result createBaseTask(long id, String taskDescription, Double money, Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String deadline,String lastUpdate) {
         Task task = new Task();
         task.setId(id);
@@ -287,6 +436,19 @@ public class DataProviderCsv implements DataProvider {
         task.setTaskType(TaskTypes.BASE_TASK);
         return new Result(Complete,task);
     }
+
+    /**
+     * @param id
+     * @param taskDescription
+     * @param money
+     * @param scrumMaster
+     * @param status
+     * @param team
+     * @param createdDate
+     * @param deadline
+     * @param lastUpdate
+     * @return
+     */
     public Result createDevelopersTask(long id, String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline, String lastUpdate) {
         DevelopersTask developersTask= new DevelopersTask();
         developersTask.setId(id);
@@ -303,6 +465,19 @@ public class DataProviderCsv implements DataProvider {
         developersTask.setDeveloperComments(Constants.BaseComment);
         return new Result(Complete,developersTask);
     }
+
+    /**
+     * @param id
+     * @param taskDescription
+     * @param money
+     * @param scrumMaster
+     * @param status
+     * @param team
+     * @param createdDate
+     * @param deadline
+     * @param lastUpdate
+     * @return
+     */
     public Result createTestersTask(long id, String taskDescription, Double money,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate, String deadline,String lastUpdate) {
         TestersTask testersTask= new TestersTask();
         testersTask.setId(id);
@@ -320,15 +495,38 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete,testersTask);
     }
 
+    /**
+     * @param id
+     * @param title
+     * @param takeIntoDevelopment
+     * @param tasks
+     * @return
+     */
     @Override
-    public Result createProject(String title, String takeIntoDevelopment, List<Task> tasks) {
+    public Result createProject(long id,String title, String takeIntoDevelopment, List<Task> tasks) {
+        if(title.isEmpty()||takeIntoDevelopment.isEmpty()){
+            return new Result(Fail);
+        }
         Project project=new Project();
+        project.setId(id);
         project.setTitle(title);
         project.setTakeIntoDevelopment(takeIntoDevelopment);
         project.setTask(tasks);
         return new Result(Complete,project);
     }
 
+    /**
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param login
+     * @param password
+     * @param email
+     * @param token
+     * @param department
+     * @param typeOfEmployee
+     * @return
+     */
     @Override
     public Result createEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee){
         if(firstName.isEmpty() || lastName.isEmpty() || login.isEmpty()||password.isEmpty()||email.isEmpty()||department.isEmpty()||typeOfEmployee.toString().isEmpty()){
@@ -349,6 +547,11 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param cl
+     * @param <T>
+     * @return
+     */
     @Override
     public <T> Result<T> deleteRecord(Class<T> cl) {
         try {
@@ -363,6 +566,17 @@ public class DataProviderCsv implements DataProvider {
 
     }
 
+    /**
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param login
+     * @param password
+     * @param email
+     * @param token
+     * @param department
+     * @return
+     */
     public Result createBaseEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department) {
         Employee employee = new Employee();
         employee.setId(id);
@@ -376,6 +590,18 @@ public class DataProviderCsv implements DataProvider {
         employee.setTypeOfEmployee(TypeOfEmployee.Employee);
         return new Result<>(Complete,employee);
     }
+
+    /**
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param login
+     * @param password
+     * @param email
+     * @param token
+     * @param department
+     * @return
+     */
     public Result createDeveloperEmployee(long id, String firstName, String lastName, String login, String password, String email,String token, String department) {
         Developer developer= new Developer();
         developer.setId(id);
@@ -391,6 +617,18 @@ public class DataProviderCsv implements DataProvider {
         developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
         return new Result<>(Complete,developer);
     }
+
+    /**
+     * @param id
+     * @param firstName
+     * @param lastName
+     * @param login
+     * @param password
+     * @param email
+     * @param token
+     * @param department
+     * @return
+     */
     public Result createTesterEmployee(long id, String firstName, String lastName, String login, String password, String email,String token, String department) {
         Tester tester= new Tester();
         tester.setId(id);
@@ -408,6 +646,12 @@ public class DataProviderCsv implements DataProvider {
     }
 //  Get
 
+    /**
+     * @param cl
+     * @param userId
+     * @param <T>
+     * @return
+     */
     public <T extends Task> Result<T> getTaskList(Class<T> cl,long userId){
         List<T> listRes = select(cl);
         List<T> optionalRes = listRes.stream()
@@ -419,18 +663,33 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete, optionalRes);
     }
 
+    /**
+     * @param userId
+     * @return
+     */
     @Override
     public Result getBaseTaskList(long userId) {
         List<Task> taskList= (List<Task>) getTaskList(Task.class,userId).getData();
         return new Result<>(Complete,taskList);
     }
 
+    /**
+     * @param cl
+     * @param taskId
+     * @return
+     */
     @Override
     public Result getTaskInfo(Class cl,long taskId) {
         Object task = getTaskInfoGeneric(cl,taskId).getData();
         return new Result(Complete,task);
     }
 
+    /**
+     * @param cl
+     * @param taskId
+     * @param <T>
+     * @return
+     */
     public <T extends Task> Result <T> getTaskInfoGeneric(Class cl,long taskId){
         try {
             List<T> list = select(cl);
@@ -449,10 +708,16 @@ public class DataProviderCsv implements DataProvider {
             return new Result(Fail);
         }
     }
+
+    /**
+     * @param userId
+     * @param taskId
+     * @return
+     */
     @Override
     public Result getTask(long userId, long taskId) {
         try {
-            List<Task> res = null;
+            List<Task> res = new ArrayList<>();
             List<Task> listRes = select(Task.class);
             if(listRes.isEmpty()){
                 return new Result<>(Fail);
@@ -483,6 +748,10 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param userId
+     * @return
+     */
     @Override
     public Result getUserInfoList(long userId) {
         try {
@@ -504,6 +773,10 @@ public class DataProviderCsv implements DataProvider {
     }
 
 
+    /**
+     * @param userId
+     * @return
+     */
     @Override
     public Result getProjectStatistic(long userId) {
         try {
@@ -542,6 +815,10 @@ public class DataProviderCsv implements DataProvider {
 
     }
 
+    /**
+     * @param projectId
+     * @return
+     */
     @Override
     public Result getProject(long projectId) {
         try {
@@ -558,6 +835,12 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param cl
+     * @param taskId
+     * @param <T>
+     * @return
+     */
     @Override
     public <T extends Task> Result<T> getTaskById(Class cl, long taskId) {
         try {
@@ -574,6 +857,10 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param id
+     * @return
+     */
     @Override
     public Result getTaskListById(long id) {
         try {
@@ -587,6 +874,9 @@ public class DataProviderCsv implements DataProvider {
             List<Task> listTask = listRes.stream()
                     .filter(el -> el.getScrumMaster().getId()==id)
                     .collect(Collectors.toList());
+            if(listTask.isEmpty()){
+                return new Result(Outcomes.Empty);
+            }
             return new Result(Complete, listTask);
         } catch (IOException e) {
             log.error(e);
@@ -594,6 +884,11 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param employee
+     * @param projectId
+     * @return
+     */
     @Override
     public Result getProjectById(Employee employee, long projectId) {
         List<Task> listRes = select(Task.class);
@@ -614,11 +909,20 @@ public class DataProviderCsv implements DataProvider {
                     return isContains;
                 })
                 .collect(Collectors.toList());
-        return new Result<>(Complete,optionalProject);
+        if(optionalProject.isEmpty()){
+            return new Result<>(Outcomes.Empty);
+        }else{
+            return new Result<>(Complete,optionalProject);
+        }
+
     }
 
+    /**
+     * @param employee
+     * @return
+     */
     @Override
-    public Result getProjecListById(Employee employee) {
+    public Result getProjectListById(Employee employee) {
         List<Task> listRes = select(Task.class);
         List<Task> findedTaskList = listRes.stream()
                 .filter(el -> el.getTeam().contains(employee.getId()))
@@ -637,9 +941,18 @@ public class DataProviderCsv implements DataProvider {
                     return isContains;
                 })
                 .collect(Collectors.toList());
-        return new Result<>(Complete,optionalProject);
+        if(optionalProject.isEmpty()){
+            return new Result<>(Fail);
+        }else{
+            return new Result<>(Complete,optionalProject);
+        }
     }
 
+    /**
+     * @param employee
+     * @param taskId
+     * @return
+     */
     @Override
     public Result getTaskWorker(Employee employee, long taskId) {
         //Task
@@ -648,11 +961,17 @@ public class DataProviderCsv implements DataProvider {
                 .filter(el -> el.getTeam().contains(employee.getId()))
                 .collect(Collectors.toList());
         List<Task> findedTask = findedTaskList;
-        return new Result<>(Complete,findedTask);
-
+        if(!findedTask.isEmpty()) {
+            return new Result<>(Complete, findedTask);
+        }else{
+            return new Result<>(Fail);
+        }
     }
 
-//  Delete
+    /**
+     * @param task
+     * @return
+     */
     @Override
     public Result deleteTask(Task task) {
     try {
@@ -664,6 +983,10 @@ public class DataProviderCsv implements DataProvider {
     }
 }
 
+    /**
+     * @param project
+     * @return
+     */
     @Override
     public Result deleteProject(Project project) {
         try {
@@ -675,6 +998,11 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param task
+     * @param employee
+     * @return
+     */
     @Override
     public Result deleteEmployeeFromTask(Task task, Employee employee) {
         List<Employee> employeeList = task.getTeam();
@@ -682,7 +1010,11 @@ public class DataProviderCsv implements DataProvider {
         task.setTeam(employeeList);
         return new Result<>(Complete);
     }
-//  Update
+
+    /**
+     * @param project
+     * @return
+     */
     @Override
     public Result updateProject(Project project) {
     try {
@@ -694,7 +1026,11 @@ public class DataProviderCsv implements DataProvider {
     }
 }
 
-//  Change
+
+    /**
+     * @param editedEmployee
+     * @return
+     */
     @Override
     public Result<Employee> changeProfileInfo(Employee editedEmployee) {
         try {
@@ -714,6 +1050,11 @@ public class DataProviderCsv implements DataProvider {
 
     }
 
+    /**
+     * @param id
+     * @param status
+     * @return
+     */
     @Override
     public Result changeTaskStatus(long id, String status) {
         try {
@@ -737,7 +1078,11 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
-//  Calculate
+
+    /**
+     * @param task
+     * @return
+     */
     @Override
     public Result calculateTaskCost(Task task) {
         try {
@@ -746,33 +1091,33 @@ public class DataProviderCsv implements DataProvider {
             Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
             long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
             long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            return new Result<>(Complete, diff * task.getMoney());
+            double res=(double) diff * task.getMoney();
+            return new Result<>(Complete, res);
         } catch (ParseException e) {
             log.error(e);
             return new Result<>(Fail);
         }
     }
 
+    /**
+     * @param project
+     * @return
+     */
     @Override
     public Result calculateProjectCost(Project project) {
-        try {
-            List<Task> taskList = project.getTask();
-            double projectCost = 0;
-            for (Task task: taskList) {
-                SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
-                Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
-                Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
-                long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-                long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-                projectCost=projectCost+ diff*task.getMoney();
-            }
-            return new Result<>(Complete,projectCost);
-        } catch (ParseException e) {
-            log.error(e);
-            return new Result<>(Fail);
+        List<Task> taskList = project.getTask();
+        double projectCost = 0.0;
+        for (Task task: taskList) {
+            System.out.println();
+            projectCost = projectCost + (double) calculateTaskCost(task).getData();
         }
+        return new Result<>(Complete,projectCost);
     }
 
+    /**
+     * @param project
+     * @return
+     */
     @Override
     public Result calculateProjectTime(Project project) {
         try {
@@ -793,7 +1138,13 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
-//  Correct
+    /**
+     * @param cl
+     * @param id
+     * @param comment
+     * @param <T>
+     * @return
+     */
     @Override
     public <T extends Task> Result<T> writeComment(Class cl, long id, String comment) {
         if(comment.isEmpty()){
@@ -817,6 +1168,10 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param editedEmployee
+     * @return
+     */
     @Override
     public Result correctEmployeeParameters(Employee editedEmployee) {
         try {
@@ -828,6 +1183,11 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    /**
+     * @param task
+     * @param employee
+     * @return
+     */
     @Override
     public Result addEmployeeToTask(Task task, Employee employee) {
         List<Employee> employeeList = task.getTeam();
@@ -835,9 +1195,5 @@ public class DataProviderCsv implements DataProvider {
         task.setTeam(employeeList);
         return new Result<>(Complete);
     }
-
-
-
-
 
 }

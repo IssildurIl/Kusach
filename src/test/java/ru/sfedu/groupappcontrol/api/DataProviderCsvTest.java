@@ -1,20 +1,15 @@
 package ru.sfedu.groupappcontrol.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.*;
-import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
 import ru.sfedu.groupappcontrol.models.enums.*;
-import ru.sfedu.groupappcontrol.utils.TaskListConverter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static ru.sfedu.groupappcontrol.api.Fill.*;
-import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Complete;
-import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Fail;
+import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
 import static ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion.TESTING;
 
 import java.io.IOException;
@@ -63,17 +58,16 @@ class DataProviderCsvTest {
 
     @Test
     public void changeTaskStatusSuccess() throws IOException {
-        //Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","05-12-2021","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.changeTaskStatus(1, TypeOfCompletion.TESTING.toString());
         Object o=instance.getTaskByID(Task.class,1).getStatus();
-        Task task = (Task) instance.getTaskByID(Task.class,1).getData();
+        Task task =  instance.getTaskByID(Task.class,1).getData();
         log.debug(task);
         assertEquals(TESTING, task.getStatus());
     }
 
     @Test
     public void changeTaskStatusFail() throws IOException {
-        Task task = (Task) instance.getTaskById(Task.class,1).getData();
+        Task task = instance.getTaskById(Task.class,1).getData();
         log.debug(task);
         assertEquals(Fail,instance.changeTaskStatus(1,"").getStatus());
     }
@@ -94,14 +88,14 @@ class DataProviderCsvTest {
 
     @Test
     public void getUserInfoListSuccess() throws IOException {
-        Employee testEmp= (Employee) instance.getUserInfoList(2).getData();
+        Employee testEmp = (Employee) instance.getUserInfoList(2).getData();
         log.debug(testEmp);
         //assertEquals(testEmp.getId(),2);
         assertEquals(2,  testEmp.getId());
     }
     @Test
     public void getUserInfoListFail() throws IOException {
-        Outcomes outcomes= instance.getUserInfoList(200).getStatus();
+        Outcomes outcomes = instance.getUserInfoList(200).getStatus();
         log.debug(outcomes);
         assertNotEquals(instance.getUserInfoList(2).getStatus().toString(),outcomes.toString());
     }
@@ -109,34 +103,30 @@ class DataProviderCsvTest {
     @Test
     public void getTaskListSuccess() throws IOException {
         List<Task> developersTask= (List<Task>) instance.getBaseTaskList(8).getData();
-        Outcomes o= instance.getBaseTaskList(8).getStatus();
+        Outcomes o = instance.getBaseTaskList(8).getStatus();
         log.debug(developersTask);
         assertEquals(o.toString(),Complete.toString());
     }
     @Test
     public void getTaskListFail() throws IOException {
         List<Task> developersTask= (List<Task>) instance.getBaseTaskList(100).getData();
-        Outcomes o= instance.getBaseTaskList(100).getStatus();
+        Outcomes o = instance.getBaseTaskList(100).getStatus();
         log.debug(developersTask);
         assertNotEquals(o.toString(),Outcomes.NotFound.toString());
     }
 
     @Test
     public void getTaskInfoSuccess() throws IOException {
+        Outcomes o = instance.getTaskInfo(DevelopersTask.class,1).getStatus();
         log.info(instance.getTaskInfo(DevelopersTask.class,1).getData());
+        assertEquals(Complete,o);
     }
 
-//    @Test
-//    public void getTaskSuccess() throws IOException {
-//        List<Task> taskList = new ArrayList<>();
-//        Task task = (Task) instance.createBaseTask(11,"de",6666.6,null,TypeOfCompletion.IDLE,getListEmployee(),"20-11-20","20-11-20","24-12-20").getData();
-//        Employee employee = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
-//        taskList.add(task);
-//        instance.insertJenericTask(Task.class,taskList,true);
-//        task.setScrumMaster(employee);
-//        log.info(instance.getTask(1,11).getData());
-//    }
-//
+    @Test
+    public void getTaskSuccess() throws IOException {
+        log.info(instance.getTask(1,1).getData());
+    }
+
 //87318
     @Test
     public void calculateTaskCostSuccess() throws IOException {
@@ -152,135 +142,211 @@ class DataProviderCsvTest {
     }
 
 //    @Test
+//    public void calculateProjectCostSuccess() throws IOException {
+//        Project testProject=(Project) instance.getProject(1).getData();
+//        double cost = (double) instance.calculateProjectCost(testProject).getData();
+//        System.out.println(cost);
+//    }
+
+//    @Test
 //    public void calculateProjectCostFail() throws IOException {
 //
 //    }
-//
-//    @Test
-//    public void calculateProjectTimeSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void calculateProjectTimeFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void createTaskSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void createTaskFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void deleteTaskSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void deleteTaskFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void getTaskWorkerSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void getTaskWorkerFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void getTaskByIdSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void getTaskByIdFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void getTaskListByIdSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void getTaskListByIdFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void deleteProjectSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void deleteProjectFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void createProjectSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void createProjectFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void getProjectByIdSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void getProjectByIdFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void getProjecListByIdSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void getProjecListByIdFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void correctEmployeeParametersSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void correctEmployeeParametersFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void addEmployeeToTaskSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void addEmployeeToTaskFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void deleteEmployeeFromTaskSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void deleteEmployeeFromTaskFail() throws IOException {
-//
-//    }
-//
-//    @Test
-//    public void createEmployeeSuccess() throws IOException {
-//
-//    }
-//    @Test
-//    public void createEmployeeFail() throws IOException {
-//
-//    }
+
+    @Test
+    public void calculateProjectTimeSuccess() throws IOException {
+        Project testProject = (Project) instance.getProject(1).getData();
+        Outcomes o = instance.calculateProjectTime(testProject).getStatus();
+        assertEquals(Complete,o);
+    }
+    @Test
+    public void calculateProjectTimeFail() throws IOException {
+        Project testProject = (Project) instance.getProject(1).getData();
+        long time = (long)instance.calculateProjectTime(testProject).getData();
+        assertNotEquals(1000,time);
+    }
+
+    @Test
+    public void createTaskSuccess() throws IOException {
+        List<Task> task = new ArrayList<>();
+        Task testTask = (Task) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        task.add(testTask);
+        instance.insertJenericTask(Task.class,task,true);
+        assertEquals(12,instance.getTaskById(Task.class,12).getData().getId());
+    }
+    @Test
+    public void createTaskFail() throws IOException {
+        List<Task> task = new ArrayList<>();
+        Task testTask = (Task) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        task.add(testTask);
+        instance.insertJenericTask(Task.class,task,true);
+        assertNotEquals(14551.0,instance.getTaskById(Task.class,12).getData().getMoney());
+    }
+
+    @Test
+    public void deleteTaskSuccess() throws IOException {
+        List<Task> task = new ArrayList<>();
+        Task testTask = (Task) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        task.add(testTask);
+        instance.insertJenericTask(Task.class,task,true);
+        instance.deleteJenericTask(Task.class,12);
+        assertEquals(Fail,instance.getTaskById(Task.class,12).getStatus());
+    }
+    @Test
+    public void deleteTaskFail() throws IOException {
+        List<Task> task = new ArrayList<>();
+        instance.deleteJenericTask(Task.class,12);
+        assertNotEquals(Complete,instance.getTaskById(Task.class,12).getStatus());
+    }
+
+    @Test
+    public void getTaskWorkerSuccess() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Outcomes o = instance.getTaskWorker(testdeveloper,1).getStatus();
+        assertNotEquals(Complete,o);
+    }
+    @Test
+    public void getTaskWorkerFail() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Outcomes o = instance.getTaskWorker(testdeveloper,1).getStatus();
+        assertEquals(Fail,o);
+    }
+
+    @Test
+    public void getTaskByIdSuccess() throws IOException {
+        Task task = instance.getTaskById(Task.class,1).getData();
+        assertEquals(1,task.getId());
+    }
+    @Test
+    public void getTaskByIdFail() throws IOException {
+        Task task = instance.getTaskById(Task.class,1).getData();
+        assertNotEquals(2,task.getId());
+    }
+
+    @Test
+    public void getTaskListByIdSuccess() throws IOException {
+        //List<Task> taskList= (List<Task>) instance.getTaskListById(1).getData();
+        Outcomes o = instance.getTaskListById(1).getStatus();
+        assertNotEquals(Fail,o);
+    }
+    @Test
+    public void getTaskListByIdFail() throws IOException {
+        Outcomes o = instance.getTaskListById(100).getStatus();
+        assertNotEquals(Complete,o);
+    }
+
+    @Test
+    public void deleteProjectSuccess() throws IOException {
+        List<Project> projectList = new ArrayList<>();
+        Project project = (Project) instance.createProject(5,"TestProject","05-12-2020",getListTask()).getData();
+        projectList.add(project);
+        instance.insertJenericProject(Project.class,projectList,true);
+        instance.deleteProject(project);
+        Outcomes o = instance.getProject(5).getStatus();
+        assertEquals(Fail,o);
+    }
+    @Test
+    public void deleteProjectFail() throws IOException {
+        List<Project> projectList = new ArrayList<>();
+        Project project = (Project) instance.createProject(5,"TestProject","05-12-2020",getListTask()).getData();
+        projectList.add(project);
+        instance.insertJenericProject(Project.class,projectList,true);
+        instance.deleteProject(project);
+        Outcomes o = instance.getProject(5).getStatus();
+        assertNotEquals(Complete,o);
+    }
+
+    @Test
+    public void createProjectSuccess() throws IOException {
+        Outcomes o = instance.createProject(5,"TestProject","05-12-2020",getListTask()).getStatus();
+        assertEquals(Complete,o);
+    }
+    @Test
+    public void createProjectFail() throws IOException {
+        Outcomes o = instance.createProject(5,"","05-12-2020",getListTask()).getStatus();
+        assertEquals(Fail,o);
+    }
+
+    @Test
+    public void getProjectByIdFail() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Outcomes o = instance.getProjectById(testdeveloper,100).getStatus();
+        assertEquals(Empty,o);
+    }
+
+    @Test
+    public void getProjectListByIdSuccess() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Outcomes o = instance.getProjectListById(testdeveloper).getStatus();
+        assertEquals(Fail,o);
+    }
+    @Test
+    public void getProjectListByIdFail() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Outcomes o = instance.getProjectListById(testdeveloper).getStatus();
+        assertNotEquals(Complete,o);
+    }
+
+    @Test
+    public void correctEmployeeParametersSuccess() throws IOException {
+        Employee test = (Employee) instance.createEmployee(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        instance.correctEmployeeParameters(test);
+        Employee testemployee = (Employee) instance.getEmployeeByID(Employee.class,4).getData();
+        assertEquals("Employee4",testemployee.getFirstName());
+    }
+    @Test
+    public void correctEmployeeParametersFail() throws IOException {
+        Employee test = (Employee) instance.createEmployee(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        instance.correctEmployeeParameters(test);
+        Employee testemployee = (Employee) instance.getEmployeeByID(Employee.class,4).getData();
+        assertNotEquals("Ilya",testemployee.getFirstName());
+    }
+
+    @Test
+    public void addEmployeeToTaskSuccess() throws IOException {
+        Employee testdeveloper= (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Outcomes outcomes= instance.addEmployeeToTask(testTask,testdeveloper).getStatus();
+        assertEquals(outcomes, Complete);
+    }
+    @Test
+    public void addEmployeeToTaskFail() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Outcomes outcomes = instance.addEmployeeToTask(testTask,testdeveloper).getStatus();
+        assertNotEquals(outcomes, Fail);
+    }
+
+    @Test
+    public void deleteEmployeeFromTaskSuccess() throws IOException {
+        Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Outcomes outcomes = instance.deleteEmployeeFromTask(testTask,testdeveloper).getStatus();
+        assertEquals(outcomes, Complete);
+    }
+    @Test
+    public void deleteEmployeeFromTaskFail() throws IOException {
+        Employee testdeveloper= (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+        Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Outcomes outcomes = instance.deleteEmployeeFromTask(testTask,testdeveloper).getStatus();
+        assertNotEquals(outcomes, Fail);
+    }
+
+    @Test
+    public void createEmployeeSuccess() throws IOException {
+        List<Tester> testerList= new ArrayList<>();
+        Tester tester = (Tester) instance.createEmployee(11,"Vasily","Vasilyev","vas1ly","vasyan","VasLy@","9bba8047-f0aa-473d-aef9-6905edcd3f99","Team13",TypeOfEmployee.Tester).getData();
+        testerList.add(tester);
+        instance.insertJenericEmployee(Tester.class,testerList,true);
+        assertEquals("Vasily",instance.getEmployeeByID(Tester.class,11).getData().getFirstName().toString());
+    }
+    @Test
+    public void createEmployeeFail() throws IOException {
+        Tester tester = (Tester) instance.createEmployee(11,"","Vasilyev","vas1ly","vasyan","VasLy@","9bba8047-f0aa-473d-aef9-6905edcd3f99","Team13",TypeOfEmployee.Tester).getData();
+        Outcomes outcomes=instance.createEmployee(11,"","Vasilyev","vas1ly","vasyan","VasLy@","9bba8047-f0aa-473d-aef9-6905edcd3f99","Team13",TypeOfEmployee.Tester).getStatus();
+        assertNotEquals(outcomes, Complete);
+
+    }
     public static void addRecord() throws IOException {
     List<Employee> employees = new ArrayList<>();
     List<Developer> developers = new ArrayList<>();

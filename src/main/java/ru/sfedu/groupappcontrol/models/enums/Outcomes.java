@@ -1,5 +1,5 @@
 package ru.sfedu.groupappcontrol.models.enums;
 
 public enum Outcomes {
-    Complete,Fail,NotFound
+    Complete,Fail,NotFound,Empty
 }

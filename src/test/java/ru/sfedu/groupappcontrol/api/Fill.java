@@ -16,8 +16,8 @@ public class Fill {
     //
     static String[] taskDescription = {"MakeDiploma","MakeKursach","MakeWebSite","MakeApplication","MakeGame","MakeLab","MakeDisign","MakeSmth","MakeOurTask","MakeNewCycle"};
     static Double[] money = {1000.0,2000.0,3000.0,4000.0,5000.0,6000.0,7000.0,8000.0,9000.0,10000.0};
-    static String[] createdDate={"04-12-2020","05-12-2021","15-12-2020","15-12-2021","30-12-2020","31-12-2020","17-12-2020","17-12-2020","14-08-2020","9-01-2021"};
-    static String[] deadline={"04-12-2022","05-12-2022","15-12-2022","15-12-2022","30-12-2022","31-12-2022","17-12-2022","17-12-2022","14-08-2022","9-01-2022"};
+    static String[] createdDate={"04-12-2020","05-12-2021","15-12-2020","15-12-2021","30-12-2020","31-12-2020","17-12-2020","17-12-2020","14-08-2020","09-01-2021"};
+    static String[] deadline={"04-12-2022","05-12-2022","15-12-2022","15-12-2022","30-12-2022","31-12-2022","17-12-2022","17-12-2022","14-08-2022","09-01-2022"};
     static String[] lastUpdate={"04-12-2020","04-12-2020","04-12-2020","04-12-2020","04-12-2020","04-12-2020","04-12-2020","04-12-2020","04-12-2020","04-12-2020"};
 
     static String[] title ={"Game Project","Labs Project","Second Project","Partners Project","WebSite project","Design Project","Diploma Project","MakeOurTask Project","Application Project","SMTH Project"};

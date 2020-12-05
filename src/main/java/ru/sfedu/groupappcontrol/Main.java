@@ -24,8 +24,8 @@ public class Main extends TestEmployee{
         employeeList.add(employee1);
         employeeList.add(employee2);
         DataProviderCsv dataProviderCsv = new DataProviderCsv();
-        dataProviderCsv.insert(Employee.class,employeeList,false);
-        dataProviderCsv.delete(Employee.class,1);
+//        dataProviderCsv.insert(Employee.class,employeeList,false);
+//        dataProviderCsv.delete(Employee.class,1);
 //        DataProviderXML dataProviderXML = new DataProviderXML();
 //        dataProviderXML.insert(Employee.class,employeeList,false);
     }

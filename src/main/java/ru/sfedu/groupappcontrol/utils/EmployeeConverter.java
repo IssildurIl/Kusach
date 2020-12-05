@@ -12,17 +12,26 @@ import java.util.List;
 
 public class EmployeeConverter extends AbstractBeanField<Employee, Integer> {
     private static final Logger log = LogManager.getLogger(EmployeeConverter.class);
-
+    @Override
     protected Object convert(String s) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
+        String indexString = s.substring(1, s.length() - 1);
+        //List<Employee> indexEmployeeList = new ArrayList<>();
         Employee employee = new Employee();
-        employee.setId(Long.parseLong(s));
+            if (!indexString.isEmpty()) {
+                employee.setId(Long.parseLong(indexString));
+                //indexEmployeeList.add(employee);
+            }
         return employee;
     }
 
-    public String convertToWrite(Object value){
-        String res="";
+    public String convertToWrite(Object value) {
         Employee employee = (Employee) value;
-        res += employee.getId();
-        return res;
+        StringBuilder builder = new StringBuilder("[");
+            builder.append(employee.getId());
+            builder.append(",");
+            builder.delete(builder.length() - 1, builder.length());
+            builder.append("]");
+        log.debug(builder.toString());
+        return builder.toString();
     }
 }

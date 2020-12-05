@@ -1,6 +1,7 @@
 package ru.sfedu.groupappcontrol.models;
 
 
+import com.opencsv.bean.CsvBindByName;
 import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
 
@@ -10,8 +11,9 @@ import java.util.Objects;
  * Class Developer
  */
 public class Developer extends Employee {
-
+  @CsvBindByName
   private TypeOfDevelopers status;
+  @CsvBindByName
   private ProgrammingLanguage programmingLanguage;
 
   public Developer () { };
@@ -49,7 +51,7 @@ public class Developer extends Employee {
 
   @Override
   public String toString() {
-    return "Developer{" +
+    return super.toString()+"Developer{" +
             "status=" + status +
             ", programmingLanguage=" + programmingLanguage +
             '}';

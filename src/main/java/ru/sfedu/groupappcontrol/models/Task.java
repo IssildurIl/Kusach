@@ -14,15 +14,16 @@ import java.util.Objects;
 /**
  * Class Task
  */
-public class Task extends BaseClass{
+public class Task{
 
-  //
-  // Fields
-  //
+  @CsvBindByName
+  private long id;
   @CsvBindByName
   private String taskDescription;
   @CsvBindByName
   private Double money;
+  //@CsvBindByName
+  //@CsvRecurse
   @CsvCustomBindByName(converter = EmployeeConverter.class)
   private Employee scrumMaster;
   @CsvBindByName
@@ -52,6 +53,14 @@ public class Task extends BaseClass{
   // Accessor methods
   //
 
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   /**
    * Set the value of taskDescription
@@ -177,11 +186,28 @@ public class Task extends BaseClass{
   }
 
   @Override
+  public String toString() {
+    return "Task{" +
+            "id=" + id +
+            ", taskDescription='" + taskDescription + '\'' +
+            ", money=" + money +
+            ", scrumMaster=" + scrumMaster +
+            ", status=" + status +
+            ", team=" + team +
+            ", createdDate='" + createdDate + '\'' +
+            ", deadline='" + deadline + '\'' +
+            ", lastUpdate='" + lastUpdate + '\'' +
+            ", taskType=" + taskType +
+            '}';
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Task task = (Task) o;
-    return Objects.equals(taskDescription, task.taskDescription) &&
+    return Objects.equals(id, task.id) &&
+            Objects.equals(taskDescription, task.taskDescription) &&
             Objects.equals(money, task.money) &&
             Objects.equals(scrumMaster, task.scrumMaster) &&
             status == task.status &&
@@ -194,23 +220,6 @@ public class Task extends BaseClass{
 
   @Override
   public int hashCode() {
-    return Objects.hash(taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate, taskType);
+    return Objects.hash(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate, taskType);
   }
-
-  @Override
-  public String toString() {
-    return "Task{" +
-            "id=" + id +
-            "taskDescription='" + taskDescription + '\'' +
-            ", money=" + money +
-            ", scrumMaster=" + scrumMaster +
-            ", status=" + status +
-            ", team=" + team +
-            ", createdDate='" + createdDate + '\'' +
-            ", deadline='" + deadline + '\'' +
-            ", lastUpdate='" + lastUpdate + '\'' +
-            ", taskType=" + taskType +
-            '}';
-  }
-
 }

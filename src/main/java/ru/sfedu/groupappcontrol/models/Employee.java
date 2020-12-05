@@ -9,7 +9,9 @@ import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class Employee extends BaseClass implements Serializable {
+public class Employee implements Serializable {
+  @CsvBindByName
+  private long id;
   @Element
   @CsvBindByName
   private String firstName;
@@ -37,6 +39,14 @@ public class Employee extends BaseClass implements Serializable {
   
 
   public Employee () { };
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public void setFirstName (String newVar) {
     firstName = newVar;
@@ -110,7 +120,7 @@ public class Employee extends BaseClass implements Serializable {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Employee)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
     Employee employee = (Employee) o;
     return id == employee.id &&
             Objects.equals(firstName, employee.firstName) &&

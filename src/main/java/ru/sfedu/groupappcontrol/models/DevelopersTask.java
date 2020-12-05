@@ -84,12 +84,12 @@ public class DevelopersTask extends Task{
   // Other methods
   //
 
+
   @Override
   public String toString() {
-    return "DevelopersTask{" +
+    return super.toString()+"DevelopersTask{" +
             "developerComments='" + developerComments + '\'' +
             ", developerTaskType=" + developerTaskType +
             '}';
   }
-
 }

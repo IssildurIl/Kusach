@@ -70,9 +70,10 @@ public class TestersTask extends Task{
   // Other methods
   //
 
+
   @Override
   public String toString() {
-    return "TestersTask{" +
+    return super.toString()+"TestersTask{" +
             "bugStatus=" + bugStatus +
             ", bugDescription='" + bugDescription + '\'' +
             '}';

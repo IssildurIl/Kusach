@@ -1,9 +1,10 @@
 package ru.sfedu.groupappcontrol.api;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.jupiter.api.*;
+import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
 import ru.sfedu.groupappcontrol.models.enums.*;
@@ -12,6 +13,8 @@ import ru.sfedu.groupappcontrol.utils.TaskListConverter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static ru.sfedu.groupappcontrol.api.Fill.*;
+import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Complete;
+import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Fail;
 import static ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion.TESTING;
 
 import java.io.IOException;
@@ -19,1048 +22,266 @@ import java.util.*;
 
 
 class DataProviderCsvTest {
-    DataProviderCsv instance = new DataProviderCsv();
+    public static DataProviderCsv instance;
+
+    static {
+        try {
+            instance = new DataProviderCsv();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private static final Logger log = LogManager.getLogger(DataProviderCsvTest.class);
+
 
     DataProviderCsvTest() throws IOException {
     }
 
-    @BeforeEach
-    void setUp() {
-        try {
-            deleteAll();
-            addRecord();
-        } catch (IOException e) {
-            log.error(e);
-        }
-    }
+    @BeforeAll
+    static void setCsvEnv() throws IOException {
+        deleteAll();
+        addRecord();
 
-    @AfterEach
-    void tearDown() {
-        //deleteAll();
     }
-
 
     @Test
     public void changeProfileInfoSuccess() throws IOException {
         Employee testEmployee = (Employee) instance.createEmployee(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
         log.debug(testEmployee);
         instance.changeProfileInfo(testEmployee);
-        assertEquals(instance.getByID(Employee.class,1).getData().getId(),testEmployee.getId());
+        assertEquals(instance.getEmployeeByID(Employee.class,1).getData().getId(),testEmployee.getId());
     }
     @Test
     public void changeProfileInfoFail() throws IOException {
         Employee testEmployee = (Employee) instance.createEmployee(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
         log.debug(testEmployee);
         instance.changeProfileInfo(testEmployee);
-        assertNotEquals(instance.getByID(Employee.class,2).getData().getId(), testEmployee.getId());
+        assertNotEquals(instance.getEmployeeByID(Employee.class,2).getData().getId(), testEmployee.getId());
     }
 
     @Test
     public void changeTaskStatusSuccess() throws IOException {
         //Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","05-12-2021","05-12-2020",TaskTypes.BASE_TASK).getData();
-        instance.changeTaskStatus(1,TESTING.toString());
-        Task task = (Task) instance.getTaskById(Task.class,1).getData();
+        instance.changeTaskStatus(1, TypeOfCompletion.TESTING.toString());
+        Object o=instance.getTaskByID(Task.class,1).getStatus();
+        Task task = (Task) instance.getTaskByID(Task.class,1).getData();
         log.debug(task);
-        assertEquals("TESTING", task.getStatus().toString());
+        assertEquals(TESTING, task.getStatus());
     }
 
     @Test
     public void changeTaskStatusFail() throws IOException {
         Task task = (Task) instance.getTaskById(Task.class,1).getData();
         log.debug(task);
-        assertEquals(Outcomes.Fail,instance.changeTaskStatus(1,"").getStatus());
+        assertEquals(Fail,instance.changeTaskStatus(1,"").getStatus());
     }
 
     @Test
     public void writeCommentSuccess() throws IOException {
-        instance.writeComment(DevelopersTask.class,1,"I wrote this comment now");
+        instance.writeComment(DevelopersTask.class,1,"i wrote this comment now");
         DevelopersTask developersTask = (DevelopersTask) instance.getTaskById(DevelopersTask.class,1).getData();
-        log.debug(developersTask);
-        assertEquals("I wrote this comment now", developersTask.getTaskDescription());
+        assertEquals("i wrote this comment now",developersTask.getTaskDescription());
     }
 
     @Test
     public void writeCommentFail() throws IOException {
         DevelopersTask developersTask = (DevelopersTask) instance.getTaskById(DevelopersTask.class,1).getData();
         log.debug(developersTask);
-        assertEquals(Outcomes.Fail,instance.writeComment(DevelopersTask.class,1,"").getStatus());
+        assertEquals(Fail,instance.writeComment(DevelopersTask.class,1,"").getStatus());
     }
 
     @Test
     public void getUserInfoListSuccess() throws IOException {
         Employee testEmp= (Employee) instance.getUserInfoList(2).getData();
         log.debug(testEmp);
-        assertEquals(testEmp.getId(),2);
+        //assertEquals(testEmp.getId(),2);
+        assertEquals(2,  testEmp.getId());
     }
-//    @Test
-//    public void getUserInfoListFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
-//    @Test
-//    public void getDevelopersListSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void getDevelopersListFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
-//    @Test
-//    public void getTestersListSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void getTestersListFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
-//    @Test
-//    public void getBaseTaskListSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void getBaseTaskListFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
-//    @Test
-//    public void getTaskInfoSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void getTaskInfoFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
+    @Test
+    public void getUserInfoListFail() throws IOException {
+        Outcomes outcomes= instance.getUserInfoList(200).getStatus();
+        log.debug(outcomes);
+        assertNotEquals(instance.getUserInfoList(2).getStatus().toString(),outcomes.toString());
+    }
+
+    @Test
+    public void getTaskListSuccess() throws IOException {
+        List<Task> developersTask= (List<Task>) instance.getBaseTaskList(8).getData();
+        Outcomes o= instance.getBaseTaskList(8).getStatus();
+        log.debug(developersTask);
+        assertEquals(o.toString(),Complete.toString());
+    }
+    @Test
+    public void getTaskListFail() throws IOException {
+        List<Task> developersTask= (List<Task>) instance.getBaseTaskList(100).getData();
+        Outcomes o= instance.getBaseTaskList(100).getStatus();
+        log.debug(developersTask);
+        assertNotEquals(o.toString(),Outcomes.NotFound.toString());
+    }
+
+    @Test
+    public void getTaskInfoSuccess() throws IOException {
+        log.info(instance.getTaskInfo(DevelopersTask.class,1).getData());
+    }
+
 //    @Test
 //    public void getTaskSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void getTaskFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//        List<Task> taskList = new ArrayList<>();
+//        Task task = (Task) instance.createBaseTask(11,"de",6666.6,null,TypeOfCompletion.IDLE,getListEmployee(),"20-11-20","20-11-20","24-12-20").getData();
+//        Employee employee = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
+//        taskList.add(task);
+//        instance.insertJenericTask(Task.class,taskList,true);
+//        task.setScrumMaster(employee);
+//        log.info(instance.getTask(1,11).getData());
 //    }
 //
-//    @Test
-//    public void calculateTaskCostSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void calculateTaskCostFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
-//    @Test
-//    public void getProjectSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//    @Test
-//    public void getProjectFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
-//
-//    @Test
-//    public void calculateProjectCostSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
-//    }
+//87318
+    @Test
+    public void calculateTaskCostSuccess() throws IOException {
+        Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        log.debug(instance.calculateTaskCost(testTask).getData());
+        assertEquals(instance.calculateTaskCost(testTask).getData(),87318.0);
+    }
+    @Test
+    public void calculateTaskCostFail() throws IOException {
+        Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        log.debug(instance.calculateTaskCost(testTask).getData());
+        assertNotEquals(instance.calculateTaskCost(testTask).getData(),1.0);
+    }
+
 //    @Test
 //    public void calculateProjectCostFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void calculateProjectTimeSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void calculateProjectTimeFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void createTaskSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void createTaskFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void deleteTaskSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void deleteTaskFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void getTaskWorkerSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void getTaskWorkerFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void getTaskByIdSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void getTaskByIdFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void getTaskListByIdSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void getTaskListByIdFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void deleteProjectSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void deleteProjectFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void createProjectSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void createProjectFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void getProjectByIdSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void getProjectByIdFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void getProjecListByIdSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void getProjecListByIdFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void correctEmployeeParametersSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void correctEmployeeParametersFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void addEmployeeToTaskSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void addEmployeeToTaskFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void deleteEmployeeFromTaskSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void deleteEmployeeFromTaskFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //
 //    @Test
 //    public void createEmployeeSuccess() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
 //    @Test
 //    public void createEmployeeFail() throws IOException {
-//        List<Employee> employeeList = new ArrayList<>();
-//        DataProviderCsv instance = new DataProviderCsv();
-//        Employee employee1 = createUser(1,"Employee1","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee2 = createUser(2,"Employee2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee3 = createUser(3,"Employee3","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee4 = createUser(4,"Employee4","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee5 = createUser(5,"Employee5","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        Employee employee6 = createUser(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer);
-//        employeeList.add(employee1);
-//        employeeList.add(employee2);
-//        employeeList.add(employee3);
-//        employeeList.add(employee4);
-//        employeeList.add(employee5);
-//        //employeeList.add(employee6);
-//        instance.insert(Employee.class,employeeList,false);
-//        instance.correctEmployeeParameters(employee6);
-//        //System.out.println(instance.select(Employee.class));
-//        //assertEquals(employee1, instance.getByID(Employee.class,1).getData());
+//
 //    }
-    public void addRecord() throws IOException {
+    public static void addRecord() throws IOException {
     List<Employee> employees = new ArrayList<>();
     List<Developer> developers = new ArrayList<>();
     List<Task> tasks = new ArrayList<>();
@@ -1080,7 +301,7 @@ class DataProviderCsvTest {
         employee.setDepartment(department[i-1]);
         employee.setTypeOfEmployee(TypeOfEmployee.Employee);
         employees.add(employee);
-        instance.insert(Employee.class,employees,false);
+        instance.insertJenericEmployee(Employee.class,employees,false);
     }
     for (int i=1; i<=10; i++) {
         Developer developer = new Developer();
@@ -1096,7 +317,7 @@ class DataProviderCsvTest {
         developer.setStatus(TypeOfDevelopers.CUSTOM);
         developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
         developers.add(developer);
-        instance.insert(Developer.class,developers,false);
+        instance.insertJenericEmployee(Developer.class,developers,false);
     }
     for (int i=1; i<=10; i++) {
         Tester tester = new Tester();
@@ -1113,7 +334,7 @@ class DataProviderCsvTest {
         tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
         tester.setTypeOfTester(TypeOfTester.Custom);
         testers.add(tester);
-        instance.insert(Tester.class,testers,false);
+        instance.insertJenericEmployee(Tester.class,testers,false);
     }
     for (int i=1; i<=10; i++) {
         Task task = new Task();
@@ -1128,7 +349,7 @@ class DataProviderCsvTest {
         task.setLastUpdate(lastUpdate[i-1]);
         task.setTaskType(TaskTypes.BASE_TASK);
         tasks.add(task);
-        instance.insert(Task.class,tasks,false);
+        instance.insertJenericTask(Task.class,tasks,false);
     }
     for (int i=1; i<=10; i++) {
         DevelopersTask developerTask = new DevelopersTask();
@@ -1145,7 +366,7 @@ class DataProviderCsvTest {
         developerTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
         developerTask.setDeveloperComments(Constants.BaseComment);
         developersTasks.add(developerTask);
-        instance.insert(DevelopersTask.class,developersTasks,false);
+        instance.insertJenericTask(DevelopersTask.class,developersTasks,false);
     }
     for (int i=1; i<=10; i++) {
         TestersTask testersTask = new TestersTask();
@@ -1162,7 +383,7 @@ class DataProviderCsvTest {
         testersTask.setBugStatus(BugStatus.IN_WORK);
         testersTask.setBugDescription(Constants.BaseComment);
         testersTasks.add(testersTask);
-        instance.insert(TestersTask.class,testersTasks,false);
+        instance.insertJenericTask(TestersTask.class,testersTasks,false);
     }
     for (int i=1; i<=4; i++) {
         Project project=new Project();
@@ -1171,16 +392,16 @@ class DataProviderCsvTest {
         project.setTakeIntoDevelopment(createdDate[i-1]);
         project.setTask(getListTask());
         projects.add(project);
-        instance.insert(Project.class,projects,false);
+        instance.insertJenericProject(Project.class,projects,false);
     }
 }
-    private Employee getScrum(){
+    private static Employee getScrum(){
         List<Employee> listemployee = instance.select(Employee.class);
         int max=9; int min=0;
         Employee employee =listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
         return employee;
     }
-    private List<Employee> getListEmployee(){
+    private static List<Employee> getListEmployee(){
         List<Employee> listemployee = instance.select(Employee.class);
         List<Developer> developers = instance.select(Developer.class);
         int max=9; int min=0;
@@ -1195,7 +416,7 @@ class DataProviderCsvTest {
         }
         return listemployee;
     }
-    private List<Task> getListTask(){
+    private static List<Task> getListTask(){
         List<Task> listTask = instance.select(Task.class);
         List<DevelopersTask> developers = instance.select(DevelopersTask.class);
         int max=9; int min=0;
@@ -1210,7 +431,7 @@ class DataProviderCsvTest {
         }
         return listTask;
     }
-    private void deleteAll(){
+    public static void deleteAll(){
         instance.deleteRecord(Employee.class);
         instance.deleteRecord(Developer.class);
         instance.deleteRecord(Tester.class);

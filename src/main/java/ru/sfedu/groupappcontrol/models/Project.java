@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class Project extends BaseClass implements Serializable {
+public class Project implements Serializable {
+  @CsvBindByName
+  private long id;
   @CsvBindByName
   private String title;
   @CsvBindByName
@@ -20,6 +22,14 @@ public class Project extends BaseClass implements Serializable {
   private List<Task> task;
 
   public Project () { };
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 
   public void setTitle (String newVar) {
     title = newVar;
@@ -46,26 +56,28 @@ public class Project extends BaseClass implements Serializable {
   }
 
   @Override
+  public String toString() {
+    return "Project{" +
+            "id=" + id +
+            ", title='" + title + '\'' +
+            ", takeIntoDevelopment='" + takeIntoDevelopment + '\'' +
+            ", task=" + task +
+            '}';
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Project project = (Project) o;
-    return Objects.equals(title, project.title) &&
+    return Objects.equals(id, project.id) &&
+            Objects.equals(title, project.title) &&
             Objects.equals(takeIntoDevelopment, project.takeIntoDevelopment) &&
             Objects.equals(task, project.task);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, takeIntoDevelopment, task);
-  }
-
-  @Override
-  public String toString() {
-    return "Project{" +
-            "title='" + title + '\'' +
-            ", takeIntoDevelopment='" + takeIntoDevelopment + '\'' +
-            ", task=" + task +
-            '}';
+    return Objects.hash(id, title, takeIntoDevelopment, task);
   }
 }

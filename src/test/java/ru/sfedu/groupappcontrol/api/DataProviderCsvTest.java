@@ -107,6 +107,7 @@ class DataProviderCsvTest {
         log.debug(developersTask);
         assertEquals(o.toString(),Complete.toString());
     }
+
     @Test
     public void getTaskListFail() throws IOException {
         List<Task> developersTask= (List<Task>) instance.getBaseTaskList(100).getData();

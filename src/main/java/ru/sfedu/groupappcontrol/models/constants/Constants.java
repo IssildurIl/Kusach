@@ -23,5 +23,6 @@ public class Constants {
     public static final String FILE_EXTENSION_CSV = "FILE_EXTENSION_CSV";
     public static final String BaseComment = "FILE_EXTENSION_CSV";
     public static final String CSV_PATH ="CSV_PATH";
+    private static final String DB_INSERT ="INSERT INTO %s VALUES(%d,'%s','%s','%s','%s','%s','%s','%s');";
 
 }

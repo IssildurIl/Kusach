@@ -8,7 +8,7 @@
 //import org.apache.logging.log4j.Logger;
 //import org.simpleframework.xml.Serializer;
 //import org.simpleframework.xml.core.Persister;
-//import ru.sfedu.groupappcontrol.Result;
+//import ru.sfedu.groupappcontrol.models.Result;
 //import ru.sfedu.groupappcontrol.models.*;
 //import ru.sfedu.groupappcontrol.models.constants.Constants;
 //import ru.sfedu.groupappcontrol.models.constants.WrapperXML;

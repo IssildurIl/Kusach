@@ -8,7 +8,7 @@ import com.opencsv.bean.StatefulBeanToCsv;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
-import ru.sfedu.groupappcontrol.Result;
+import ru.sfedu.groupappcontrol.models.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.constants.Constants;
 import ru.sfedu.groupappcontrol.models.enums.*;
@@ -38,8 +38,7 @@ public class DataProviderCsv implements DataProvider {
 
     private final String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
     private static Logger log = LogManager.getLogger(DataProviderCsv.class);
-
-
+    
     public DataProviderCsv() throws IOException {
     }
 
@@ -75,7 +74,7 @@ public class DataProviderCsv implements DataProvider {
     public <T extends Task> Result<T> getTaskByID(Class cl, long id) throws IOException {
         try {
             List<T> listRes = select(cl);
-            Optional<T> optional=listRes.stream().filter(el -> el.getId()==id).findFirst();
+            Optional<T> optional=searchTask(listRes,id);
             return new Result(Complete, optional.get());
         } catch (NoSuchElementException e) {
             log.error(e);
@@ -93,13 +92,14 @@ public class DataProviderCsv implements DataProvider {
     public <T extends Employee> Result<T> getEmployeeByID(Class cl, long id) throws IOException {
         try {
             List<T> listRes = select(cl);
-            Optional<T> optional = listRes.stream().filter(el -> el.getId() == id).findFirst();
+            Optional<T> optional = searchEmployee(listRes,id);
             return new Result(Complete, optional.get());
         } catch (NoSuchElementException e) {
             log.error(e);
             return new Result(Fail);
         }
     }
+
 
     /**
      * @param cl
@@ -109,32 +109,20 @@ public class DataProviderCsv implements DataProvider {
      * @return
      */
     public <T extends Task> Result<Void> insertJenericTask(Class<T> cl, List<T> list, boolean append) {
-        try{
+        try {
             String path = getPath(cl);
             createFile(path);
-            List<T> oldList = this.select(cl);
-            if (append) {
-                if (oldList != null && oldList.size() > 0) {
-                    Long id = list.get(0).getId();
-                    if (oldList.stream().anyMatch(el -> el.getId() == id)) {
-                        return new Result<>(Fail);
-                    }
-                    list = Stream
-                            .concat(list.stream(), oldList.stream())
-                            .collect(Collectors.toList());
-                }
+            if (append){
+                List<T> corrList= (List<T>) isOldTask(cl,list).getData();
+                searchTemplate(path,corrList);
             }
-            FileWriter file = new FileWriter(path);
-            CSVWriter writer = new CSVWriter(file);
-            StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer)
-                    .withApplyQuotesToAll(false)
-                    .build();
-            beanToCsv.write(list);
-            writer.close();
+            else{
+                searchTemplate(path,list);
+            }
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException ex) {
-            log.error(ex);
-            return new Result<>(Fail, Constants.IS_EMPTY, null);
+        } catch (IndexOutOfBoundsException | IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
 
     }
@@ -150,34 +138,18 @@ public class DataProviderCsv implements DataProvider {
         try {
             String path = getPath(cl);
             createFile(path);
-            if(list.isEmpty()){
-                return new Result<>(Fail);
+            if (append){
+                List<T> corrList= (List<T>) isOldEmployee(cl,list).getData();
+                searchTemplate(path,corrList);
             }
-            List<T> oldList = (List<T>) this.select(cl);
-            if (append) {
-                if (oldList != null && oldList.size() > 0) {
-                    Long id = list.get(0).getId();
-                    if (oldList.stream().anyMatch(el -> el.getId() == id)) {
-                        return new Result<>(Fail);
-                    }
-                    list = Stream
-                            .concat(list.stream(), oldList.stream())
-                            .collect(Collectors.toList());
-                }
+            else{
+                searchTemplate(path,list);
             }
-            FileWriter file = new FileWriter(path);
-            CSVWriter writer = new CSVWriter(file);
-            StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer)
-                    .withApplyQuotesToAll(false)
-                    .build();
-            beanToCsv.write(list);
-            writer.close();
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException ex) {
-            log.error(ex);
-            return new Result<>(Fail, Constants.IS_EMPTY, null);
+        } catch (IndexOutOfBoundsException | IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
-
     }
 
     /**
@@ -191,31 +163,18 @@ public class DataProviderCsv implements DataProvider {
         try {
             String path = getPath(cl);
             createFile(path);
-            List<T> oldList = (List<T>) this.select(cl);
-            if (append) {
-                if (oldList != null && oldList.size() > 0) {
-                    Long id = list.get(0).getId();
-                    if (oldList.stream().anyMatch(el -> el.getId() == id)) {
-                        return new Result<>(Fail);
-                    }
-                    list = Stream
-                            .concat(list.stream(), oldList.stream())
-                            .collect(Collectors.toList());
-                }
+            if (append){
+                List<T> corrList= (List<T>) isOldProject(cl,list).getData();
+                searchTemplate(path,corrList);
             }
-            FileWriter file = new FileWriter(path);
-            CSVWriter writer = new CSVWriter(file);
-            StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer)
-                    .withApplyQuotesToAll(false)
-                    .build();
-            beanToCsv.write(list);
-            writer.close();
+            else{
+                searchTemplate(path,list);
+            }
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException | CsvDataTypeMismatchException | CsvRequiredFieldEmptyException ex) {
-            log.error(ex);
-            return new Result<>(Fail, Constants.IS_EMPTY, null);
+        } catch (IndexOutOfBoundsException | IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
-
     }
 
     /**
@@ -332,7 +291,6 @@ public class DataProviderCsv implements DataProvider {
 
     }
 
-
     /**
      * @param listRes
      * @param id
@@ -374,8 +332,6 @@ public class DataProviderCsv implements DataProvider {
                 .findFirst();
         return optional;
     }
-
-//  Create
 
     /**
      * @param id
@@ -644,7 +600,6 @@ public class DataProviderCsv implements DataProvider {
         tester.setTypeOfTester(TypeOfTester.Custom);
         return new Result<>(Complete,tester);
     }
-//  Get
 
     /**
      * @param cl
@@ -1026,7 +981,6 @@ public class DataProviderCsv implements DataProvider {
     }
 }
 
-
     /**
      * @param editedEmployee
      * @return
@@ -1077,7 +1031,6 @@ public class DataProviderCsv implements DataProvider {
             return new Result<>(Fail);
         }
     }
-
 
     /**
      * @param task
@@ -1194,6 +1147,66 @@ public class DataProviderCsv implements DataProvider {
         employeeList.addAll(Collections.singleton(employee));
         task.setTeam(employeeList);
         return new Result<>(Complete);
+    }
+
+
+    public <T extends Employee> Result isOldEmployee(Class<T> cl,List<T> list){
+        List<T> oldList = this.select(cl);
+        if (oldList != null && oldList.size() > 0) {
+            Long id = list.get(0).getId();
+            if (oldList.stream().anyMatch(el -> el.getId() == id)) {
+                return new Result<>(Fail);
+            }
+            list = Stream
+                    .concat(list.stream(), oldList.stream())
+                    .collect(Collectors.toList());
+        }
+        return new Result(Complete,list);
+    }
+
+    public <T extends Task> Result isOldTask(Class<T> cl,List<T> list){
+        List<T> oldList = this.select(cl);
+        if (oldList != null && oldList.size() > 0) {
+            Long id = list.get(0).getId();
+            if (oldList.stream().anyMatch(el -> el.getId() == id)) {
+                return new Result<>(Fail);
+            }
+            list = Stream
+                    .concat(list.stream(), oldList.stream())
+                    .collect(Collectors.toList());
+        }
+        return new Result(Complete,list);
+    }
+
+    public <T extends Project> Result isOldProject(Class<T> cl,List<T> list){
+        List<T> oldList = this.select(cl);
+        if (oldList != null && oldList.size() > 0) {
+            Long id = list.get(0).getId();
+            if (oldList.stream().anyMatch(el -> el.getId() == id)) {
+                return new Result<>(Fail);
+            }
+            list = Stream
+                    .concat(list.stream(), oldList.stream())
+                    .collect(Collectors.toList());
+        }
+        return new Result(Complete,list);
+    }
+
+    public <T> Result searchTemplate(String path, List<T> list){
+        try {
+            FileWriter file = new FileWriter(path);
+            CSVWriter writer = new CSVWriter(file);
+            StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer)
+                    .withApplyQuotesToAll(false)
+                    .build();
+            beanToCsv.write(list);
+            writer.close();
+            return new Result(Complete);
+        } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException | IOException e) {
+            log.error(e);
+            return new Result(Fail);
+        }
+
     }
 
 }

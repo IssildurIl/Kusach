@@ -29,7 +29,7 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
             task.setCreatedDate(elements.get(i+1));
             task.setDeadline(elements.get(i+2));
             indexTaskList.add(task);
-            //log.debug(task);
+            log.debug(task);
         }
         return indexTaskList;
     }
@@ -50,7 +50,7 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
             builder.delete(builder.length() - 1, builder.length());
         }
         builder.append("]");
-        //log.debug(builder.toString());
+        log.debug(builder.toString());
         return builder.toString();
     }
 }

@@ -2,7 +2,7 @@
 //
 //import org.apache.logging.log4j.LogManager;
 //import org.apache.logging.log4j.Logger;
-//import ru.sfedu.groupappcontrol.models.Result;
+//import ru.sfedu.groupappcontrol.Result;
 //import ru.sfedu.groupappcontrol.models.*;
 //import ru.sfedu.groupappcontrol.models.enums.*;
 //import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
@@ -20,6 +20,11 @@
 //public class DataProviderJdbc implements DataProvider {
 //    private final String PATH = getConfigurationEntry("JDBC_PATH");
 //    private final String FILE_EXTENSION_JDBC = "FILE_EXTENSION_JDBC";
+////
+////    private final String DB_DRIVER = ConfigurationUtil.getConfigurationEntry("db_driver");
+////    private final String DB_USER = ConfigurationUtil.getConfigurationEntry("db_user");
+////    private final String DB_PASS = ConfigurationUtil.getConfigurationEntry("db_pass");
+////    private final String DB_URL = ConfigurationUtil.getConfigurationEntry("db_url");
 //    private final String DB_INSERT ="INSERT INTO %s VALUES(%d,'%s','%s','%s','%s','%s','%s','%s');";
 //    private final String DB_SELECT ="SELECT * FROM %s WHERE id=%d";
 //    private Connection connection;
@@ -64,20 +69,14 @@
 //        return connection;
 //    }
 //
-//    public Result execute(String sql) {
-//        try {
-//            log.info(sql);
-//            PreparedStatement statement = getConnection().prepareStatement(sql);
-//            statement.executeUpdate();
-//            statement.close();
-//            return new Result(Outcomes.Complete);
-//        } catch (SQLException | IOException | ClassNotFoundException e) {
-//            log.error(e);
-//            return new Result(Outcomes.Fail);
-//        }
-//
+//    public void execute(String sql) throws SQLException, IOException, ClassNotFoundException {
+//        log.info(sql);
+//        PreparedStatement statement = getConnection().prepareStatement(sql);
+//        statement.executeUpdate();
+//        statement.close();
 //    }
-//    public ResultSet select(String sql) {
+//
+//    public ResultSet select (String sql) {
 //        log.info(sql);
 //        try {
 //            PreparedStatement statement = getConnection().prepareStatement(sql);
@@ -95,7 +94,6 @@
 //        return set;
 //    }
 //
-//
 //    @Override
 //    public Result changeProfileInfo(Employee employee) {
 //        return null;
@@ -107,9 +105,10 @@
 //    }
 //
 //    @Override
-//    public <T extends Task> Result<T> writeComment(Class cl, long id, String comment) {
+//    public Result writeComment(long id, String comment) {
 //        return null;
 //    }
+//
 //
 //    @Override
 //    public Result getUserInfoList(long userId) {
@@ -117,12 +116,12 @@
 //    }
 //
 //    @Override
-//    public Result getBaseTaskList(long taskId) {
+//    public Result getTaskList(long userId) {
 //        return null;
 //    }
 //
 //    @Override
-//    public Result getTaskInfo(Class cl, long taskId) {
+//    public Result getTaskInfo(long taskId) {
 //        return null;
 //    }
 //
@@ -136,13 +135,14 @@
 //        return null;
 //    }
 //
+//
 //    @Override
 //    public Result getProjectStatistic(long userId) {
 //        return null;
 //    }
 //
 //    @Override
-//    public Result getProject(long projectId) {
+//    public Result getProject(long userId, long projectId) {
 //        return null;
 //    }
 //
@@ -157,7 +157,17 @@
 //    }
 //
 //    @Override
-//    public Result createTask(long id, String taskDescription, Double money, Employee scrumMaster, TypeOfCompletion status, List<Employee> team, String createdDate, String deadline, String lastUpdate, TaskTypes taskType) {
+//    public Result createTask(String taskDescription, Double money, Employee scrumMaster, TypeOfCompletion status, List<Employee> team, String createdDate, String deadline, String lastUpdate, TaskTypes taskType) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Result createTask( String taskDescription, Double money, String deadline,Employee scrumMaster,TypeOfCompletion status, List<Employee> team, String createdDate,String lastUpdate,TaskTypes taskType, DeveloperTaskType devTaskType,String developerComments) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Result createTask(String taskDescription, Double money, String deadline, Employee scrumMaster, TypeOfCompletion status, List<Employee> team, String createdDate, String lastUpdate, TaskTypes taskType, BugStatus bugStatus, String bugDescription) {
 //        return null;
 //    }
 //
@@ -167,17 +177,17 @@
 //    }
 //
 //    @Override
-//    public Result getTaskWorker(Employee employee, long taskId) {
+//    public Result getTask(Employee employee, long taskId) {
 //        return null;
 //    }
 //
 //    @Override
-//    public <T extends Task> Result<T> getTaskById(Class cl, long taskId) {
+//    public Result getTaskById(Employee employee, long taskId) {
 //        return null;
 //    }
 //
 //    @Override
-//    public Result getTaskListById(long id) {
+//    public Result getTaskListById(Employee employee) {
 //        return null;
 //    }
 //
@@ -192,7 +202,12 @@
 //    }
 //
 //    @Override
-//    public Result createProject(long id, String title, String takeIntoDevelopment, List<Task> tasks) {
+//    public Result createProject(String title, String takeIntoDevelopment, List<Task> tasks) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Result getProject(Employee employee) {
 //        return null;
 //    }
 //
@@ -202,7 +217,7 @@
 //    }
 //
 //    @Override
-//    public Result getProjectListById(Employee employee) {
+//    public Result getProjecListById(Employee employee) {
 //        return null;
 //    }
 //
@@ -222,12 +237,17 @@
 //    }
 //
 //    @Override
-//    public Result createEmployee(long id, String firstName, String lastName, String login, String password, String email, String token, String department, TypeOfEmployee typeOfEmployee) {
+//    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department){
 //        return null;
 //    }
 //
 //    @Override
-//    public <T> Result<T> deleteRecord(Class<T> cl) {
+//    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfDevelopers status, ProgrammingLanguage language) {
+//        return null;
+//    }
+//
+//    @Override
+//    public Result createEmployee(String firstName, String lastName, String login, String password, String email,String token, String department, TypeOfDevelopers status, ProgrammingLanguage language,TypeOfTester typeOfTester) {
 //        return null;
 //    }
 //}

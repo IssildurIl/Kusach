@@ -1,4 +1,4 @@
-package ru.sfedu.groupappcontrol.models;
+package ru.sfedu.groupappcontrol;
 
 import ru.sfedu.groupappcontrol.models.enums.Outcomes;
 

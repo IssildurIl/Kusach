@@ -1,10 +1,11 @@
 package ru.sfedu.groupappcontrol.api;
 
 
-import ru.sfedu.groupappcontrol.models.Result;
+import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.enums.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface DataProvider {

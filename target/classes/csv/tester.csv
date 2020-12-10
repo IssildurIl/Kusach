@@ -1,4 +1,5 @@
 DEPARTMENT,EMAIL,FIRSTNAME,ID,LASTNAME,LOGIN,PASSWORD,PROGRAMMINGLANGUAGE,STATUS,TOKEN,TYPEOFEMPLOYEE,TYPEOFTESTER
+Team13,VasLy@,Vasily,11,Vasilyev,vas1ly,vasyan,Custom,CUSTOM,9bba8047-f0aa-473d-aef9-6905edcd3f99,Tester,Custom
 Team1,Parfenov@mail.com,Ivan,1,Parfenov,employee1,123admin,Custom,CUSTOM,e6368342-ae1d-40ef-9bfd-e28eba43aa90,Tester,Custom
 Team2,Medvedev@mail.com,Kirill,2,Medvedev,employee2,1234nimda,Custom,CUSTOM,9bba8047-f0aa-473d-aef9-6905edcd3f99,Tester,Custom
 Team3,Yeremin@mail.com,Sergey,3,Yeremin,employee3,12345,Custom,CUSTOM,56b52b03-d76f-4105-8c06-3a3efb12633a,Tester,Custom

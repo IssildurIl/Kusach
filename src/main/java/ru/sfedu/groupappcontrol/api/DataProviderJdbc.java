@@ -14,7 +14,7 @@
 //import java.sql.*;
 //import java.util.List;
 //
-//import static ru.sfedu.groupappcontrol.models.constants.Constants.*;
+//import static ru.sfedu.groupappcontrol.Constants.*;
 //import static ru.sfedu.groupappcontrol.utils.ConfigurationUtil.getConfigurationEntry;
 //
 //public class DataProviderJdbc implements DataProvider {

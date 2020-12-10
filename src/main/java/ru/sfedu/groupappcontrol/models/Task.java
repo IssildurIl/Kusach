@@ -52,8 +52,6 @@ public class Task{
   //
   // Accessor methods
   //
-
-
   public long getId() {
     return id;
   }

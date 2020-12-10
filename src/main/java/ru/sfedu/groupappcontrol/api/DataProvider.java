@@ -17,13 +17,13 @@ public interface DataProvider {
 
 //    Developer, Tester
     public Result changeTaskStatus(long id, String status);
-    public <T extends Task> Result<T> writeComment(Class cl, long id, String comment);
+    public <T extends Task> Result<T> writeComment(Class<T> cl, long id, String comment);
 //    ScrumMaster.taskAnalysis
 
-    public Result getUserInfoList(long userId);
-    public Result getBaseTaskList(long taskId);
+    public <T extends Employee> Result getUserInfoList(Class cl,long userId);
+    public Result getScrumMasterTaskList(long userId, TaskTypes taskTypes);
     public Result getTaskInfo(Class cl,long taskId);
-    public Result getTask(long userId, long taskId);
+    Result getTasksByUser(int userId, long taskId);
     public Result calculateTaskCost(Task task);
 
 //    ScrumMaster.projectAnalysis
@@ -38,15 +38,16 @@ public interface DataProvider {
     public <T extends Task> Result<T> getTaskById(Class cl, long taskId);
     public Result getTaskListById(long id);
 //    ScrumMaster.ProjectControl
-    public Result deleteProject(Project project);
-    public Result updateProject(Project project);
-    public Result createProject(long id,String title, String takeIntoDevelopment, List<Task> tasks);
-    public Result getProjectById(Employee employee, long projectId);
-    public Result getProjectListById(Employee employee);
+     Result deleteProject(Project project);
+     Result updateProject(Project project);
+     Result createProject(long id,String title, String takeIntoDevelopment, List<Task> tasks);
+     Result getProjectById(Employee employee, long projectId);
+     Result getProjectListById(Employee employee);
 //    ScrumMaster.EmployeeControl
-    public Result correctEmployeeParameters(Employee editedEmployee);
-    public Result addEmployeeToTask(Task task, Employee employee);
-    public Result deleteEmployeeFromTask(Task task, Employee employee);
-    public Result createEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee);
-    public <T> Result<T> deleteRecord(Class<T> cl);
+     Result correctEmployeeParameters(Employee editedEmployee);
+     Result addEmployeeToTask(Task task, Employee employee);
+     Result deleteEmployeeFromTask(Task task, Employee employee);
+     Result createEmployee(long id,String firstName, String lastName, String login, String password, String email,String token, String department,TypeOfEmployee typeOfEmployee);
+     <T> Result<T> deleteRecord(Class<T> cl);
+     Result<Task> getTasks(long id);
 }

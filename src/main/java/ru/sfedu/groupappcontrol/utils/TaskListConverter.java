@@ -17,8 +17,7 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
 
 
     @Override
-    protected Object convert(String s) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
-
+    protected Object convert(String s) {
         String indexString = s.substring(1, s.length() - 1);
         String[] unparsedList = indexString.split(",");
         List<String> indexTaskList = new ArrayList<>(Arrays.asList(unparsedList));
@@ -37,7 +36,7 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
             builder.delete(builder.length() - 1, builder.length());
         }
         builder.append("]");
-        log.debug(builder.toString());
+        //log.debug(builder.toString());
         return builder.toString();
     }
 }

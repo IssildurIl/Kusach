@@ -1,4 +1,4 @@
-package ru.sfedu.groupappcontrol.models.constants;
+package ru.sfedu.groupappcontrol;
 
 public class Constants {
     public static final int TEST_CONST=33;

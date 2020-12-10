@@ -116,6 +116,16 @@ public class DataProviderCsv implements DataProvider {
             return new Result<>(Fail);
         }
     }
+    public <T extends Project> Result<T> getProjectByID(Class<T> cl, long id) {
+        try{
+            List<T> listRes = select(cl);
+            Optional<T> optional = listRes.stream().filter(el -> el.getId() == id).findFirst();
+            return new Result<>(Complete, optional.orElseThrow());
+        } catch (NoSuchElementException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
 
     public <T extends Task> Result<Void> insertGenericTask(Class<T> cl, List<T> list, boolean append) {
         try{
@@ -193,70 +203,85 @@ public class DataProviderCsv implements DataProvider {
 
     }
 
-    public <T extends Task> Result<T> deleteGenericTask(Class<T> cl, long id) throws IOException {
+    public <T extends Task> Result<T> deleteGenericTask(Class<T> cl, long id) {
         List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insertGenericTask(cl, listData, false);
         return new Result<>(Complete);
     }
-    public <T extends Employee> Result<T> deleteGenericEmployee(Class<T> cl, long id) throws IOException {
+    public <T extends Employee> Result<T> deleteGenericEmployee(Class<T> cl, long id) {
         List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insertGenericEmployee(cl, listData, false);
         return new Result<>(Complete);
     }
-    public <T extends Project> Result<T> deleteGenericProject(Class<T> cl, long id) throws IOException {
+    public <T extends Project> Result<T> deleteGenericProject(Class<T> cl, long id){
         List<T> listData = select(cl);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         insertGenericProject(cl, listData, false);
         return new Result<>(Complete);
     }
 
-    public <T extends Task> Result<T> updateGenericTask(Class<T> cl, T updElement) throws IOException {
-        List<T> userList = select(cl);
-        Optional<T> optionalUser = searchTask(userList,updElement.getId());
-        if (optionalUser.isEmpty()) {
+    public <T extends Task> Result<T> updateGenericTask(Class<T> cl, T updElement){
+        try {
+            List<T> userList = select(cl);
+            Optional<T> optionalUser = searchTask(userList,updElement.getId());
+            if (optionalUser.isEmpty()) {
+                return new Result<T>(Fail);
+            }
+            userList.remove(optionalUser.get());
+            userList.add(updElement);
+            insertGenericTask(cl, userList, false);
+            return new Result<T>(Complete);
+        } catch (IOException e) {
+            log.error(e);
             return new Result<T>(Fail);
         }
-        userList.remove(optionalUser.get());
-        userList.add(updElement);
-        insertGenericTask(cl, userList, false);
-        return new Result<T>(Complete);
     }
-    public <T extends Employee> Result<T> updateGenericEmployee(Class<T> cl, T updElement) throws IOException {
-        List<T> userList = select(cl);
-        Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
-        if (optionalUser.isEmpty()) {
+    public <T extends Employee> Result<T> updateGenericEmployee(Class<T> cl, T updElement)  {
+        try {
+            List<T> userList = select(cl);
+            Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
+            if (optionalUser.isEmpty()) {
             return new Result<T>(Fail);
         }
-        userList.remove(optionalUser.get());
-        userList.add(updElement);
-        insertGenericEmployee(cl, userList, false);
-        return new Result<T>(Complete);
+            userList.remove(optionalUser.get());
+            userList.add(updElement);
+            insertGenericEmployee(cl, userList, false);
+            return new Result<T>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<T>(Fail);
+        }
     }
-    public <T extends Project> Result<T> updateGenericProject(Class<T> cl, T updElement) throws IOException {
-        List<T> userList = select(cl);
-        Optional<T> optionalUser = searchProject(userList,updElement.getId());
-        if (optionalUser.isEmpty()) {
+    public <T extends Project> Result<T> updateGenericProject(Class<T> cl, T updElement) {
+        try {
+            List<T> userList = select(cl);
+            Optional<T> optionalUser = searchProject(userList,updElement.getId());
+            if (optionalUser.isEmpty()) {
             return new Result<T>(Fail);
         }
-        userList.remove(optionalUser.get());
-        userList.add(updElement);
-        insertGenericProject(cl, userList, false);
-        return new Result<T>(Complete);
+            userList.remove(optionalUser.get());
+            userList.add(updElement);
+            insertGenericProject(cl, userList, false);
+            return new Result<T>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<T>(Fail);
+        }
     }
 
-    public <T extends Task> Optional<T> searchTask(List<T> listRes,long id) throws IOException {
+    private <T extends Task> Optional<T> searchTask(List<T> listRes,long id) throws IOException {
         return listRes.stream()
                 .filter(el -> el.getId() == id)
                 .findFirst();
     }
-    public <T extends Employee> Optional<T> searchEmployee(List<T> listRes,long id) throws IOException {
+    private <T extends Employee> Optional<T> searchEmployee(List<T> listRes,long id) throws IOException {
         return listRes.stream()
                 .filter(el -> el.getId() == id)
                 .findFirst();
     }
-    public <T extends Project> Optional<T> searchProject(List<T> listRes,long id) throws IOException {
+    private <T extends Project> Optional<T> searchProject(List<T> listRes,long id) throws IOException {
         return listRes.stream()
                 .filter(el -> el.getId() == id)
                 .findFirst();
@@ -276,6 +301,7 @@ public class DataProviderCsv implements DataProvider {
     task.setLastUpdate(lastUpdate);
     task.setTaskType(taskType);
 }
+    @Override
     public <T extends Task> Result <T> getTaskInfoGeneric(Class<T> cl,long taskId){
         try {
             List<T> list = select(cl);
@@ -360,7 +386,7 @@ public class DataProviderCsv implements DataProvider {
         testersTask.setBugDescription(Constants.BaseComment);
         return new Result<>(Complete,testersTask);
     }
-
+    @Override
     public Result<Task> getTasks(long id){
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(select(Task.class));
@@ -369,7 +395,8 @@ public class DataProviderCsv implements DataProvider {
         Optional<Task> optTask = taskList.stream().filter(el -> el.getId() == id).findAny();
         return optTask.map(task -> new Result<>(Outcomes.Complete, task)).orElseGet(() -> new Result<>(Outcomes.Fail));
     }
-    private List<Task> getAllTask(){
+    @Override
+    public List<Task> getAllTask(){
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(select(Task.class));
         taskList.addAll(select(TestersTask.class));
@@ -378,22 +405,29 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public <T extends Task> Result<Task> getTaskInfo(Class<T> cl,long taskId) {
-        Task task = getTaskInfoGeneric(cl,taskId).getData();
-        return new Result<Task>(Complete,task);
+    public Result getTasksByUser(long userId, long taskId) {
+        try {
+            List<Task> list = select(Task.class);
+            Task task = searchTask(list, taskId).get();
+            if(task.getTeam().contains(null)){
+                return new Result(Fail);
+            }
+//            List<Task> taskList = listRes.stream()
+//                    .filter(task -> task.getTeam().stream().anyMatch(employee -> employee.getId() == userId))
+//                    .collect(Collectors.toList());
+            if (task.getTeam().stream().anyMatch(employee -> employee.getId() == userId)) {
+                return new Result(Complete, task);
+            } else {
+                return new Result(Fail);
+            }
+        } catch (IOException e) {
+            log.error(e);
+            return new Result(Fail);
+        }
     }
 
     @Override
-    public Result<List<Task>> getTasksByUser(long userId, long taskId) {
-        List<Task> listRes = getAllTask();
-        List<Task> taskList = listRes.stream()
-                .filter(task -> task.getTeam().stream().anyMatch(employee -> employee.getId() == userId))
-                .collect(Collectors.toList());
-        return new Result<>(Complete,taskList);
-    }
-
-    @Override
-    public <T extends Task> Result<T> getTaskById(Class cl, long taskId) {
+    public <T extends Task> Result<T> getAnyTaskByTaskId(Class cl, long taskId) {
         try {
             List<T> listTaskRes = select(cl);
             Optional<T> optionalTask= searchTask(listTaskRes,taskId);
@@ -413,6 +447,7 @@ public class DataProviderCsv implements DataProvider {
         //Task
         List<Task> listRes = select(Task.class);
         List<Task> taskList = listRes.stream()
+                .filter(task -> task.getId() == taskId)
                 .filter(task -> task.getTeam().stream().anyMatch(employee1 -> employee1.getId() == employee.getId()))
                 .collect(Collectors.toList());
         if(!taskList.isEmpty()) {
@@ -424,13 +459,8 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> deleteTask(Task task) {
-        try {
-            deleteGenericTask(Task.class, task.getId());
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+        deleteGenericTask(Task.class, task.getId());
+        return new Result<>(Complete);
     }
 
     @Override
@@ -494,7 +524,7 @@ public class DataProviderCsv implements DataProvider {
             return new Result<>(Fail);
         }
     }
-
+    @Override
     public <T extends Task> Result<List<T>> getTaskListByScrumMaster(Class<T> cl, long userId){
         List<T> listRes = select(cl);
         List<T> optionalRes = listRes.stream()
@@ -517,7 +547,6 @@ public class DataProviderCsv implements DataProvider {
         return new Result<>(Complete,project);
     }
 
-    @Override
     public Result<Project> getProjectStatistic(long userId) {
         try {
             //Emp
@@ -555,7 +584,7 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result<Project> getProject(long projectId) {
+    public Result<Project> getProjectByProjectID(long projectId) {
         try {
             List<Project> listPrjRes = select(Project.class);
             Optional<Project> optionalProject = searchProject(listPrjRes, projectId);
@@ -600,26 +629,15 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> deleteProject(Project project) {
-        try {
-            deleteGenericProject(Project.class,project.getId());
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+        deleteGenericProject(Project.class,project.getId());
+        return new Result<>(Complete);
     }
 
     @Override
     public Result<Void> updateProject(Project project) {
-        try {
-            updateGenericProject(Project.class,project);
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+        updateGenericProject(Project.class,project);
+        return new Result<>(Complete);
     }
-
 
     @Override
     public Result<Long> calculateProjectCost(Project project) {
@@ -728,6 +746,7 @@ public class DataProviderCsv implements DataProvider {
         tester.setTypeOfTester(TypeOfTester.Custom);
         return new Result<>(Complete,tester);
     }
+    @Override
     public List<Employee> getAllEmployee(){
         List<Employee> employees = new ArrayList<>();
         employees.addAll(select(Employee.class));
@@ -756,32 +775,10 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result<List<Task>> getTaskListById(long id) {
-        try {
-            List<Employee> listEmpRes = select(Employee.class);
-            Optional<Employee> optionalUser = searchEmployee(listEmpRes, id);
-            if(optionalUser.isEmpty()){
-                return new Result<>(Fail);
-            }
-            List<Task> listRes = select(Task.class);
-            List<Task> listTask = listRes.stream()
-                    .filter(el -> el.getScrumMaster().getId()==id)
-                    .collect(Collectors.toList());
-            if(listTask.isEmpty()){
-                return new Result(Outcomes.Empty);
-            }
-            return new Result(Complete, listTask);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result getProjectListById(Employee employee) {
+    public Result getProjectListByScrummasterId(long id) {
         List<Task> listRes = select(Task.class);
         List<Task> findedTaskList = listRes.stream()
-                .filter(el -> el.getTeam().contains(employee.getId()))
+                .filter(el -> el.getTeam().contains(id))
                 .collect(Collectors.toList());
         List<Task> findedTask = findedTaskList;
         List<Project> listProject = select(Project.class);
@@ -833,13 +830,8 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Employee> correctEmployeeParameters(Employee editedEmployee) {
-        try {
-            updateGenericEmployee(Employee.class, editedEmployee);
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+        updateGenericEmployee(Employee.class, editedEmployee);
+        return new Result<>(Complete);
     }
 
     @Override

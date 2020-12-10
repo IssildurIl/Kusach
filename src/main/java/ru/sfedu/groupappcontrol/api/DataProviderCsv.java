@@ -323,7 +323,7 @@ public class DataProviderCsv implements DataProvider {
                     .build();
             List<T> list = csvToBean.parse();
             reader.close();
-            return (List<T>) list;
+            return list;
         } catch (IOException e) {
             log.error(e);
             return Collections.emptyList();
@@ -658,10 +658,28 @@ public class DataProviderCsv implements DataProvider {
         return new Result(Complete, optionalRes);
     }
 
-    /**
-     * @param userId
-     * @return
-     */
+    public Result<Task> getTasks(long id){
+        List<Task> taskList = new ArrayList<>();
+        taskList.addAll(select(Task.class));
+        taskList.addAll(select(TestersTask.class));
+        taskList.addAll(select(DevelopersTask.class));
+        Optional<Task> optTask = taskList.stream().filter(el -> el.getId() == id).findAny();
+        return optTask.map(task -> new Result<>(Outcomes.Complete, task)).orElseGet(() -> new Result<>(Outcomes.Fail));
+    }
+    public List<Task> getAllTask(){
+        List<Task> taskList = new ArrayList<>();
+        taskList.addAll(select(Task.class));
+        taskList.addAll(select(TestersTask.class));
+        taskList.addAll(select(DevelopersTask.class));
+        return taskList;
+    }
+    public List<Employee> getAllEmployee(){
+        List<Employee> employees = new ArrayList<>();
+        employees.addAll(select(Employee.class));
+        employees.addAll(select(Tester.class));
+        employees.addAll(select(Developer.class));
+        return employees;
+    }
     @Override
     public Result getBaseTaskList(long userId) {
         List<Task> taskList= (List<Task>) getTaskList(Task.class,userId).getData();
@@ -1077,7 +1095,7 @@ public class DataProviderCsv implements DataProvider {
      * @return
      */
     @Override
-    public Result calculateTaskCost(Task task) {
+    public Result<Double> calculateTaskCost(Task task) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));

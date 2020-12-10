@@ -31,7 +31,7 @@ class DataProviderCsvTest {
     private static final Logger log = LogManager.getLogger(DataProviderCsvTest.class);
 
 
-    DataProviderCsvTest() throws IOException {
+    DataProviderCsvTest() {
     }
 
     @BeforeAll
@@ -133,7 +133,7 @@ class DataProviderCsvTest {
     public void calculateTaskCostSuccess() throws IOException {
         Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         log.debug(instance.calculateTaskCost(testTask).getData());
-        assertEquals(instance.calculateTaskCost(testTask).getData(),87318.0);
+        Assertions.assertEquals(instance.calculateTaskCost(testTask).getData().longValue(), 87318.0);
     }
     @Test
     public void calculateTaskCostFail() throws IOException {
@@ -149,7 +149,7 @@ class DataProviderCsvTest {
 //        System.out.println(cost);
 //    }
 
-//    @Test
+//    @log.info
 //    public void calculateProjectCostFail() throws IOException {
 //
 //    }

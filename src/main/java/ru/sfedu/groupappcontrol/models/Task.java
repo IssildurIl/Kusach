@@ -21,7 +21,7 @@ public class Task{
   @CsvBindByName
   private String taskDescription;
   @CsvBindByName
-  private Double money;
+  private double money;
   //@CsvBindByName
   //@CsvRecurse
   @CsvCustomBindByName(converter = EmployeeConverter.class)

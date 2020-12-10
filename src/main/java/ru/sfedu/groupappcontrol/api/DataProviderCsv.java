@@ -9,9 +9,11 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.NonNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ru.sfedu.groupappcontrol.Constants;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
-import ru.sfedu.groupappcontrol.Constants;
 import ru.sfedu.groupappcontrol.models.enums.*;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
@@ -28,9 +30,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
 
@@ -280,15 +279,15 @@ public class DataProviderCsv implements DataProvider {
     public <T extends Task> Result <T> getTaskInfoGeneric(Class<T> cl,long taskId){
         try {
             List<T> list = select(cl);
-            Optional task = searchTask(list,taskId);
+            Optional<T> task = searchTask(list,taskId);
             if(task.isEmpty()){
                 return new Result<>(Fail);
             }
-            T res= (T) task.get();
+            T res = task.get();
             if (list.isEmpty()) {
-                return new Result(Fail);
+                return new Result<>(Fail);
             } else {
-                return new Result<T>(Complete, res);
+                return new Result<>(Complete, res);
             }
         } catch (Exception e) {
             log.error(e);
@@ -659,8 +658,17 @@ public class DataProviderCsv implements DataProvider {
                 return new Result<>(Fail);
         }
     }
-    public Result<Employee> createBaseEmployee(long id,@NonNull String firstName,@NonNull String lastName,@NonNull String login,@NonNull String password,@NonNull String email,@NonNull String token,@NonNull String department) {
-        Employee employee = new Employee();
+
+    private void setBasicEmployee(Employee employee,
+                                  long id,
+                                  String firstName,
+                                  String lastName,
+                                  String login,
+                                  String email,
+                                  String password,
+                                  String token,
+                                  String department,
+                                  TypeOfEmployee typeOfEmployee){
         employee.setId(id);
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
@@ -669,40 +677,159 @@ public class DataProviderCsv implements DataProvider {
         employee.setEmail(email);
         employee.setToken(token);
         employee.setDepartment(department);
-        employee.setTypeOfEmployee(TypeOfEmployee.Employee);
+        employee.setTypeOfEmployee(typeOfEmployee);
+    }
+
+
+    public Result<Employee> createBaseEmployee(long id,@NonNull String firstName,@NonNull String lastName,@NonNull String login,@NonNull String password,@NonNull String email,@NonNull String token,@NonNull String department) {
+        Employee employee = new Employee();
+        setBasicEmployee(employee,
+                id,
+                firstName,
+                lastName,
+                login,
+                password,
+                email,
+                token,
+                department,
+                TypeOfEmployee.Employee);
         return new Result<>(Complete,employee);
     }
     public Result<Developer> createDeveloperEmployee(long id,@NonNull String firstName,@NonNull String lastName,@NonNull String login,@NonNull String password,@NonNull String email,@NonNull String token,@NonNull String department) {
         Developer developer= new Developer();
-        developer.setId(id);
-        developer.setFirstName(firstName);
-        developer.setLastName(lastName);
-        developer.setLogin(login);
-        developer.setPassword(password);
-        developer.setEmail(email);
-        developer.setToken(token);
-        developer.setDepartment(department);
-        developer.setTypeOfEmployee(TypeOfEmployee.Developer);
+        setBasicEmployee(developer,
+                id,
+                firstName,
+                lastName,
+                login,
+                password,
+                email,
+                token,
+                department,
+                TypeOfEmployee.Developer);
         developer.setStatus(TypeOfDevelopers.CUSTOM);
         developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
         return new Result<>(Complete,developer);
     }
     public Result<Tester> createTesterEmployee(long id,@NonNull String firstName,@NonNull String lastName,@NonNull String login,@NonNull String password,@NonNull String email,@NonNull String token,@NonNull String department) {
         Tester tester= new Tester();
-        tester.setId(id);
-        tester.setFirstName(firstName);
-        tester.setLastName(lastName);
-        tester.setLogin(login);
-        tester.setPassword(password);
-        tester.setEmail(email);
-        tester.setToken(token);
-        tester.setDepartment(department);tester.setTypeOfEmployee(TypeOfEmployee.Tester);
+        setBasicEmployee(tester,
+                id,
+                firstName,
+                lastName,
+                login,
+                password,
+                email,
+                token,
+                department,
+                TypeOfEmployee.Tester);
         tester.setStatus(TypeOfDevelopers.CUSTOM);
         tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
         tester.setTypeOfTester(TypeOfTester.Custom);
         return new Result<>(Complete,tester);
     }
+    public List<Employee> getAllEmployee(){
+        List<Employee> employees = new ArrayList<>();
+        employees.addAll(select(Employee.class));
+        employees.addAll(select(Tester.class));
+        employees.addAll(select(Developer.class));
+        return employees;
+    }
 
+    @Override
+    public Result<List<Task>> getScrumMasterTaskList(long userId, TaskTypes taskTypes) {
+        switch (taskTypes){
+            case BASE_TASK:
+                return new Result<>(Complete, getTaskListByScrumMaster(Task.class, userId).getData());
+            case DEVELOPERS_TASK:
+                return new Result<>(Complete,new ArrayList<>(getTaskListByScrumMaster(DevelopersTask.class, userId).getData()));
+            case TESTERS_TASK:
+                return new Result<>(Complete,new ArrayList<>(getTaskListByScrumMaster(TestersTask.class,userId).getData()));
+            default:
+                return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public <T extends Employee> Result getUserInfoList(Class<T> cl,long userId) {
+        return new Result<>(Complete,getEmployeeByID(cl,userId).getData());
+    }
+
+    @Override
+    public Result<List<Task>> getTaskListById(long id) {
+        try {
+            List<Employee> listEmpRes = select(Employee.class);
+            Optional<Employee> optionalUser = searchEmployee(listEmpRes, id);
+            if(optionalUser.isEmpty()){
+                return new Result<>(Fail);
+            }
+            List<Task> listRes = select(Task.class);
+            List<Task> listTask = listRes.stream()
+                    .filter(el -> el.getScrumMaster().getId()==id)
+                    .collect(Collectors.toList());
+            if(listTask.isEmpty()){
+                return new Result(Outcomes.Empty);
+            }
+            return new Result(Complete, listTask);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result getProjectListById(Employee employee) {
+        List<Task> listRes = select(Task.class);
+        List<Task> findedTaskList = listRes.stream()
+                .filter(el -> el.getTeam().contains(employee.getId()))
+                .collect(Collectors.toList());
+        List<Task> findedTask = findedTaskList;
+        List<Project> listProject = select(Project.class);
+        List<Project> optionalProject = listProject.stream()
+                .filter(project -> {
+                    boolean isContains=false;
+                    for(Task task:findedTaskList){
+                        if(project.getTask().contains(task)){
+                            isContains=true;
+                            break;
+                        }
+                    }
+                    return isContains;
+                })
+                .collect(Collectors.toList());
+        if(optionalProject.isEmpty()){
+            return new Result<>(Fail);
+        }else{
+            return new Result<>(Complete,optionalProject);
+        }
+    }
+
+    @Override
+    public Result<Void> deleteEmployeeFromTask(Task task, Employee employee) {
+        List<Employee> employeeList = task.getTeam();
+        employeeList.removeIf(employee1 -> employee1.getId() == employee.getId());
+        task.setTeam(employeeList);
+        return new Result<>(Complete);
+    }
+
+    @Override
+    public Result<Employee> changeProfileInfo(Employee editedEmployee) {
+        try {
+            List<Employee> listRes = select(Employee.class);
+            Optional<Employee> optionalUser = searchEmployee(listRes, editedEmployee.getId());
+            if(optionalUser.isEmpty()){
+                return new Result<>(Fail);
+            }
+            listRes.remove(optionalUser.get());
+            listRes.add(editedEmployee);
+            insertGenericEmployee(Employee.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+
+    }
 
     @Override
     public Result<Employee> correctEmployeeParameters(Employee editedEmployee) {

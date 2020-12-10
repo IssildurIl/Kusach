@@ -88,21 +88,21 @@ class DataProviderCsvTest {
     public void getUserInfoListFail() throws IOException {
         Outcomes outcomes = instance.getUserInfoList(Employee.class,200).getStatus();
         log.debug(outcomes);
-        assertNotEquals(instance.getUserInfoList(Employee.class,2).getStatus().toString(),outcomes.toString());
+        assertEquals(Fail,outcomes);
     }
 
     @Test
     public void getScrumMasterTaskListSuccess(){
         Employee employee = (Employee) instance.getEmployeeByID(Employee.class,10).getData();
         List<Task> list = new ArrayList<>();
-        Task testTask = (Task) instance.createTask(11,"Descript",14553.0,employee,TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task testTask = (Task) instance.createTask(15,"Descript",14553.0,employee,TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         list.add(testTask);
         instance.insertGenericTask(Task.class,list,true);
         List<Task> taskList= instance.select(Task.class);
         log.info(taskList);
         List<Task> testlist = instance.getScrumMasterTaskList(10,TaskTypes.BASE_TASK).getData();
         log.debug(testlist);
-        assertEquals(testlist.get(0).getId(),11);
+        assertEquals(15,testlist.get(0).getId());
     }
 
     @Test

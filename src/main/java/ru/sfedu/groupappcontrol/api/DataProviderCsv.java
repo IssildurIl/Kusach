@@ -941,7 +941,7 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public <T extends Employee> Result getUserInfoList(Class<T> cl,long userId) {
-        return new Result<>(Complete,getEmployeeByID(cl,userId).getData());
+        return new Result(getEmployeeByID(cl,userId).getStatus(),getEmployeeByID(cl,userId).getData());
     }
 
     @Override

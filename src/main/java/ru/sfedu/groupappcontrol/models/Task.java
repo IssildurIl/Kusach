@@ -8,13 +8,14 @@ import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 import ru.sfedu.groupappcontrol.utils.EmployeeConverter;
 import ru.sfedu.groupappcontrol.utils.EmployeeListConverter;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Class Task
  */
-public class Task{
+public class Task implements Serializable {
 
   @CsvBindByName
   private long id;

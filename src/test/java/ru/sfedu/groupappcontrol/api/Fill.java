@@ -3,8 +3,6 @@ package ru.sfedu.groupappcontrol.api;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 
 public class Fill {
-    int maxGen = 100;
-    int genId;
 
     static String[] firstName = {"Ivan", "Kirill", "Sergey", "Daniil", "Denis", "Dmitry", "Yevgeny", "Anatoliy", "Anton", "Vladimir"};
     static String[] lastName = {"Parfenov", "Medvedev", "Yeremin", "Raykin", "Zhirnov", "Shalyapin", "Shchitov", "Kuznetsov", "Tsvetaeva", "Hasymov"};

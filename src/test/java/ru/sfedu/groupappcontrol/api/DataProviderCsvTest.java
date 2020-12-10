@@ -28,7 +28,7 @@ class DataProviderCsvTest {
 
     @BeforeAll
     static void setCsvEnv() throws IOException {
-        deleteAll();
+        instance.deleteAllRecord();
         addRecord();
     }
 
@@ -66,6 +66,7 @@ class DataProviderCsvTest {
     public void writeCommentSuccess() throws IOException {
         instance.writeComment(DevelopersTask.class,1,"i wrote this comment now");
         DevelopersTask developersTask = (DevelopersTask) instance.getTaskById(DevelopersTask.class,1).getData();
+        log.debug(developersTask);
         assertEquals("i wrote this comment now",developersTask.getTaskDescription());
     }
 
@@ -80,25 +81,43 @@ class DataProviderCsvTest {
     public void getUserInfoListSuccess() throws IOException {
         Employee testEmp = (Employee) instance.getUserInfoList(Employee.class,2).getData();
         log.debug(testEmp);
-        //assertEquals(testEmp.getId(),2);
         assertEquals(2,  testEmp.getId());
     }
-
-    @Test
-    public void UpdateUserInfo() throws IOException {
-        Employee testEmployee = (Employee) instance.createEmployee(3,"Emp","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
-        log.debug(testEmployee);
-        instance.updateGenericEmployee(Employee.class,testEmployee);
-        //assertNotEquals(instance.getUserInfoList(2).getStatus().toString(),outcomes.toString());
-    }
-
-
 
     @Test
     public void getUserInfoListFail() throws IOException {
         Outcomes outcomes = instance.getUserInfoList(Employee.class,200).getStatus();
         log.debug(outcomes);
         assertNotEquals(instance.getUserInfoList(Employee.class,2).getStatus().toString(),outcomes.toString());
+    }
+
+    @Test
+    public void getScrumMasterTaskListSuccess(){
+        Employee employee = (Employee) instance.getEmployeeByID(Employee.class,10).getData();
+        List<Task> list = new ArrayList<>();
+        Task testTask = (Task) instance.createTask(11,"Descript",14553.0,employee,TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        list.add(testTask);
+        instance.insertGenericTask(Task.class,list,true);
+        List<Task> taskList= instance.select(Task.class);
+        log.info(taskList);
+        List<Task> testlist = instance.getScrumMasterTaskList(10,TaskTypes.BASE_TASK).getData();
+        log.debug(testlist);
+        assertEquals(testlist.get(0).getId(),11);
+    }
+
+    @Test
+    public void getScrumMasterTaskListFail(){
+        Employee employee = (Employee) instance.getEmployeeByID(Employee.class,10).getData();
+        List<Task> list = new ArrayList<>();
+        Task testTask = (Task) instance.createTask(11,"Descript",14553.0,employee,TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        list.add(testTask);
+        instance.insertGenericTask(Task.class,list,true);
+        List<Task> taskList= instance.select(Task.class);
+        log.info(taskList);
+        List<Task> testlist = instance.getScrumMasterTaskList(10,TaskTypes.CUSTOM).getData();
+        log.debug(testlist);
+        Outcomes outcomes = instance.getScrumMasterTaskList(10,TaskTypes.CUSTOM).getStatus();
+        assertEquals(outcomes,Fail);
     }
 
     @Test
@@ -343,6 +362,13 @@ class DataProviderCsvTest {
         instance.insertGenericEmployee(Tester.class,testerList,true);
         assertEquals("Vasily",instance.getEmployeeByID(Tester.class,11).getData().getFirstName().toString());
     }
+    @Test
+    public void UpdateUserInfo() throws IOException {
+        Employee testEmployee = (Employee) instance.createEmployee(3,"Emp","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
+        log.debug(testEmployee);
+        instance.updateGenericEmployee(Employee.class,testEmployee);
+        assertNotEquals(instance.getUserInfoList(Employee.class,20).getStatus().toString(), Complete);
+    }
 
     public static void addRecord() throws IOException {
     List<Employee> employees = new ArrayList<>();
@@ -493,14 +519,5 @@ class DataProviderCsvTest {
             listTask.add(testersTask);
         }
         return listTask;
-    }
-    public static void deleteAll(){
-        instance.deleteRecord(Employee.class);
-        instance.deleteRecord(Developer.class);
-        instance.deleteRecord(Tester.class);
-        instance.deleteRecord(Task.class);
-        instance.deleteRecord(DevelopersTask.class);
-        instance.deleteRecord(TestersTask.class);
-        instance.deleteRecord(Project.class);
     }
 }

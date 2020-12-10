@@ -38,7 +38,7 @@ public class DataProviderCsv implements DataProvider {
 
     private String PATH;
     private static final Logger log = LogManager.getLogger(DataProviderCsv.class);
-    
+
     public DataProviderCsv() {
         try {
             PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
@@ -62,6 +62,41 @@ public class DataProviderCsv implements DataProvider {
         }
     }
 
+    public <T> List<T> select(Class<T> cl) {
+        try {
+            String path = getPath(cl);
+            FileReader file = new FileReader(path);
+            CSVReader reader = new CSVReader(file);
+            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
+                    .withType(cl)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build();
+            List<T> list = csvToBean.parse();
+            reader.close();
+            return list;
+        } catch (IOException e) {
+            log.error(e);
+            return Collections.emptyList();
+        }
+
+    }
+
+    public <T> Result<T> writer(String path,List<T> list) {
+        try {
+            FileWriter file = new FileWriter(path);
+            CSVWriter writer = new CSVWriter(file);
+            StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer)
+                    .withApplyQuotesToAll(false)
+                    .build();
+            beanToCsv.write(list);
+            writer.close();
+            return new Result<>(Complete);
+        } catch (CsvRequiredFieldEmptyException | IOException | CsvDataTypeMismatchException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+    //CRUD
     public <T extends Task> Result<T> getTaskByID(Class<T> cl, long id) {
         try{
             List<T> listRes = select(cl);
@@ -212,25 +247,6 @@ public class DataProviderCsv implements DataProvider {
         return new Result<T>(Complete);
     }
 
-    public <T> List<T> select(Class<T> cl) {
-        try {
-            String path = getPath(cl);
-            FileReader file = new FileReader(path);
-            CSVReader reader = new CSVReader(file);
-            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(reader)
-                    .withType(cl)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .build();
-            List<T> list = csvToBean.parse();
-            reader.close();
-            return list;
-        } catch (IOException e) {
-            log.error(e);
-            return Collections.emptyList();
-        }
-
-    }
-
     public <T extends Task> Optional<T> searchTask(List<T> listRes,long id) throws IOException {
         return listRes.stream()
                 .filter(el -> el.getId() == id)
@@ -247,39 +263,21 @@ public class DataProviderCsv implements DataProvider {
                 .findFirst();
     }
 
-    public <T> Result<T> writer(String path,List<T> list) {
-        try {
-            FileWriter file = new FileWriter(path);
-            CSVWriter writer = new CSVWriter(file);
-            StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(writer)
-                    .withApplyQuotesToAll(false)
-                    .build();
-            beanToCsv.write(list);
-            writer.close();
-            return new Result<>(Complete);
-        } catch (CsvRequiredFieldEmptyException | IOException | CsvDataTypeMismatchException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
 
-    public Result calculatePrice(Task task) {
-        try {
-            long resulttime = 0;
-            SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
-            Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
-            Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
-            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            resulttime = resulttime + diff;
-            return new Result<>(Complete,resulttime);
-        } catch (ParseException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    public <T extends Task> Result <T> getTaskInfoGeneric(Class cl,long taskId){
+//Task
+    private void setBasicTask(Task task, long id, String taskDescription, double money, Employee scrumMaster, TypeOfCompletion status, List<Employee> team, String createdDate, String deadline,String lastUpdate,TaskTypes taskType ){
+    task.setId(id);
+    task.setTaskDescription(taskDescription);
+    task.setMoney(money);
+    task.setScrumMaster(scrumMaster);
+    task.setStatus(status);
+    task.setTeam(team);
+    task.setCreatedDate(createdDate);
+    task.setDeadline(deadline);
+    task.setLastUpdate(lastUpdate);
+    task.setTaskType(taskType);
+}
+    public <T extends Task> Result <T> getTaskInfoGeneric(Class<T> cl,long taskId){
         try {
             List<T> list = select(cl);
             Optional task = searchTask(list,taskId);
@@ -294,73 +292,222 @@ public class DataProviderCsv implements DataProvider {
             }
         } catch (Exception e) {
             log.error(e);
-            return new Result(Fail);
+            return new Result<>(Fail);
         }
     }
 
     @Override
-    public Result<Task> createTask(long id, @NonNull String taskDescription,@NonNull Double money,@NonNull Employee scrumMaster,@NonNull TypeOfCompletion status,@NonNull List<Employee> team,@NonNull String createdDate,@NonNull String deadline,@NonNull String lastUpdate,@NonNull TaskTypes taskType){
-        switch (taskType){
-        case BASE_TASK:
-            Task baseTask = createBaseTask(id,taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
-            return new Result<>(Complete,baseTask);
-        case DEVELOPERS_TASK:
-            DevelopersTask developersTask = createDevelopersTask(id,taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
-            return new Result<>(Complete,developersTask);
-        case TESTERS_TASK:
-            TestersTask testersTask = createTestersTask(id,taskDescription,money,scrumMaster,status,team,createdDate,deadline,lastUpdate).getData();
-            return new Result<>(Complete,testersTask);
-        default:
-            return new Result<>(Fail);
+    public Result<Task> createTask(long id, @NonNull String taskDescription,@NonNull Double money,@NonNull Employee scrumMaster,@NonNull TypeOfCompletion status,@NonNull List<Employee> team,@NonNull String createdDate,@NonNull String deadline,@NonNull String lastUpdate,@NonNull TaskTypes taskType) {
+        switch (taskType) {
+            case BASE_TASK:
+                Task baseTask = createBaseTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
+                return new Result<>(Complete, baseTask);
+            case DEVELOPERS_TASK:
+                DevelopersTask developersTask = createDevelopersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
+                return new Result<>(Complete, developersTask);
+            case TESTERS_TASK:
+                TestersTask testersTask = createTestersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
+                return new Result<>(Complete, testersTask);
+            default:
+                return new Result<>(Fail);
+        }
     }
-}
     public Result<Task> createBaseTask(long id,@NonNull String taskDescription,@NonNull Double money,@NonNull Employee scrumMaster,@NonNull TypeOfCompletion status,@NonNull List<Employee> team,@NonNull String createdDate,@NonNull String deadline,@NonNull String lastUpdate) {
         Task task = new Task();
-        task.setId(id);
-        task.setTaskDescription(taskDescription);
-        task.setMoney(money);
-        task.setScrumMaster(scrumMaster);
-        task.setStatus(status);
-        task.setTeam(team);
-        task.setCreatedDate(createdDate);
-        task.setDeadline(deadline);
-        task.setLastUpdate(lastUpdate);
-        task.setTaskType(TaskTypes.BASE_TASK);
-        return new Result<Task>(Complete,task);
+        setBasicTask(task,
+                id,
+                taskDescription,
+                money,
+                scrumMaster,
+                status,
+                team,
+                createdDate,
+                deadline,
+                lastUpdate,
+                TaskTypes.BASE_TASK);
+        return new Result<>(Complete,task);
     }
     public Result<DevelopersTask> createDevelopersTask(long id,@NonNull String taskDescription,@NonNull Double money,@NonNull Employee scrumMaster,@NonNull TypeOfCompletion status,@NonNull List<Employee> team,@NonNull String createdDate,@NonNull String deadline,@NonNull String lastUpdate) {
         DevelopersTask developersTask= new DevelopersTask();
-        developersTask.setId(id);
-        developersTask.setTaskDescription(taskDescription);
-        developersTask.setMoney(money);
-        developersTask.setScrumMaster(scrumMaster);
-        developersTask.setStatus(status);
-        developersTask.setTeam(team);
-        developersTask.setCreatedDate(createdDate);
-        developersTask.setDeadline(deadline);
-        developersTask.setLastUpdate(lastUpdate);
-        developersTask.setTaskType(TaskTypes.DEVELOPERS_TASK);
+        setBasicTask(developersTask,
+                id,
+                taskDescription,
+                money,
+                scrumMaster,
+                status,
+                team,
+                createdDate,
+                deadline,
+                lastUpdate,
+                TaskTypes.DEVELOPERS_TASK);
         developersTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
         developersTask.setDeveloperComments(Constants.BaseComment);
-        return new Result(Complete,developersTask);
+        return new Result<>(Complete,developersTask);
     }
     public Result<TestersTask> createTestersTask(long id,@NonNull String taskDescription,@NonNull Double money,@NonNull Employee scrumMaster,@NonNull TypeOfCompletion status,@NonNull List<Employee> team,@NonNull String createdDate,@NonNull String deadline,@NonNull String lastUpdate) {
         TestersTask testersTask= new TestersTask();
-        testersTask.setId(id);
-        testersTask.setTaskDescription(taskDescription);
-        testersTask.setMoney(money);
-        testersTask.setScrumMaster(scrumMaster);
-        testersTask.setStatus(status);
-        testersTask.setTeam(team);
-        testersTask.setCreatedDate(createdDate);
-        testersTask.setDeadline(deadline);
-        testersTask.setLastUpdate(lastUpdate);
-        testersTask.setTaskType(TaskTypes.TESTERS_TASK);
+        setBasicTask(testersTask,
+                id,
+                taskDescription,
+                money,
+                scrumMaster,
+                status,
+                team,
+                createdDate,
+                deadline,
+                lastUpdate,
+                TaskTypes.TESTERS_TASK);
         testersTask.setBugStatus(BugStatus.IN_WORK);
         testersTask.setBugDescription(Constants.BaseComment);
-        return new Result(Complete,testersTask);
+        return new Result<>(Complete,testersTask);
     }
 
+    public Result<Task> getTasks(long id){
+        List<Task> taskList = new ArrayList<>();
+        taskList.addAll(select(Task.class));
+        taskList.addAll(select(TestersTask.class));
+        taskList.addAll(select(DevelopersTask.class));
+        Optional<Task> optTask = taskList.stream().filter(el -> el.getId() == id).findAny();
+        return optTask.map(task -> new Result<>(Outcomes.Complete, task)).orElseGet(() -> new Result<>(Outcomes.Fail));
+    }
+    private List<Task> getAllTask(){
+        List<Task> taskList = new ArrayList<>();
+        taskList.addAll(select(Task.class));
+        taskList.addAll(select(TestersTask.class));
+        taskList.addAll(select(DevelopersTask.class));
+        return taskList;
+    }
+
+    @Override
+    public <T extends Task> Result<Task> getTaskInfo(Class<T> cl,long taskId) {
+        Task task = getTaskInfoGeneric(cl,taskId).getData();
+        return new Result<Task>(Complete,task);
+    }
+
+    @Override
+    public Result<List<Task>> getTasksByUser(long userId, long taskId) {
+        List<Task> listRes = getAllTask();
+        List<Task> taskList = listRes.stream()
+                .filter(task -> task.getTeam().stream().anyMatch(employee -> employee.getId() == userId))
+                .collect(Collectors.toList());
+        return new Result<>(Complete,taskList);
+    }
+
+    @Override
+    public <T extends Task> Result<T> getTaskById(Class cl, long taskId) {
+        try {
+            List<T> listTaskRes = select(cl);
+            Optional<T> optionalTask= searchTask(listTaskRes,taskId);
+            if(optionalTask.isEmpty()){
+                return new Result<>(Fail);
+            }
+            T task=optionalTask.get();
+            return new Result<>(Complete, task);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result<List<Task>> getTaskWorker(Employee employee, long taskId) {
+        //Task
+        List<Task> listRes = select(Task.class);
+        List<Task> taskList = listRes.stream()
+                .filter(task -> task.getTeam().stream().anyMatch(employee1 -> employee1.getId() == employee.getId()))
+                .collect(Collectors.toList());
+        if(!taskList.isEmpty()) {
+            return new Result<>(Complete, taskList);
+        }else{
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result<Void> deleteTask(Task task) {
+        try {
+            deleteGenericTask(Task.class, task.getId());
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result<Void> changeTaskStatus(long id, String status) {
+        try {
+            if(status.isEmpty()){
+                return new Result<>(Fail);
+            }
+            List<Task> listRes = select(Task.class);
+            Optional<Task> optionalTask = searchTask(listRes, id);
+            if (optionalTask.isEmpty()) {
+                return new Result<>(Fail);
+            }
+            Task editedTask = optionalTask.get();
+            listRes.remove(optionalTask.get());
+            editedTask.setStatus(TypeOfCompletion.valueOf(status));
+            listRes.add(editedTask);
+            insertGenericTask(Task.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result<Double> calculateTaskCost(Task task) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
+            Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
+            Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
+            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            double res=(double) diff * task.getMoney();
+            return new Result<>(Complete, res);
+        } catch (ParseException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public <T extends Task> Result<T> writeComment(Class<T> cl, long id, String comment) {
+        if(comment.isEmpty()){
+            return new Result<>(Fail);
+        }
+        try {
+            List<T> listRes = select(cl);
+            Optional<T> optionalTask = searchTask(listRes, id);
+            if (optionalTask.isEmpty()) {
+                return new Result<>(Fail);
+            }
+            T editedTask = (T) optionalTask.get();
+            listRes.remove(optionalTask.get());
+            editedTask.setTaskDescription(comment);
+            listRes.add(editedTask);
+            insertGenericTask(cl, listRes, false);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    public <T extends Task> Result<List<T>> getTaskListByScrumMaster(Class<T> cl, long userId){
+        List<T> listRes = select(cl);
+        List<T> optionalRes = listRes.stream()
+                .filter(el -> el.getScrumMaster().getId() == userId)
+                .collect(Collectors.toList());
+        if(optionalRes.contains(null)){
+            return new Result<>(Outcomes.NotFound);
+        }
+        return new Result<>(Complete, optionalRes);
+    }
+
+    //Project
     @Override
     public Result<Project> createProject(long id,@NonNull String title,@NonNull String takeIntoDevelopment,@NonNull List<Task> tasks) {
         Project project=new Project();
@@ -371,6 +518,131 @@ public class DataProviderCsv implements DataProvider {
         return new Result<>(Complete,project);
     }
 
+    @Override
+    public Result<Project> getProjectStatistic(long userId) {
+        try {
+            //Emp
+            List<Employee> listEmpRes = select(Employee.class);
+            Optional<Employee> optionalUser = searchEmployee(listEmpRes, userId);
+            if(optionalUser.isEmpty()){
+                return new Result<>(Fail);
+            }
+            Employee findedEmployee = optionalUser.get();
+            //Task
+            List<Task> listRes = select(Task.class);
+            List<Task> findedTaskList = listRes.stream()
+                    .filter(el -> el.getScrumMaster().getId() == findedEmployee.getId())
+                    .collect(Collectors.toList());
+            //Project
+            List<Project> listProject = select(Project.class);
+            List<Project> optionalProject = listProject.stream()
+                    .filter(project -> {
+                        boolean isContains = false;
+                        for (Task task : findedTaskList) {
+                            if (project.getTask().contains(task)) {
+                                isContains = true;
+                                break;
+                            }
+                        }
+                        return isContains;
+                    })
+                    .collect(Collectors.toList());
+            return new Result(Complete, optionalProject);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+
+    }
+
+    @Override
+    public Result<Project> getProject(long projectId) {
+        try {
+            List<Project> listPrjRes = select(Project.class);
+            Optional<Project> optionalProject = searchProject(listPrjRes, projectId);
+            if(optionalProject.isEmpty()){
+                return new Result<>(Fail);
+            }
+            Project findedProject = optionalProject.get();
+            return new Result<>(Complete, findedProject);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result getProjectById(Employee employee, long projectId) {
+        List<Task> listRes = select(Task.class);
+        List<Task> findedTaskList = listRes.stream()
+                .filter(el -> el.getTeam().contains(employee.getId()))
+                .collect(Collectors.toList());
+        List<Task> findedTask = findedTaskList;
+        List<Project> listProject = select(Project.class);
+        List<Project> optionalProject = listProject.stream()
+                .filter(project -> {
+                    boolean isContains=false;
+                    for(Task task:findedTaskList){
+                        if(project.getTask().contains(task)&&project.getId()==projectId){
+                            isContains=true;
+                            break;
+                        }
+                    }
+                    return isContains;
+                })
+                .collect(Collectors.toList());
+        if(optionalProject.isEmpty()){
+            return new Result<>(Outcomes.Empty);
+        }else{
+            return new Result<>(Complete,optionalProject);
+        }
+
+    }
+
+    @Override
+    public Result<Void> deleteProject(Project project) {
+        try {
+            deleteGenericProject(Project.class,project.getId());
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+    @Override
+    public Result<Void> updateProject(Project project) {
+        try {
+            updateGenericProject(Project.class,project);
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+
+
+    @Override
+    public Result<Long> calculateProjectCost(Project project) {
+        List<Task> taskList = project.getTask();
+        double projectCost = 0.0;
+        for (Task task: taskList) {
+            projectCost = projectCost + (double) calculateTaskCost(task).getData();
+        }
+        return new Result<Long>(Complete,(long) projectCost);
+    }
+
+    @Override
+    public Result<Long> calculateProjectTime(Project project) {
+        List<Task> taskList = project.getTask();
+        long resulttime = 0;
+        for (Task task: taskList) {
+            resulttime = resulttime + (long)calculatePrice(task).getData();
+        }
+        return new Result<>(Complete,resulttime);
+    }
+
+    //Employee
     @Override
     public Result<Employee> createEmployee(long id,@NonNull String firstName,@NonNull String lastName,@NonNull String login,@NonNull String password,@NonNull String email,@NonNull String token,@NonNull String department,@NonNull TypeOfEmployee typeOfEmployee){
         switch (typeOfEmployee){
@@ -432,404 +704,6 @@ public class DataProviderCsv implements DataProvider {
     }
 
 
-    public <T extends Task> Result<T> getTaskListByScrumMaster(Class<T> cl, long userId){
-        List<T> listRes = select(cl);
-        List<T> optionalRes = listRes.stream()
-                .filter(el -> el.getScrumMaster().getId() == userId)
-                .collect(Collectors.toList());
-        if(optionalRes.contains(null)){
-            return new Result<>(Outcomes.NotFound);
-        }
-        return new Result(Complete, optionalRes);
-    }
-
-    public Result<Task> getTasks(long id){
-        List<Task> taskList = new ArrayList<>();
-        taskList.addAll(select(Task.class));
-        taskList.addAll(select(TestersTask.class));
-        taskList.addAll(select(DevelopersTask.class));
-        Optional<Task> optTask = taskList.stream().filter(el -> el.getId() == id).findAny();
-        return optTask.map(task -> new Result<>(Outcomes.Complete, task)).orElseGet(() -> new Result<>(Outcomes.Fail));
-    }
-    public List<Task> getAllTask(){
-        List<Task> taskList = new ArrayList<>();
-        taskList.addAll(select(Task.class));
-        taskList.addAll(select(TestersTask.class));
-        taskList.addAll(select(DevelopersTask.class));
-        return taskList;
-    }
-    public List<Employee> getAllEmployee(){
-        List<Employee> employees = new ArrayList<>();
-        employees.addAll(select(Employee.class));
-        employees.addAll(select(Tester.class));
-        employees.addAll(select(Developer.class));
-        return employees;
-    }
-    @Override
-    public Result getScrumMasterTaskList(long userId, TaskTypes taskTypes) {
-        switch (taskTypes){
-            case BASE_TASK:
-                List<Task> taskList = (List<Task>) getTaskListByScrumMaster(Task.class, userId).getData();
-                return new Result<>(Complete, taskList);
-            case DEVELOPERS_TASK:
-                List<DevelopersTask> developersTask = (List<DevelopersTask>) getTaskListByScrumMaster(DevelopersTask.class, userId).getData();
-                return new Result<>(Complete, developersTask);
-            case TESTERS_TASK:
-                List<TestersTask> testersTasks = (List<TestersTask>) getTaskListByScrumMaster(TestersTask.class,userId);
-                return new Result<>(Complete, testersTasks);
-            default:
-                return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result getTaskInfo(Class cl,long taskId) {
-        Object task = getTaskInfoGeneric(cl,taskId).getData();
-        return new Result(Complete,task);
-    }
-
-    @Override
-    public <T> Result<T> deleteRecord(Class<T> cl) {
-        try {
-            String path = getPath(cl);
-            File file = new File(path);
-            file.delete();
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-
-    }
-////////////////////////////////////////////
-    @Override
-    public Result getTasksByUser(int userId, long taskId) {
-        List<Task> taskRes= new ArrayList<>();
-        List<Task> listRes = getAllTask();
-            return new Result<>(Fail);
-    }
-
-    @Override
-    public <T extends Employee> Result getUserInfoList(Class cl,long userId) {
-        try {
-            List<T> list = select(cl);
-            if (list.isEmpty()) {
-                return new Result(Fail);
-            }
-            Optional<T> optionalEmployee=searchEmployee(list,userId);
-            return optionalEmployee.isEmpty() ? new Result<>(Fail) : new Result(Complete, optionalEmployee.get());
-        } catch (IOException e) {
-            log.error(e);
-            return new Result(Fail);
-        }
-
-    }
-
-    @Override
-    public Result getProjectStatistic(long userId) {
-        try {
-            //Emp
-            List<Employee> listEmpRes = select(Employee.class);
-            Optional<Employee> optionalUser = searchEmployee(listEmpRes, userId);
-            if(optionalUser.isEmpty()){
-                return new Result<>(Fail);
-            }
-            Employee findedEmployee = optionalUser.get();
-            //Task
-            List<Task> listRes = select(Task.class);
-            List<Task> findedTaskList = listRes.stream()
-                    .filter(el -> el.getScrumMaster().getId() == findedEmployee.getId())
-                    .collect(Collectors.toList());
-            List<Task> findedTask = findedTaskList;
-            //Project
-            List<Project> listProject = select(Project.class);
-            List<Project> optionalProject = listProject.stream()
-                    .filter(project -> {
-                        boolean isContains = false;
-                        for (Task task : findedTaskList) {
-                            if (project.getTask().contains(task)) {
-                                isContains = true;
-                                break;
-                            }
-                        }
-                        return isContains;
-                    })
-                    .collect(Collectors.toList());
-            return new Result<>(Complete, optionalProject);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-
-    }
-
-    @Override
-    public Result getProject(long projectId) {
-        try {
-            List<Project> listPrjRes = select(Project.class);
-            Optional<Project> optionalProject = searchProject(listPrjRes, projectId);
-            if(optionalProject.isEmpty()){
-                return new Result<>(Fail);
-            }
-            Project findedProject = optionalProject.get();
-            return new Result<>(Complete, findedProject);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public <T extends Task> Result<T> getTaskById(Class cl, long taskId) {
-        try {
-            List<T> listTaskRes = select(cl);
-            Optional<T> optionalTask= searchTask(listTaskRes,taskId);
-            if(optionalTask.isEmpty()){
-                return new Result<>(Fail);
-            }
-            T task=optionalTask.get();
-            return new Result<>(Complete, task);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result getTaskListById(long id) {
-        try {
-            List<Employee> listEmpRes = select(Employee.class);
-            Optional<Employee> optionalUser = searchEmployee(listEmpRes, id);
-            if(optionalUser.isEmpty()){
-                return new Result<>(Fail);
-            }
-            Employee findedEmployee = optionalUser.get();
-            List<Task> listRes = select(Task.class);
-            List<Task> listTask = listRes.stream()
-                    .filter(el -> el.getScrumMaster().getId()==id)
-                    .collect(Collectors.toList());
-            if(listTask.isEmpty()){
-                return new Result(Outcomes.Empty);
-            }
-            return new Result(Complete, listTask);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result getProjectById(Employee employee, long projectId) {
-        List<Task> listRes = select(Task.class);
-        List<Task> findedTaskList = listRes.stream()
-                .filter(el -> el.getTeam().contains(employee.getId()))
-                .collect(Collectors.toList());
-        List<Task> findedTask = findedTaskList;
-        List<Project> listProject = select(Project.class);
-        List<Project> optionalProject = listProject.stream()
-                .filter(project -> {
-                    boolean isContains=false;
-                    for(Task task:findedTaskList){
-                        if(project.getTask().contains(task)&&project.getId()==projectId){
-                            isContains=true;
-                            break;
-                        }
-                    }
-                    return isContains;
-                })
-                .collect(Collectors.toList());
-        if(optionalProject.isEmpty()){
-            return new Result<>(Outcomes.Empty);
-        }else{
-            return new Result<>(Complete,optionalProject);
-        }
-
-    }
-
-    @Override
-    public Result getProjectListById(Employee employee) {
-        List<Task> listRes = select(Task.class);
-        List<Task> findedTaskList = listRes.stream()
-                .filter(el -> el.getTeam().contains(employee.getId()))
-                .collect(Collectors.toList());
-        List<Task> findedTask = findedTaskList;
-        List<Project> listProject = select(Project.class);
-        List<Project> optionalProject = listProject.stream()
-                .filter(project -> {
-                    boolean isContains=false;
-                    for(Task task:findedTaskList){
-                        if(project.getTask().contains(task)){
-                            isContains=true;
-                            break;
-                        }
-                    }
-                    return isContains;
-                })
-                .collect(Collectors.toList());
-        if(optionalProject.isEmpty()){
-            return new Result<>(Fail);
-        }else{
-            return new Result<>(Complete,optionalProject);
-        }
-    }
-
-    @Override
-    public Result getTaskWorker(Employee employee, long taskId) {
-        //Task
-        List<Task> listRes = select(Task.class);
-        List<Task> findedTaskList = listRes.stream()
-                .filter(el -> el.getTeam().contains(employee.getId()))
-                .collect(Collectors.toList());
-        List<Task> findedTask = findedTaskList;
-        if(!findedTask.isEmpty()) {
-            return new Result<>(Complete, findedTask);
-        }else{
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result deleteTask(Task task) {
-    try {
-        deleteGenericTask(Task.class, task.getId());
-        return new Result(Complete);
-    } catch (IOException e) {
-        log.error(e);
-        return new Result(Fail);
-    }
-}
-
-    @Override
-    public Result deleteProject(Project project) {
-        try {
-            deleteGenericProject(Project.class,project.getId());
-            return new Result(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result(Fail);
-        }
-    }
-
-    @Override
-    public Result deleteEmployeeFromTask(Task task, Employee employee) {
-        List<Employee> employeeList = task.getTeam();
-        employeeList.remove(employee.getId());
-        task.setTeam(employeeList);
-        return new Result<>(Complete);
-    }
-
-    @Override
-    public Result updateProject(Project project) {
-    try {
-        updateGenericProject(Project.class,project);
-        return new Result(Complete);
-    } catch (IOException e) {
-        log.error(e);
-        return new Result(Fail);
-    }
-}
-
-    @Override
-    public Result<Employee> changeProfileInfo(Employee editedEmployee) {
-        try {
-            List<Employee> listRes = select(Employee.class);
-            Optional<Employee> optionalUser = searchEmployee(listRes, editedEmployee.getId());
-            if(optionalUser.isEmpty()){
-                return new Result<>(Fail);
-            }
-            listRes.remove(optionalUser.get());
-            listRes.add(editedEmployee);
-            insertGenericEmployee(Employee.class, listRes, false);
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-
-    }
-
-    @Override
-    public Result changeTaskStatus(long id, String status) {
-        try {
-            if(status.isEmpty()){
-                return new Result<>(Fail);
-            }
-            List<Task> listRes = select(Task.class);
-            Optional<Task> optionalTask = searchTask(listRes, id);
-            if (optionalTask.isEmpty()) {
-                return new Result<>(Fail);
-            }
-            Task editedTask = optionalTask.get();
-            listRes.remove(optionalTask.get());
-            editedTask.setStatus(TypeOfCompletion.valueOf(status));
-            listRes.add(editedTask);
-            insertGenericTask(Task.class, listRes, false);
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result<Double> calculateTaskCost(Task task) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
-            Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
-            Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
-            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
-            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
-            double res=(double) diff * task.getMoney();
-            return new Result<>(Complete, res);
-        } catch (ParseException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
-    @Override
-    public Result<Long> calculateProjectCost(Project project) {
-        List<Task> taskList = project.getTask();
-        double projectCost = 0.0;
-        for (Task task: taskList) {
-            projectCost = projectCost + (double) calculateTaskCost(task).getData();
-        }
-        return new Result<Long>(Complete,(long) projectCost);
-    }
-
-    @Override
-    public Result<Long> calculateProjectTime(Project project) {
-        List<Task> taskList = project.getTask();
-        long resulttime = 0;
-        for (Task task: taskList) {
-                resulttime = resulttime + (long)calculatePrice(task).getData();
-        }
-        return new Result<>(Complete,resulttime);
-    }
-
-    @Override
-    public <T extends Task> Result<T> writeComment(Class<T> cl, long id, String comment) {
-        if(comment.isEmpty()){
-            return new Result<>(Fail);
-        }
-        try {
-            List<T> listRes = select(cl);
-            Optional<T> optionalTask = searchTask(listRes, id);
-            if (optionalTask.isEmpty()) {
-                return new Result<>(Fail);
-            }
-            T editedTask = (T) optionalTask.get();
-            listRes.remove(optionalTask.get());
-            editedTask.setTaskDescription(comment);
-            listRes.add(editedTask);
-            insertGenericTask(cl, listRes, false);
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
-    }
-
     @Override
     public Result<Employee> correctEmployeeParameters(Employee editedEmployee) {
         try {
@@ -849,4 +723,46 @@ public class DataProviderCsv implements DataProvider {
         return new Result<>(Complete);
     }
 
-}
+
+
+    //Optional
+
+    @Override
+    public <T> Result<T> deleteRecord(Class<T> cl) {
+        try {
+            String path = getPath(cl);
+            File file = new File(path);
+            file.delete();
+            return new Result<>(Complete);
+        } catch (IOException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+
+    }
+    public void deleteAllRecord(){
+        deleteRecord(Employee.class);
+        deleteRecord(Developer.class);
+        deleteRecord(Tester.class);
+        deleteRecord(Task.class);
+        deleteRecord(DevelopersTask.class);
+        deleteRecord(TestersTask.class);
+        deleteRecord(Project.class);
+    }
+
+    private Result<Long> calculatePrice(Task task) {
+        try {
+            long resulttime = 0;
+            SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
+            Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
+            Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
+            long diffInMillies = Math.abs(secondDate.getTime() - firstDate.getTime());
+            long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+            resulttime = resulttime + diff;
+            return new Result<>(Complete,resulttime);
+        } catch (ParseException e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+    }
+    }

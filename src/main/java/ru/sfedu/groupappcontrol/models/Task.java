@@ -3,6 +3,8 @@ package ru.sfedu.groupappcontrol.models;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 import ru.sfedu.groupappcontrol.utils.EmployeeConverter;
@@ -16,27 +18,34 @@ import java.util.Objects;
  * Class Task
  */
 public class Task implements Serializable {
-
+  @Attribute
   @CsvBindByName
   private long id;
+  @Element
   @CsvBindByName
   private String taskDescription;
+  @Element
   @CsvBindByName
   private double money;
-  //@CsvBindByName
-  //@CsvRecurse
+  @Element
   @CsvCustomBindByName(converter = EmployeeConverter.class)
   private Employee scrumMaster;
+  @Element
   @CsvBindByName
   private TypeOfCompletion status;
+  @Element
   @CsvCustomBindByName(converter = EmployeeListConverter.class)
   private List<Employee> team;
+  @Element
   @CsvBindByName
   private String createdDate;
+  @Element
   @CsvBindByName
   private String deadline;
+  @Element
   @CsvBindByName
   private String lastUpdate;
+  @Element
   @CsvBindByName
   private TaskTypes taskType;
 

@@ -3,6 +3,8 @@ package ru.sfedu.groupappcontrol.models;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
+import org.simpleframework.xml.Attribute;
+import org.simpleframework.xml.Element;
 import ru.sfedu.groupappcontrol.utils.EmployeeConverter;
 import ru.sfedu.groupappcontrol.utils.TaskListConverter;
 
@@ -12,12 +14,16 @@ import java.util.Objects;
 
 
 public class Project implements Serializable {
+  @Attribute
   @CsvBindByName
   private long id;
+  @Element
   @CsvBindByName
   private String title;
+  @Element
   @CsvBindByName
   private String takeIntoDevelopment;
+  @Element
   @CsvCustomBindByName(converter = TaskListConverter.class)
   private List<Task> task;
 

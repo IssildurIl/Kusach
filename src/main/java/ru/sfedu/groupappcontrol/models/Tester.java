@@ -2,6 +2,7 @@ package ru.sfedu.groupappcontrol.models;
 
 
 import com.opencsv.bean.CsvBindByName;
+import org.simpleframework.xml.Element;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfTester;
 
 import java.util.Objects;
@@ -14,6 +15,7 @@ public class Tester extends Developer{
   //
   // Fields
   //
+  @Element
   @CsvBindByName
   private TypeOfTester typeOfTester;
 

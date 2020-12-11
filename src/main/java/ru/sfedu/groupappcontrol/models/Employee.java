@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class Employee implements Serializable {
+  @Attribute
   @CsvBindByName
   private long id;
   @Element

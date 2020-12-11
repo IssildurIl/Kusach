@@ -2,6 +2,7 @@ package ru.sfedu.groupappcontrol.models;
 
 
 import com.opencsv.bean.CsvBindByName;
+import org.simpleframework.xml.Element;
 import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
 
@@ -11,8 +12,10 @@ import java.util.Objects;
  * Class Developer
  */
 public class Developer extends Employee {
+  @Element
   @CsvBindByName
   private TypeOfDevelopers status;
+  @Element
   @CsvBindByName
   private ProgrammingLanguage programmingLanguage;
 

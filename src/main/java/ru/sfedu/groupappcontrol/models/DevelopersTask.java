@@ -2,6 +2,7 @@ package ru.sfedu.groupappcontrol.models;
 
 
 import com.opencsv.bean.CsvBindByName;
+import org.simpleframework.xml.Element;
 import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
 
 import java.util.Objects;
@@ -14,8 +15,10 @@ public class DevelopersTask extends Task{
   //
   // Fields
   //
+  @Element
   @CsvBindByName
   private String developerComments;
+  @Element
   @CsvBindByName
   private DeveloperTaskType developerTaskType;
 

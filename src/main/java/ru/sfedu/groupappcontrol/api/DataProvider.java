@@ -9,7 +9,16 @@ import java.io.IOException;
 import java.util.List;
 
 public interface DataProvider {
+
+     void initDataSource();
+
+     /**
+      * @param cl
+      * @param <T>
+      * @return
+      */
 //    Generalized method
+     <T> List<T> select(Class<T> cl);
      /**
       * @param cl
       * @param id

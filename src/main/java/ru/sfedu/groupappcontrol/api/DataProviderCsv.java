@@ -35,15 +35,9 @@ import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
 
 public class DataProviderCsv implements DataProvider {
 
-    private String PATH;
     private static final Logger log = LogManager.getLogger(DataProviderCsv.class);
-
-    public DataProviderCsv() {
-        try {
-            PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
-        } catch (IOException e) {
-            log.error(e);
-        }
+    @Override
+    public void initDataSource() {
     }
 
     /**
@@ -51,30 +45,37 @@ public class DataProviderCsv implements DataProvider {
      * @return
      * @throws IOException
      */
-    public String getPath(Class<?> cl) throws IOException {
-        return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
+    public String getPath(Class<?> cl) {
+        try {
+            String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
+            return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
+        } catch (IOException e) {
+            log.error(e);
+            return null;
+        }
     }
 
     /**
      * @param path
      * @throws IOException
      */
-    public void createFile(String path) throws IOException {
-        File file = new File(path);
-        if (!file.exists()) {
-            Path dirPath = Paths.get(PATH);
-            Files.createDirectories(dirPath);
-            if(!file.createNewFile()){
-                log.error(Empty);
+    public void createFile(String path)  {
+        try {
+            String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
+            File file = new File(path);
+            if (!file.exists()) {
+                Path dirPath = Paths.get(PATH);
+                Files.createDirectories(dirPath);
+                if(!file.createNewFile()){
+                    log.error(Empty);
+                }
             }
+        } catch (IOException e) {
+            log.error(e);
         }
     }
 
-    /**
-     * @param cl
-     * @param <T>
-     * @return
-     */
+    @Override
     public <T> List<T> select(Class<T> cl) {
         try {
             String path = getPath(cl);
@@ -116,6 +117,7 @@ public class DataProviderCsv implements DataProvider {
         }
     }
     //CRUD
+
 
     @Override
     public <T extends Task> Result<T> getTaskByID(Class<T> cl, long id) {
@@ -172,7 +174,7 @@ public class DataProviderCsv implements DataProvider {
             }
             writer(path,list);
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException e) {
+        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -201,7 +203,7 @@ public class DataProviderCsv implements DataProvider {
             }
             writer(path,list);
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException e) {
+        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -227,7 +229,7 @@ public class DataProviderCsv implements DataProvider {
             }
             writer(path,list);
             return new Result<>(Complete);
-        } catch (IndexOutOfBoundsException | IOException  e) {
+        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -400,7 +402,7 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Task> createTask(long id, @NonNull String taskDescription,@NonNull Double money,@NonNull Employee scrumMaster,@NonNull TypeOfCompletion status,@NonNull List<Employee> team,@NonNull String createdDate,@NonNull String deadline,@NonNull String lastUpdate,@NonNull TaskTypes taskType) {
-        switch (taskType) {
+        switch (taskType){
             case BASE_TASK:
                 Task baseTask = createBaseTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
                 return new Result<>(Complete, baseTask);
@@ -995,15 +997,10 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public <T> Result<T> deleteRecord(Class<T> cl) {
-        try {
-            String path = getPath(cl);
-            File file = new File(path);
-            file.delete();
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+        String path = getPath(cl);
+        File file = new File(path);
+        file.delete();
+        return new Result<>(Complete);
 
     }
 

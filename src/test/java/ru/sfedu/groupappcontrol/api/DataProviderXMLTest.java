@@ -139,7 +139,7 @@ class DataProviderXMLTest {
         List<Task> developersTask= (List<Task>) instance.getTaskListByScrumMaster(Task.class,8).getData();
         Outcomes o = instance.getTaskListByScrumMaster(Task.class,8).getStatus();
         log.debug(developersTask);
-        assertEquals(o.toString(),Complete.toString());
+        assertEquals(o,Complete);
     }
 
     @Test

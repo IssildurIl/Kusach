@@ -1,7 +1,8 @@
 package ru.sfedu.groupappcontrol;
 
+import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
+
 public class Constants {
-    public static final int TEST_CONST=33;
     public static final String TEST_NAME="test.name";
     public static final String ENV_CONST="source";
     public static final String ENV_TESTCONST="Student %s with roll number %d found!";

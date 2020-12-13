@@ -37,13 +37,9 @@ public class DataProviderXML implements DataProvider {
 
     private String PATH;
     private static final Logger log = LogManager.getLogger(DataProviderXML.class);
+    @Override
+    public void initDataSource() {
 
-    public DataProviderXML() {
-        try {
-            PATH = ConfigurationUtil.getConfigurationEntry(Constants.XML_PATH);
-        } catch (IOException e) {
-            log.error(e);
-        }
     }
 
     /**
@@ -51,30 +47,37 @@ public class DataProviderXML implements DataProvider {
      * @return
      * @throws IOException
      */
-    public String getPath(Class<?> cl) throws IOException {
-        return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_XML);
+    public String getPath(Class<?> cl) {
+        try {
+            String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
+            return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
+        } catch (IOException e) {
+            log.error(e);
+            return null;
+        }
     }
 
     /**
      * @param path
      * @throws IOException
      */
-    public void createFile(String path) throws IOException {
-        File file = new File(path);
-        if (!file.exists()) {
-            Path dirPath = Paths.get(PATH);
-            Files.createDirectories(dirPath);
-            if(!file.createNewFile()){
-                log.error(Empty);
+    public void createFile(String path)  {
+        try {
+            String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
+            File file = new File(path);
+            if (!file.exists()) {
+                Path dirPath = Paths.get(PATH);
+                Files.createDirectories(dirPath);
+                if(!file.createNewFile()){
+                    log.error(Empty);
+                }
             }
+        } catch (IOException e) {
+            log.error(e);
         }
     }
 
-    /**
-     * @param cl
-     * @param <T>
-     * @return
-     */
+    @Override
     public <T> List<T> select(Class<T> cl) {
         try {
             String path = getPath(cl);
@@ -168,7 +171,7 @@ public class DataProviderXML implements DataProvider {
             }
             writer(path,list);
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException e) {
+        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -197,7 +200,7 @@ public class DataProviderXML implements DataProvider {
             }
             writer(path,list);
             return new Result(Complete);
-        } catch (IndexOutOfBoundsException | IOException e) {
+        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -223,7 +226,7 @@ public class DataProviderXML implements DataProvider {
             }
             writer(path,list);
             return new Result<>(Complete);
-        } catch (IndexOutOfBoundsException | IOException  e) {
+        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -991,15 +994,10 @@ public class DataProviderXML implements DataProvider {
 
     @Override
     public <T> Result<T> deleteRecord(Class<T> cl) {
-        try {
-            String path = getPath(cl);
-            File file = new File(path);
-            file.delete();
-            return new Result<>(Complete);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+        String path = getPath(cl);
+        File file = new File(path);
+        file.delete();
+        return new Result<>(Complete);
 
     }
 

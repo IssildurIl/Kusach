@@ -293,6 +293,7 @@ class DataProviderXMLTest {
         projectList.add(project);
         instance.insertGenericProject(Project.class,projectList,true);
         instance.deleteProject(project);
+        log.debug(project);
         Outcomes o = instance.getProjectByProjectID(5).getStatus();
         assertNotEquals(Complete,o);
     }
@@ -325,6 +326,7 @@ class DataProviderXMLTest {
     public void getProjectByIdSuccess(){
         Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         Outcomes o = instance.getProjectById(testdeveloper,1).getStatus();
+        log.debug(testdeveloper);
         assertEquals(Complete,o);
     }
     @Test

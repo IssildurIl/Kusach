@@ -11,13 +11,12 @@ import java.util.List;
 public interface DataProvider {
 
      void initDataSource();
-
+//    Generalized method
      /**
       * @param cl
       * @param <T>
       * @return
       */
-//    Generalized method
      <T> List<T> select(Class<T> cl);
      /**
       * @param cl

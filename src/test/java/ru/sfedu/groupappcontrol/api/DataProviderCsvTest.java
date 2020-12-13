@@ -27,7 +27,7 @@ class DataProviderCsvTest {
     }
 
     @BeforeAll
-    static void setCsvEnv() throws IOException {
+    static void setXMLEnv() throws IOException {
         instance.deleteAllRecord();
         addRecord();
     }
@@ -293,6 +293,7 @@ class DataProviderCsvTest {
         projectList.add(project);
         instance.insertGenericProject(Project.class,projectList,true);
         instance.deleteProject(project);
+        log.debug(project);
         Outcomes o = instance.getProjectByProjectID(5).getStatus();
         assertNotEquals(Complete,o);
     }
@@ -325,7 +326,7 @@ class DataProviderCsvTest {
     public void getProjectByIdSuccess(){
         Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         Outcomes o = instance.getProjectById(testdeveloper,1).getStatus();
-        log.debug(instance.getProjectById(testdeveloper,1).getData());
+        log.debug(testdeveloper);
         assertEquals(Complete,o);
     }
     @Test
@@ -431,119 +432,119 @@ class DataProviderCsvTest {
 
 
     public static void addRecord() throws IOException {
-    List<Employee> employees = new ArrayList<>();
-    List<Developer> developers = new ArrayList<>();
-    List<Task> tasks = new ArrayList<>();
-    List<Tester> testers = new ArrayList<>();
-    List<DevelopersTask> developersTasks = new ArrayList<DevelopersTask>();
-    List<TestersTask> testersTasks = new ArrayList<>();
-    List<Project> projects = new ArrayList<>();
-    for (int i=1; i<=10; i++) {
-        Employee employee = new Employee();
-        employee.setId(i);
-        employee.setFirstName(firstName[i-1]);
-        employee.setLastName(lastName[i-1]);
-        employee.setLogin(login[i-1]);
-        employee.setPassword(password[i-1]);
-        employee.setEmail(email[i-1]);
-        employee.setToken(token[i-1]);
-        employee.setDepartment(department[i-1]);
-        employee.setTypeOfEmployee(TypeOfEmployee.Employee);
-        employees.add(employee);
-        instance.insertGenericEmployee(Employee.class,employees,false);
+        List<Employee> employees = new ArrayList<>();
+        List<Developer> developers = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
+        List<Tester> testers = new ArrayList<>();
+        List<DevelopersTask> developersTasks = new ArrayList<DevelopersTask>();
+        List<TestersTask> testersTasks = new ArrayList<>();
+        List<Project> projects = new ArrayList<>();
+        for (int i=1; i<=10; i++) {
+            Employee employee = new Employee();
+            employee.setId(i);
+            employee.setFirstName(firstName[i-1]);
+            employee.setLastName(lastName[i-1]);
+            employee.setLogin(login[i-1]);
+            employee.setPassword(password[i-1]);
+            employee.setEmail(email[i-1]);
+            employee.setToken(token[i-1]);
+            employee.setDepartment(department[i-1]);
+            employee.setTypeOfEmployee(TypeOfEmployee.Employee);
+            employees.add(employee);
+            instance.insertGenericEmployee(Employee.class,employees,false);
+        }
+        for (int i=1; i<=10; i++) {
+            Developer developer = new Developer();
+            developer.setId(i);
+            developer.setFirstName(firstName[i-1]);
+            developer.setLastName(lastName[i-1]);
+            developer.setLogin(login[i-1]);
+            developer.setPassword(password[i-1]);
+            developer.setEmail(email[i-1]);
+            developer.setToken(token[i-1]);
+            developer.setDepartment(department[i-1]);
+            developer.setTypeOfEmployee(TypeOfEmployee.Developer);
+            developer.setStatus(TypeOfDevelopers.CUSTOM);
+            developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
+            developers.add(developer);
+            instance.insertGenericEmployee(Developer.class,developers,false);
+        }
+        for (int i=1; i<=10; i++) {
+            Tester tester = new Tester();
+            tester.setId(i);
+            tester.setFirstName(firstName[i-1]);
+            tester.setLastName(lastName[i-1]);
+            tester.setLogin(login[i-1]);
+            tester.setPassword(password[i-1]);
+            tester.setEmail(email[i-1]);
+            tester.setToken(token[i-1]);
+            tester.setDepartment(department[i-1]);
+            tester.setTypeOfEmployee(TypeOfEmployee.Tester);
+            tester.setStatus(TypeOfDevelopers.CUSTOM);
+            tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
+            tester.setTypeOfTester(TypeOfTester.Custom);
+            testers.add(tester);
+            instance.insertGenericEmployee(Tester.class,testers,false);
+        }
+        for (int i=1; i<=10; i++) {
+            Task task = new Task();
+            task.setId(i);
+            task.setTaskDescription(taskDescription[i-1]);
+            task.setMoney(money[i-1]);
+            task.setScrumMaster(getScrum());
+            task.setStatus(TypeOfCompletion.CUSTOM);
+            task.setTeam(getListEmployee());
+            task.setCreatedDate(createdDate[i-1]);
+            task.setDeadline(deadline[i-1]);
+            task.setLastUpdate(lastUpdate[i-1]);
+            task.setTaskType(TaskTypes.BASE_TASK);
+            tasks.add(task);
+            instance.insertGenericTask(Task.class,tasks,false);
+        }
+        for (int i=1; i<=10; i++) {
+            DevelopersTask developerTask = new DevelopersTask();
+            developerTask.setId(i);
+            developerTask.setTaskDescription(taskDescription[i-1]);
+            developerTask.setMoney(money[i-1]);
+            developerTask.setScrumMaster(getScrum());
+            developerTask.setStatus(TypeOfCompletion.CUSTOM);
+            developerTask.setTeam(getListEmployee());
+            developerTask.setCreatedDate(createdDate[i-1]);
+            developerTask.setDeadline(deadline[i-1]);
+            developerTask.setLastUpdate(lastUpdate[i-1]);
+            developerTask.setTaskType(TaskTypes.DEVELOPERS_TASK);
+            developerTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
+            developerTask.setDeveloperComments(Constants.BaseComment);
+            developersTasks.add(developerTask);
+            instance.insertGenericTask(DevelopersTask.class,developersTasks,false);
+        }
+        for (int i=1; i<=10; i++) {
+            TestersTask testersTask = new TestersTask();
+            testersTask.setId(i);
+            testersTask.setTaskDescription(taskDescription[i-1]);
+            testersTask.setMoney(money[i-1]);
+            testersTask.setScrumMaster(getScrum());
+            testersTask.setStatus(TypeOfCompletion.CUSTOM);
+            testersTask.setTeam(getListEmployee());
+            testersTask.setCreatedDate(createdDate[i-1]);
+            testersTask.setDeadline(deadline[i-1]);
+            testersTask.setLastUpdate(lastUpdate[i-1]);
+            testersTask.setTaskType(TaskTypes.TESTERS_TASK);
+            testersTask.setBugStatus(BugStatus.IN_WORK);
+            testersTask.setBugDescription(Constants.BaseComment);
+            testersTasks.add(testersTask);
+            instance.insertGenericTask(TestersTask.class,testersTasks,false);
+        }
+        for (int i=1; i<=4; i++) {
+            Project project=new Project();
+            project.setId(i);
+            project.setTitle(title[i-1]);
+            project.setTakeIntoDevelopment(createdDate[i-1]);
+            project.setTask(getListTask());
+            projects.add(project);
+            instance.insertGenericProject(Project.class,projects,false);
+        }
     }
-    for (int i=1; i<=10; i++) {
-        Developer developer = new Developer();
-        developer.setId(i);
-        developer.setFirstName(firstName[i-1]);
-        developer.setLastName(lastName[i-1]);
-        developer.setLogin(login[i-1]);
-        developer.setPassword(password[i-1]);
-        developer.setEmail(email[i-1]);
-        developer.setToken(token[i-1]);
-        developer.setDepartment(department[i-1]);
-        developer.setTypeOfEmployee(TypeOfEmployee.Developer);
-        developer.setStatus(TypeOfDevelopers.CUSTOM);
-        developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
-        developers.add(developer);
-        instance.insertGenericEmployee(Developer.class,developers,false);
-    }
-    for (int i=1; i<=10; i++) {
-        Tester tester = new Tester();
-        tester.setId(i);
-        tester.setFirstName(firstName[i-1]);
-        tester.setLastName(lastName[i-1]);
-        tester.setLogin(login[i-1]);
-        tester.setPassword(password[i-1]);
-        tester.setEmail(email[i-1]);
-        tester.setToken(token[i-1]);
-        tester.setDepartment(department[i-1]);
-        tester.setTypeOfEmployee(TypeOfEmployee.Tester);
-        tester.setStatus(TypeOfDevelopers.CUSTOM);
-        tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
-        tester.setTypeOfTester(TypeOfTester.Custom);
-        testers.add(tester);
-        instance.insertGenericEmployee(Tester.class,testers,false);
-    }
-    for (int i=1; i<=10; i++) {
-        Task task = new Task();
-        task.setId(i);
-        task.setTaskDescription(taskDescription[i-1]);
-        task.setMoney(money[i-1]);
-        task.setScrumMaster(getScrum());
-        task.setStatus(TypeOfCompletion.CUSTOM);
-        task.setTeam(getListEmployee());
-        task.setCreatedDate(createdDate[i-1]);
-        task.setDeadline(deadline[i-1]);
-        task.setLastUpdate(lastUpdate[i-1]);
-        task.setTaskType(TaskTypes.BASE_TASK);
-        tasks.add(task);
-        instance.insertGenericTask(Task.class,tasks,false);
-    }
-    for (int i=1; i<=10; i++) {
-        DevelopersTask developerTask = new DevelopersTask();
-        developerTask.setId(i);
-        developerTask.setTaskDescription(taskDescription[i-1]);
-        developerTask.setMoney(money[i-1]);
-        developerTask.setScrumMaster(getScrum());
-        developerTask.setStatus(TypeOfCompletion.CUSTOM);
-        developerTask.setTeam(getListEmployee());
-        developerTask.setCreatedDate(createdDate[i-1]);
-        developerTask.setDeadline(deadline[i-1]);
-        developerTask.setLastUpdate(lastUpdate[i-1]);
-        developerTask.setTaskType(TaskTypes.DEVELOPERS_TASK);
-        developerTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
-        developerTask.setDeveloperComments(Constants.BaseComment);
-        developersTasks.add(developerTask);
-        instance.insertGenericTask(DevelopersTask.class,developersTasks,false);
-    }
-    for (int i=1; i<=10; i++) {
-        TestersTask testersTask = new TestersTask();
-        testersTask.setId(i);
-        testersTask.setTaskDescription(taskDescription[i-1]);
-        testersTask.setMoney(money[i-1]);
-        testersTask.setScrumMaster(getScrum());
-        testersTask.setStatus(TypeOfCompletion.CUSTOM);
-        testersTask.setTeam(getListEmployee());
-        testersTask.setCreatedDate(createdDate[i-1]);
-        testersTask.setDeadline(deadline[i-1]);
-        testersTask.setLastUpdate(lastUpdate[i-1]);
-        testersTask.setTaskType(TaskTypes.TESTERS_TASK);
-        testersTask.setBugStatus(BugStatus.IN_WORK);
-        testersTask.setBugDescription(Constants.BaseComment);
-        testersTasks.add(testersTask);
-        instance.insertGenericTask(TestersTask.class,testersTasks,false);
-    }
-    for (int i=1; i<=4; i++) {
-        Project project=new Project();
-        project.setId(i);
-        project.setTitle(title[i-1]);
-        project.setTakeIntoDevelopment(createdDate[i-1]);
-        project.setTask(getListTask());
-        projects.add(project);
-        instance.insertGenericProject(Project.class,projects,false);
-    }
-}
     private static Employee getScrum(){
         List<Employee> listemployee = instance.select(Employee.class);
         int max=9; int min=0;
@@ -570,7 +571,7 @@ class DataProviderCsvTest {
         List<DevelopersTask> developers = instance.select(DevelopersTask.class);
         int max=9; int min=0;
         for (int i=1;i<=3; i++) {
-            DevelopersTask developersTask =developers.get((int)((Math.random() * ((max - min) + 1)) + min));
+            DevelopersTask developersTask = developers.get((int)((Math.random() * ((max - min) + 1)) + min));
             listTask.add(developersTask);
         }
         List<TestersTask> testers = instance.select(TestersTask.class);

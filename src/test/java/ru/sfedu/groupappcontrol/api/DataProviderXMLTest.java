@@ -17,7 +17,7 @@ import java.util.*;
 
 
 class DataProviderXMLTest {
-    public static DataProviderXML instance = new DataProviderXML();
+    public static DataProvider instance = new DataProviderXML();
 
 
     private static final Logger log = LogManager.getLogger(DataProviderXMLTest.class);

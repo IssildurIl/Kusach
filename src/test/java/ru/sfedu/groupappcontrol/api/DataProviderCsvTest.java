@@ -325,7 +325,8 @@ class DataProviderCsvTest {
     public void getProjectByIdSuccess(){
         Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         Outcomes o = instance.getProjectById(testdeveloper,1).getStatus();
-        assertEquals(Empty,o);
+        log.debug(instance.getProjectById(testdeveloper,1).getData());
+        assertEquals(Complete,o);
     }
     @Test
     public void getProjectByIdFail() throws IOException {

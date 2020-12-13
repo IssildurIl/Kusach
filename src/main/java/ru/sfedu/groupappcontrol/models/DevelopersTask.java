@@ -3,6 +3,7 @@ package ru.sfedu.groupappcontrol.models;
 
 import com.opencsv.bean.CsvBindByName;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
 
 import java.util.Objects;
@@ -10,11 +11,8 @@ import java.util.Objects;
 /**
  * Class DevelopersTask
  */
+@Root(name = "DevelopersTask")
 public class DevelopersTask extends Task{
-
-  //
-  // Fields
-  //
   @Element
   @CsvBindByName
   private String developerComments;
@@ -22,19 +20,24 @@ public class DevelopersTask extends Task{
   @CsvBindByName
   private DeveloperTaskType developerTaskType;
 
-  //
-  // Constructors
-  //
   public DevelopersTask () { };
 
-  //
-  // Methods
-  //
+  public void setDeveloperComments (String newVar) {
+    developerComments = newVar;
+  }
 
+  public String getDeveloperComments () {
+    return developerComments;
+  }
 
-  //
-  // Accessor methods
-  //
+  public void setDeveloperTaskType (DeveloperTaskType newVar) {
+    developerTaskType = newVar;
+  }
+
+  public DeveloperTaskType getDeveloperTaskType () {
+    return developerTaskType;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -50,43 +53,6 @@ public class DevelopersTask extends Task{
   public int hashCode() {
     return Objects.hash(super.hashCode(), developerComments, developerTaskType);
   }
-
-  /**
-   * Set the value of developerComments
-   * @param newVar the new value of developerComments
-   */
-  public void setDeveloperComments (String newVar) {
-    developerComments = newVar;
-  }
-
-  /**
-   * Get the value of developerComments
-   * @return the value of developerComments
-   */
-  public String getDeveloperComments () {
-    return developerComments;
-  }
-
-  /**
-   * Set the value of developerTaskType
-   * @param newVar the new value of developerTaskType
-   */
-  public void setDeveloperTaskType (DeveloperTaskType newVar) {
-    developerTaskType = newVar;
-  }
-
-  /**
-   * Get the value of developerTaskType
-   * @return the value of developerTaskType
-   */
-  public DeveloperTaskType getDeveloperTaskType () {
-    return developerTaskType;
-  }
-
-  //
-  // Other methods
-  //
-
 
   @Override
   public String toString() {

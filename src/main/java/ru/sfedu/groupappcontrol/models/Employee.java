@@ -4,11 +4,12 @@ package ru.sfedu.groupappcontrol.models;
 import com.opencsv.bean.CsvBindByName;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
 import java.io.Serializable;
 import java.util.Objects;
-
+@Root(name = "Employee")
 public class Employee implements Serializable {
   @Attribute
   @CsvBindByName
@@ -37,7 +38,7 @@ public class Employee implements Serializable {
   @Element
   @CsvBindByName
   private TypeOfEmployee typeOfEmployee;
-  
+
 
   public Employee () { };
 
@@ -107,10 +108,6 @@ public class Employee implements Serializable {
 
   public void setTypeOfEmployee (TypeOfEmployee newVar) {
     typeOfEmployee = newVar;
-  }
-
-  public void setTypeOfEmployee (String newVar) {
-    this.typeOfEmployee = TypeOfEmployee.valueOf(newVar);
   }
 
   public TypeOfEmployee getTypeOfEmployee () {

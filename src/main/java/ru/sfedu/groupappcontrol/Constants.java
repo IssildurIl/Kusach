@@ -23,5 +23,7 @@ public class Constants {
     public static final String FILE_EXTENSION_CSV = "FILE_EXTENSION_CSV";
     public static final String BaseComment = "FILE_EXTENSION_CSV";
     public static final String CSV_PATH ="CSV_PATH";
+    public static final String FILE_EXTENSION_XML = "FILE_EXTENSION_XML";
+    public static final String XML_PATH ="XML_PATH";
 
 }

@@ -530,9 +530,6 @@ public class DataProviderCsv implements DataProvider {
             if(task.getTeam().contains(null)){
                 return new Result(Fail);
             }
-//            List<Task> taskList = listRes.stream()
-//                    .filter(task -> task.getTeam().stream().anyMatch(employee -> employee.getId() == userId))
-//                    .collect(Collectors.toList());
             if (task.getTeam().stream().anyMatch(employee -> employee.getId() == userId)) {
                 return new Result(Complete, task);
             } else {
@@ -670,38 +667,26 @@ public class DataProviderCsv implements DataProvider {
      * @return
      */
     public Result<Project> getProjectStatistic(long userId) {
-        try {
-            //Emp
-            List<Employee> listEmpRes = select(Employee.class);
-            Optional<Employee> optionalUser = searchEmployee(listEmpRes, userId);
-            if(optionalUser.isEmpty()){
-                return new Result<>(Fail);
-            }
-            Employee findedEmployee = optionalUser.get();
-            //Task
-            List<Task> listRes = select(Task.class);
-            List<Task> findedTaskList = listRes.stream()
-                    .filter(el -> el.getScrumMaster().getId() == findedEmployee.getId())
-                    .collect(Collectors.toList());
-            //Project
-            List<Project> listProject = select(Project.class);
-            List<Project> optionalProject = listProject.stream()
-                    .filter(project -> {
-                        boolean isContains = false;
-                        for (Task task : findedTaskList) {
-                            if (project.getTask().contains(task)) {
-                                isContains = true;
-                                break;
-                            }
+        //Task
+        List<Task> listRes = select(Task.class);
+        List<Task> findedTaskList = listRes.stream()
+                .filter(el -> el.getScrumMaster().getId() == userId)
+                .collect(Collectors.toList());
+        //Project
+        List<Project> listProject = select(Project.class);
+        List<Project> optionalProject = listProject.stream()
+                .filter(project -> {
+                    boolean isContains = false;
+                    for (Task task : findedTaskList) {
+                        if (project.getTask().contains(task)) {
+                            isContains = true;
+                            break;
                         }
-                        return isContains;
-                    })
-                    .collect(Collectors.toList());
-            return new Result(Complete, optionalProject);
-        } catch (IOException e) {
-            log.error(e);
-            return new Result<>(Fail);
-        }
+                    }
+                    return isContains;
+                })
+                .collect(Collectors.toList());
+        return new Result(Complete, optionalProject);
 
     }
 
@@ -725,9 +710,8 @@ public class DataProviderCsv implements DataProvider {
     public Result getProjectById(Employee employee, long projectId) {
         List<Task> listRes = select(Task.class);
         List<Task> findedTaskList = listRes.stream()
-                .filter(el -> el.getTeam().contains(employee.getId()))
+                .filter(task -> task.getTeam().stream().anyMatch(employee1 -> employee1.getId() == employee.getId()))
                 .collect(Collectors.toList());
-        List<Task> findedTask = findedTaskList;
         List<Project> listProject = select(Project.class);
         List<Project> optionalProject = listProject.stream()
                 .filter(project -> {
@@ -741,13 +725,8 @@ public class DataProviderCsv implements DataProvider {
                     return isContains;
                 })
                 .collect(Collectors.toList());
-        if(optionalProject.isEmpty()){
-            return new Result<>(Outcomes.Empty);
-        }else{
-            return new Result<>(Complete,optionalProject);
+        return optionalProject.isEmpty() ? new Result<>(Outcomes.Empty) : new Result<>(Complete,optionalProject);
         }
-
-    }
 
     @Override
     public Result<Void> deleteProject(Project project) {

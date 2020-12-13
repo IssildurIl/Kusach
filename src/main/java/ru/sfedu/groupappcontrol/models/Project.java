@@ -5,6 +5,8 @@ import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 import ru.sfedu.groupappcontrol.utils.EmployeeConverter;
 import ru.sfedu.groupappcontrol.utils.TaskListConverter;
 
@@ -12,7 +14,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-
+@Root(name = "Project")
 public class Project implements Serializable {
   @Attribute
   @CsvBindByName
@@ -23,7 +25,7 @@ public class Project implements Serializable {
   @Element
   @CsvBindByName
   private String takeIntoDevelopment;
-  @Element
+  @ElementList
   @CsvCustomBindByName(converter = TaskListConverter.class)
   private List<Task> task;
 

@@ -119,7 +119,6 @@ public class DataProviderCsv implements DataProvider {
     }
     //CRUD
 
-
     @Override
     public <T extends Task> Result<T> getTaskByID(Class<T> cl, long id) {
         try{
@@ -145,10 +144,10 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public <T extends Project> Result<T> getProjectByID(Class<T> cl, long id) {
+    public Result<Project> getProjectByID( long id){
         try{
-            List<T> listRes = select(cl);
-            Optional<T> optional = listRes.stream().filter(el -> el.getId() == id).findFirst();
+            List<Project> listRes = select(Project.class);
+            Optional<Project> optional = listRes.stream().filter(el -> el.getId() == id).findFirst();
             return new Result<>(Complete, optional.orElseThrow());
         } catch (NoSuchElementException e) {
             log.error(e);
@@ -213,12 +212,11 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public <T extends Project> Result<Void> insertGenericProject(Class<T> cl,
-                                                                 List<T> list, boolean append) {
+    public Result<Project> insertGenericProject(List<Project> list, boolean append) {
         try {
-            String path = getPath(cl);
+            String path = getPath(Project.class);
             createFile(path);
-            List<T> oldList = this.select(cl);
+            List<Project> oldList = this.select(Project.class);
             if (append) {
                 if (oldList != null && oldList.size() > 0) {
                     long id = list.get(0).getId();
@@ -256,10 +254,10 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public <T extends Project> Result<T> deleteGenericProject(Class<T> cl, long id){
-        List<T> listData = select(cl);
+    public Result<Project> deleteGenericProject(long id){
+        List<Project> listData = select(Project.class);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
-        insertGenericProject(cl, listData, false);
+        insertGenericProject(listData, false);
         return new Result<>(Complete);
     }
 
@@ -290,16 +288,16 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public <T extends Project> Result<T> updateGenericProject(Class<T> cl, T updElement) {
-        List<T> userList = select(cl);
-        Optional<T> optionalUser = searchProject(userList,updElement.getId());
+    public Result<Project> updateGenericProject(Project project) {
+        List<Project> userList = select(Project.class);
+        Optional<Project> optionalUser = searchProject(userList,project.getId());
         if (optionalUser.isEmpty()) {
-        return new Result<T>(Fail);
+        return new Result<Project>(Fail);
     }
         userList.remove(optionalUser.get());
-        userList.add(updElement);
-        insertGenericProject(cl, userList, false);
-        return new Result<T>(Complete);
+        userList.add(project);
+        insertGenericProject(userList, false);
+        return new Result<Project>(Complete);
     }
 
     /**
@@ -328,14 +326,8 @@ public class DataProviderCsv implements DataProvider {
                 .findFirst();
     }
 
-    /**
-     * @param listRes
-     * @param id
-     * @param <T>
-     * @return
-     * @throws IOException
-     */
-    private <T extends Project> Optional<T> searchProject(List<T> listRes,long id) {
+
+    private Optional<Project> searchProject(List<Project> listRes,long id) {
         return listRes.stream()
                 .filter(el -> el.getId() == id)
                 .findFirst();
@@ -712,13 +704,13 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> deleteProject(Project project) {
-        deleteGenericProject(Project.class,project.getId());
+        deleteGenericProject(project.getId());
         return new Result<>(Complete);
     }
 
     @Override
     public Result<Void> updateProject(Project project) {
-        updateGenericProject(Project.class,project);
+        updateGenericProject(project);
         return new Result<>(Complete);
     }
 

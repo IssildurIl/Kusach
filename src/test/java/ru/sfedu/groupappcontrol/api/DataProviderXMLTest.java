@@ -276,7 +276,7 @@ class DataProviderXMLTest {
         List<Project> projectList = new ArrayList<>();
         Project project = (Project) instance.createProject(5,"TestProject","05-12-2020",getListTask()).getData();
         projectList.add(project);
-        instance.insertGenericProject(Project.class,projectList,true);
+        instance.insertGenericProject(projectList,true);
         List<Project> list = instance.select(Project.class);
         log.debug(list);
         instance.deleteProject(project);
@@ -291,7 +291,7 @@ class DataProviderXMLTest {
         List<Project> projectList = new ArrayList<>();
         Project project = (Project) instance.createProject(5,"TestProject","05-12-2020",getListTask()).getData();
         projectList.add(project);
-        instance.insertGenericProject(Project.class,projectList,true);
+        instance.insertGenericProject(projectList,true);
         instance.deleteProject(project);
         log.debug(project);
         Outcomes o = instance.getProjectByProjectID(5).getStatus();
@@ -542,7 +542,7 @@ class DataProviderXMLTest {
             project.setTakeIntoDevelopment(createdDate[i-1]);
             project.setTask(getListTask());
             projects.add(project);
-            instance.insertGenericProject(Project.class,projects,false);
+            instance.insertGenericProject(projects,false);
         }
     }
     private static Employee getScrum(){

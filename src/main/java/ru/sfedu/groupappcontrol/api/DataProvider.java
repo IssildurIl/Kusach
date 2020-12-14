@@ -34,13 +34,8 @@ public interface DataProvider {
       */
      <T extends Employee> Result<T> getEmployeeByID(Class<T> cl, long id);
 
-     /**
-      * @param cl
-      * @param id
-      * @param <T>
-      * @return
-      */
-     <T extends Project> Result<T> getProjectByID(Class<T> cl, long id);
+
+     Result getProjectByID(long id);
 
      /**
       * @param cl
@@ -60,14 +55,8 @@ public interface DataProvider {
       */
      <T extends Employee> Result<Void> insertGenericEmployee(Class<T> cl, List<T> list, boolean append);
 
-     /**
-      * @param cl
-      * @param list
-      * @param append
-      * @param <T>
-      * @return
-      */
-     <T extends Project> Result<Void> insertGenericProject(Class<T> cl, List<T> list, boolean append);
+
+     Result<Project> insertGenericProject(List<Project> list, boolean append);
 
      /**
       * @param cl
@@ -85,13 +74,8 @@ public interface DataProvider {
       */
      <T extends Employee> Result<T> deleteGenericEmployee(Class<T> cl, long id);
 
-     /**
-      * @param cl
-      * @param id
-      * @param <T>
-      * @return
-      */
-     <T extends Project> Result<T> deleteGenericProject(Class<T> cl, long id);
+
+     Result<Project> deleteGenericProject(long id);
 
      /**
       * @param cl
@@ -109,13 +93,8 @@ public interface DataProvider {
       */
      <T extends Employee> Result<T> updateGenericEmployee(Class<T> cl, T updElement);
 
-     /**
-      * @param cl
-      * @param updElement
-      * @param <T>
-      * @return
-      */
-     <T extends Project> Result<T> updateGenericProject(Class<T> cl, T updElement);
+
+     Result<Project> updateGenericProject(Project project);
 
      /**
       * @param employee

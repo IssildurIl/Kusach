@@ -25,7 +25,6 @@ class DataProviderXMLTest {
 
     DataProviderXMLTest() {
     }
-
     @BeforeAll
     static void setXMLEnv() throws IOException {
         instance.deleteAllRecord();
@@ -33,14 +32,14 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void changeProfileInfoSuccess() throws IOException {
+    public void changeProfileInfoSuccess() {
         Employee testEmployee = (Employee) instance.createEmployee(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
         log.debug(testEmployee);
         instance.changeProfileInfo(testEmployee);
         assertEquals(instance.getEmployeeByID(Employee.class,1).getData().getId(),testEmployee.getId());
     }
     @Test
-    public void changeProfileInfoFail() throws IOException {
+    public void changeProfileInfoFail() {
         Employee testEmployee = (Employee) instance.createEmployee(1,"Employee6","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
         log.debug(testEmployee);
         instance.changeProfileInfo(testEmployee);
@@ -48,7 +47,7 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void changeTaskStatusSuccess() throws IOException {
+    public void changeTaskStatusSuccess() {
         instance.changeTaskStatus(1, TypeOfCompletion.TESTING.toString());
         Task task =  instance.getTaskByID(Task.class,1).getData();
         log.debug(task);
@@ -56,14 +55,14 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void changeTaskStatusFail() throws IOException {
+    public void changeTaskStatusFail() {
         Task task = instance.getAnyTaskByTaskId(Task.class,1).getData();
         log.debug(task);
         assertEquals(Fail,instance.changeTaskStatus(1,"").getStatus());
     }
 
     @Test
-    public void writeCommentSuccess() throws IOException {
+    public void writeCommentSuccess() {
         instance.writeComment(DevelopersTask.class,1,"i wrote this comment now");
         DevelopersTask developersTask = (DevelopersTask) instance.getAnyTaskByTaskId(DevelopersTask.class,1).getData();
         log.debug(developersTask);
@@ -71,21 +70,21 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void writeCommentFail() throws IOException {
+    public void writeCommentFail() {
         DevelopersTask developersTask = (DevelopersTask) instance.getAnyTaskByTaskId(DevelopersTask.class,1).getData();
         log.debug(developersTask);
         assertEquals(Fail,instance.writeComment(DevelopersTask.class,1,"").getStatus());
     }
 
     @Test
-    public void getUserInfoListSuccess() throws IOException {
+    public void getUserInfoListSuccess() {
         Employee testEmp = (Employee) instance.getUserInfoList(Employee.class,2).getData();
         log.debug(testEmp);
         assertEquals(2,  testEmp.getId());
     }
 
     @Test
-    public void getUserInfoListFail() throws IOException {
+    public void getUserInfoListFail() {
         Outcomes outcomes = instance.getUserInfoList(Employee.class,200).getStatus();
         log.debug(outcomes);
         assertEquals(Fail,outcomes);
@@ -121,21 +120,21 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void getTaskInfoSuccess() throws IOException {
+    public void getTaskInfoSuccess() {
         Outcomes o = instance. getTaskInfoGeneric(DevelopersTask.class,1).getStatus();
         log.info(instance. getTaskInfoGeneric(DevelopersTask.class,1).getData());
         assertEquals(Complete,o);
     }
 
     @Test
-    public void getTaskInfoFail() throws IOException {
+    public void getTaskInfoFail() {
         Outcomes o = instance. getTaskInfoGeneric(DevelopersTask.class,15).getStatus();
         log.info(instance. getTaskInfoGeneric(DevelopersTask.class,15).getData());
         assertEquals(Fail,o);
     }
 
     @Test
-    public void getTaskListSuccess() throws IOException {
+    public void getTaskListSuccess() {
         List<Task> developersTask= (List<Task>) instance.getTaskListByScrumMaster(Task.class,8).getData();
         Outcomes o = instance.getTaskListByScrumMaster(Task.class,8).getStatus();
         log.debug(developersTask);
@@ -143,7 +142,7 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void getTaskListFail() throws IOException {
+    public void getTaskListFail() {
         List<Task> developersTask= (List<Task>) instance.getTaskListByScrumMaster(Task.class,100).getData();
         Outcomes o = instance.getTaskListByScrumMaster(Task.class,100).getStatus();
         log.debug(developersTask);
@@ -151,7 +150,7 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void getTasksByUserSuccess() throws IOException {
+    public void getTasksByUserSuccess() {
         Employee employee = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         List<Task> list = new ArrayList<>();
         List<Employee> list1 = getListEmployee();
@@ -166,26 +165,26 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void getTasksByUserFail() throws IOException {
+    public void getTasksByUserFail() {
         log.info(instance.getTasksByUser(15,10).getData());
         assertEquals(Fail,instance.getTasksByUser(15,10).getStatus());
     }
     @Test
-    public void calculateTaskCostSuccess() throws IOException {
+    public void calculateTaskCostSuccess() {
         Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         log.debug(instance.calculateTaskCost(testTask).getData());
         Assertions.assertEquals(instance.calculateTaskCost(testTask).getData().longValue(), 87318.0);
     }
 
     @Test
-    public void calculateTaskCostFail() throws IOException {
+    public void calculateTaskCostFail() {
         Task testTask = (Task) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         log.debug(instance.calculateTaskCost(testTask).getData());
         assertNotEquals(instance.calculateTaskCost(testTask).getData(),1.0);
     }
 
     @Test
-    public void calculateProjectCostSuccess() throws IOException {
+    public void calculateProjectCostSuccess() {
         Project testProject=(Project) instance.getProjectByProjectID(1).getData();
         double cost = (double) instance.calculateProjectCost(testProject).getData();
         log.debug(cost);
@@ -194,20 +193,20 @@ class DataProviderXMLTest {
 
 
     @Test
-    public void calculateProjectTimeSuccess() throws IOException {
+    public void calculateProjectTimeSuccess() {
         Project testProject = (Project) instance.getProjectByProjectID(1).getData();
         Outcomes o = instance.calculateProjectTime(testProject).getStatus();
         assertEquals(Complete,o);
     }
     @Test
-    public void calculateProjectTimeFail() throws IOException {
+    public void calculateProjectTimeFail() {
         Project testProject = (Project) instance.getProjectByProjectID(1).getData();
         long time = (long)instance.calculateProjectTime(testProject).getData();
         assertNotEquals(1000,time);
     }
 
     @Test
-    public void createTaskSuccess() throws IOException {
+    public void createTaskSuccess() {
         List<Task> task = new ArrayList<>();
         Task testTask = (Task) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         task.add(testTask);
@@ -215,7 +214,7 @@ class DataProviderXMLTest {
         assertEquals(12,instance.getAnyTaskByTaskId(Task.class,12).getData().getId());
     }
     @Test
-    public void createTaskFail() throws IOException {
+    public void createTaskFail() {
         List<Task> task = new ArrayList<>();
         Task testTask = (Task) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         task.add(testTask);
@@ -224,7 +223,7 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void deleteTaskSuccess() throws IOException {
+    public void deleteTaskSuccess() {
         List<Task> task = new ArrayList<>();
         Task testTask = (Task) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         task.add(testTask);
@@ -237,20 +236,20 @@ class DataProviderXMLTest {
         assertEquals(Fail,instance.getAnyTaskByTaskId(Task.class,12).getStatus());
     }
     @Test
-    public void deleteTaskFail() throws IOException {
+    public void deleteTaskFail() {
         instance.deleteGenericTask(Task.class,12);
         assertNotEquals(Complete,instance.getAnyTaskByTaskId(Task.class,12).getStatus());
     }
 
     @Test
-    public void getTaskWorkerSuccess() throws IOException {
+    public void getTaskWorkerSuccess() {
         Employee employee = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         Outcomes o = instance.getTaskWorker(employee,1).getStatus();
         log.debug(instance.getTaskWorker(employee,1).getData());
         assertEquals(Complete,o);
     }
     @Test
-    public void getTaskWorkerFail() throws IOException {
+    public void getTaskWorkerFail() {
         Employee employee = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         Outcomes o = instance.getTaskWorker(employee,15).getStatus();
         log.debug(instance.getTaskWorker(employee,15).getData());
@@ -258,13 +257,13 @@ class DataProviderXMLTest {
     }
 
     @Test
-    public void getAnyTaskByTaskIdSuccess() throws IOException {
+    public void getAnyTaskByTaskIdSuccess() {
         Task task = instance.getAnyTaskByTaskId(Task.class,1).getData();
         log.debug(task);
         assertEquals(1,task.getId());
     }
     @Test
-    public void getAnyTaskByTaskIdFail() throws IOException {
+    public void getAnyTaskByTaskIdFail() {
         Task task = instance.getAnyTaskByTaskId(Task.class,1).getData();
         log.debug(task);
         assertNotEquals(2,task.getId());

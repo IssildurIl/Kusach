@@ -2,15 +2,19 @@ package ru.sfedu.groupappcontrol.api;
 
 
 import ru.sfedu.groupappcontrol.Result;
-import ru.sfedu.groupappcontrol.models.*;
-import ru.sfedu.groupappcontrol.models.enums.*;
+import ru.sfedu.groupappcontrol.models.Employee;
+import ru.sfedu.groupappcontrol.models.Project;
+import ru.sfedu.groupappcontrol.models.Task;
+import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface DataProvider {
 
      void initDataSource();
+
 //    Generalized method
      /**
       * @param cl
@@ -18,6 +22,7 @@ public interface DataProvider {
       * @return
       */
      <T> List<T> select(Class<T> cl);
+
      /**
       * @param cl
       * @param id
@@ -34,7 +39,10 @@ public interface DataProvider {
       */
      <T extends Employee> Result<T> getEmployeeByID(Class<T> cl, long id);
 
-
+     /**
+      * @param id
+      * @return
+      */
      Result getProjectByID(long id);
 
      /**
@@ -55,7 +63,11 @@ public interface DataProvider {
       */
      <T extends Employee> Result<Void> insertGenericEmployee(Class<T> cl, List<T> list, boolean append);
 
-
+     /**
+      * @param list
+      * @param append
+      * @return
+      */
      Result<Project> insertGenericProject(List<Project> list, boolean append);
 
      /**
@@ -74,7 +86,10 @@ public interface DataProvider {
       */
      <T extends Employee> Result<T> deleteGenericEmployee(Class<T> cl, long id);
 
-
+     /**
+      * @param id
+      * @return
+      */
      Result<Project> deleteGenericProject(long id);
 
      /**
@@ -93,7 +108,10 @@ public interface DataProvider {
       */
      <T extends Employee> Result<T> updateGenericEmployee(Class<T> cl, T updElement);
 
-
+     /**
+      * @param project
+      * @return
+      */
      Result<Project> updateGenericProject(Project project);
 
      /**

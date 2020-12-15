@@ -156,7 +156,7 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public <T extends Task> Result<Void> insertGenericTask(Class<T> cl, List<T> list, boolean append) {
+    public <T extends Task> Result<Void> insertGenericTask(Class<T> cl,@NonNull List<T> list, boolean append) {
         try{
             String path = getPath(cl);
             createFile(path);
@@ -183,13 +183,10 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public <T extends Employee> Result<Void> insertGenericEmployee(Class<T> cl,
-                                                                   List<T> list, boolean append) {
-        try {
+                                                                   @NonNull List<T> list, boolean append) {
+        try{
             String path = getPath(cl);
             createFile(path);
-            if(list.isEmpty()){
-                return new Result<>(Fail);
-            }
             List<T> oldList = (List<T>) this.select(cl);
             if (append){
                 if (oldList != null && oldList.size() > 0) {
@@ -212,7 +209,7 @@ public class DataProviderCsv implements DataProvider {
     }
 
     @Override
-    public Result<Project> insertGenericProject(List<Project> list, boolean append) {
+    public Result<Project> insertProject(List<Project> list, boolean append) {
         try {
             String path = getPath(Project.class);
             createFile(path);
@@ -257,47 +254,57 @@ public class DataProviderCsv implements DataProvider {
     public Result<Project> deleteGenericProject(long id){
         List<Project> listData = select(Project.class);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
-        insertGenericProject(listData, false);
+        insertProject(listData, false);
         return new Result<>(Complete);
     }
 
     @Override
     public <T extends Task> Result<T> updateGenericTask(Class<T> cl, T updElement){
-        List<T> userList = select(cl);
-        Optional<T> optionalUser = searchTask(userList,updElement.getId());
-        if (optionalUser.isEmpty()) {
-            return new Result<T>(Fail);
+        try {
+            List<T> userList = select(cl);
+            Optional<T> optionalUser = searchTask(userList,updElement.getId());
+            optionalIsValid(optionalUser);
+            userList.remove(optionalUser.get());
+            userList.add(updElement);
+            insertGenericTask(cl, userList, false);
+            return new Result<T>(Complete);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
-        userList.remove(optionalUser.get());
-        userList.add(updElement);
-        insertGenericTask(cl, userList, false);
-        return new Result<T>(Complete);
     }
 
     @Override
     public <T extends Employee> Result<T> updateGenericEmployee(Class<T> cl, T updElement)  {
-        List<T> userList = select(cl);
-        Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
-        if (optionalUser.isEmpty()) {
-        return new Result<T>(Fail);
-    }
-        userList.remove(optionalUser.get());
-        userList.add(updElement);
-        insertGenericEmployee(cl, userList, false);
-        return new Result<T>(Complete);
+        try {
+            List<T> userList = select(cl);
+            Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
+            optionalIsValid(optionalUser);
+            userList.remove(optionalUser.get());
+            userList.add(updElement);
+            insertGenericEmployee(cl, userList, false);
+            return new Result<T>(Complete);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
     }
 
     @Override
     public Result<Project> updateGenericProject(Project project) {
-        List<Project> userList = select(Project.class);
-        Optional<Project> optionalUser = searchProject(userList,project.getId());
-        if (optionalUser.isEmpty()) {
-        return new Result<Project>(Fail);
-    }
-        userList.remove(optionalUser.get());
-        userList.add(project);
-        insertGenericProject(userList, false);
-        return new Result<Project>(Complete);
+        try {
+            List<Project> userList = select(Project.class);
+            Optional<Project> optionalUser = searchProject(userList,project.getId());
+            optionalIsValid(optionalUser);
+            userList.remove(optionalUser.get());
+            userList.add(project);
+            insertProject(userList, false);
+            return new Result<Project>(Complete);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
+
     }
 
     /**
@@ -360,6 +367,7 @@ public class DataProviderCsv implements DataProvider {
     task.setDeadline(deadline);
     task.setLastUpdate(lastUpdate);
     task.setTaskType(taskType);
+    isValidTask(task);
 }
 
     @Override
@@ -367,15 +375,9 @@ public class DataProviderCsv implements DataProvider {
         try {
             List<T> list = select(cl);
             Optional<T> task = searchTask(list,taskId);
-            if(task.isEmpty()){
-                return new Result<>(Fail);
-            }
+            optionalIsValid(task);
             T res = task.get();
-            if (list.isEmpty()) {
-                return new Result<>(Fail);
-            } else {
-                return new Result<>(Complete, res);
-            }
+            return new Result<>(Complete, res);
         } catch (Exception e) {
             log.error(e);
             return new Result<>(Fail);
@@ -519,41 +521,45 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result getTasksByUser(long userId, long taskId) {
-        List<Task> list = select(Task.class);
-        Task task = searchTask(list, taskId).get();
-        if(task.getTeam().contains(null)){
-            return new Result(Fail);
-        }
-        if (task.getTeam().stream().anyMatch(employee -> employee.getId() == userId)) {
-            return new Result(Complete, task);
-        } else {
-            return new Result(Fail);
+        try {
+            List<Task> list = select(Task.class);
+            Task task = searchTask(list, taskId).get();
+            listIsValid(task.getTeam());
+            return task.getTeam().stream().anyMatch(employee -> employee.getId() == userId)
+                    ? new Result<>(Complete, task) : new Result<>(Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
     }
 
     @Override
-    public <T extends Task> Result<T> getAnyTaskByTaskId(Class cl, long taskId) {
-        List<T> listTaskRes = select(cl);
-        Optional<T> optionalTask= searchTask(listTaskRes,taskId);
-        if(optionalTask.isEmpty()){
+    public <T extends Task> Result<T> getAnyTaskByTaskId(Class<T> cl, long taskId) {
+        try {
+            List<T> listTaskRes = select(cl);
+            Optional<T> optionalTask= searchTask(listTaskRes,taskId);
+            optionalIsValid(optionalTask);
+            T task=optionalTask.get();
+            return new Result<>(Complete, task);
+        } catch (Exception e) {
+            log.error(e);
             return new Result<>(Fail);
         }
-        T task=optionalTask.get();
-        return new Result<>(Complete, task);
     }
 
     @Override
     public Result<List<Task>> getTaskWorker(Employee employee, long taskId) {
-        //Task
-        List<Task> listRes = select(Task.class);
-        List<Task> taskList = listRes.stream()
-                .filter(task -> task.getId() == taskId)
-                .filter(task -> task.getTeam().stream().anyMatch(employee1 ->
-                        employee1.getId() == employee.getId()))
-                .collect(Collectors.toList());
-        if(!taskList.isEmpty()) {
+        try {
+            List<Task> listRes = select(Task.class);
+            List<Task> taskList = listRes.stream()
+                    .filter(task -> task.getId() == taskId)
+                    .filter(task -> task.getTeam().stream().anyMatch(employee1 ->
+                            employee1.getId() == employee.getId()))
+                    .collect(Collectors.toList());
+            listIsValid(taskList);
             return new Result<>(Complete, taskList);
-        }else{
+        } catch (Exception e) {
+            log.error(e);
             return new Result<>(Fail);
         }
     }
@@ -566,20 +572,22 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> changeTaskStatus(long id, String status) {
-        if(status.isEmpty()){
+        try {
+            stringIsValid(status);
+            List<Task> listRes = select(Task.class);
+            Optional<Task> optionalTask = searchTask(listRes, id);
+            optionalIsValid(optionalTask);
+            Task editedTask = optionalTask.get();
+            listRes.remove(optionalTask.get());
+            editedTask.setStatus(TypeOfCompletion.valueOf(status));
+            listRes.add(editedTask);
+            insertGenericTask(Task.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (Exception e) {
+            log.error(e);
             return new Result<>(Fail);
         }
-        List<Task> listRes = select(Task.class);
-        Optional<Task> optionalTask = searchTask(listRes, id);
-        if (optionalTask.isEmpty()) {
-            return new Result<>(Fail);
-        }
-        Task editedTask = optionalTask.get();
-        listRes.remove(optionalTask.get());
-        editedTask.setStatus(TypeOfCompletion.valueOf(status));
-        listRes.add(editedTask);
-        insertGenericTask(Task.class, listRes, false);
-        return new Result<>(Complete);
+
     }
 
     @Override
@@ -600,31 +608,37 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public <T extends Task> Result<T> writeComment(Class<T> cl, long id, String comment) {
-        if(comment.isEmpty()){
+        try {
+            stringIsValid(comment);
+            List<T> listRes = select(cl);
+            Optional<T> optionalTask = searchTask(listRes, id);
+            optionalIsValid(optionalTask);
+            T editedTask = (T) optionalTask.get();
+            listRes.remove(optionalTask.get());
+            editedTask.setTaskDescription(comment);
+            listRes.add(editedTask);
+            insertGenericTask(cl, listRes, false);
+            return new Result<>(Complete);
+        } catch (Exception e) {
+            log.error(e);
             return new Result<>(Fail);
         }
-        List<T> listRes = select(cl);
-        Optional<T> optionalTask = searchTask(listRes, id);
-        if (optionalTask.isEmpty()) {
-            return new Result<>(Fail);
-        }
-        T editedTask = (T) optionalTask.get();
-        listRes.remove(optionalTask.get());
-        editedTask.setTaskDescription(comment);
-        listRes.add(editedTask);
-        insertGenericTask(cl, listRes, false);
-        return new Result<>(Complete);
     }
     @Override
     public <T extends Task> Result<List<T>> getTaskListByScrumMaster(Class<T> cl, long userId){
-        List<T> listRes = select(cl);
-        List<T> optionalRes = listRes.stream()
-                .filter(el -> el.getScrumMaster().getId() == userId)
-                .collect(Collectors.toList());
-        if(optionalRes.contains(null)){
-            return new Result<>(Outcomes.NotFound);
+        try {
+            List<T> listRes = select(cl);
+            List<T> optionalRes = listRes.stream()
+                    .filter(el -> el.getScrumMaster().getId() == userId)
+                    .collect(Collectors.toList());
+            listIsValid(optionalRes);
+            return new Result<>(Complete, optionalRes);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(Fail);
         }
-        return new Result<>(Complete, optionalRes);
+
+
     }
 
     //Project
@@ -636,6 +650,7 @@ public class DataProviderCsv implements DataProvider {
         project.setTitle(title);
         project.setTakeIntoDevelopment(takeIntoDevelopment);
         project.setTask(tasks);
+        isValidProject(project);
         return new Result<>(Complete,project);
     }
 
@@ -669,13 +684,16 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Project> getProjectByProjectID(long projectId) {
-        List<Project> listPrjRes = select(Project.class);
-        Optional<Project> optionalProject = searchProject(listPrjRes, projectId);
-        if(optionalProject.isEmpty()){
+        try {
+            List<Project> listPrjRes = select(Project.class);
+            Optional<Project> optionalProject = searchProject(listPrjRes, projectId);
+            optionalIsValid(optionalProject);
+            Project findedProject = optionalProject.get();
+            return new Result<>(Complete, findedProject);
+        } catch (Exception e) {
+            log.error(e);
             return new Result<>(Fail);
         }
-        Project findedProject = optionalProject.get();
-        return new Result<>(Complete, findedProject);
     }
 
     @Override
@@ -786,6 +804,7 @@ public class DataProviderCsv implements DataProvider {
         employee.setToken(token);
         employee.setDepartment(department);
         employee.setTypeOfEmployee(typeOfEmployee);
+        isValidEmployee(employee);
     }
 
 
@@ -913,28 +932,30 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result getProjectListByScrummasterId(long id) {
-        List<Task> listRes = select(Task.class);
-        List<Task> findedTaskList = listRes.stream()
-                .filter(el -> el.getTeam().contains(id))
-                .collect(Collectors.toList());
-        List<Task> findedTask = findedTaskList;
-        List<Project> listProject = select(Project.class);
-        List<Project> optionalProject = listProject.stream()
-                .filter(project -> {
-                    boolean isContains=false;
-                    for(Task task:findedTaskList){
-                        if(project.getTask().contains(task)){
-                            isContains=true;
-                            break;
+        try {
+            List<Task> listRes = select(Task.class);
+            List<Task> findedTaskList = listRes.stream()
+                    .filter(el -> el.getTeam().contains(id))
+                    .collect(Collectors.toList());
+            List<Task> findedTask = findedTaskList;
+            List<Project> listProject = select(Project.class);
+            List<Project> optionalProject = listProject.stream()
+                    .filter(project -> {
+                        boolean isContains=false;
+                        for(Task task:findedTaskList){
+                            if(project.getTask().contains(task)){
+                                isContains=true;
+                                break;
+                            }
                         }
-                    }
-                    return isContains;
-                })
-                .collect(Collectors.toList());
-        if(optionalProject.isEmpty()){
-            return new Result<>(Fail);
-        }else{
+                        return isContains;
+                    })
+                    .collect(Collectors.toList());
+            listIsValid(optionalProject);
             return new Result<>(Complete,optionalProject);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
     }
 
@@ -948,16 +969,18 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Employee> changeProfileInfo(Employee editedEmployee) {
-        List<Employee> listRes = select(Employee.class);
-        Optional<Employee> optionalUser = searchEmployee(listRes, editedEmployee.getId());
-        if(optionalUser.isEmpty()){
+        try {
+            List<Employee> listRes = select(Employee.class);
+            Optional<Employee> optionalUser = searchEmployee(listRes, editedEmployee.getId());
+            optionalIsValid(optionalUser);
+            listRes.remove(optionalUser.get());
+            listRes.add(editedEmployee);
+            insertGenericEmployee(Employee.class, listRes, false);
+            return new Result<>(Complete);
+        } catch (Exception e) {
+            log.error(e);
             return new Result<>(Fail);
         }
-        listRes.remove(optionalUser.get());
-        listRes.add(editedEmployee);
-        insertGenericEmployee(Employee.class, listRes, false);
-        return new Result<>(Complete);
-
     }
 
     @Override
@@ -1015,4 +1038,59 @@ public class DataProviderCsv implements DataProvider {
             return new Result<>(Fail);
         }
     }
+
+    private void listIsValid(List<?> list) throws Exception {
+        if (list.isEmpty()) throw new Exception(String.valueOf(Fail));
     }
+
+    private void optionalIsValid(Optional<?> optional) throws Exception {
+        if (optional.isEmpty()) throw new Exception(String.valueOf(Fail));
+    }
+
+    private void stringIsValid(String str) throws Exception {
+        if (str.isEmpty()) throw new Exception(String.valueOf(Fail));
+    }
+
+    private boolean isValidEmployee(Employee employee) {
+        return employee.getFirstName() != null
+                && !employee.getFirstName().isEmpty()
+                && employee.getLastName() != null
+                && !employee.getLastName().isEmpty()
+                && employee.getLogin() != null
+                && !employee.getLogin().isEmpty()
+                && employee.getPassword() != null
+                && !employee.getPassword().isEmpty()
+                && employee.getEmail() != null
+                && !employee.getEmail().isEmpty()
+                && employee.getToken() != null
+                && !employee.getToken().isEmpty()
+                && employee.getDepartment() != null
+                && !employee.getDepartment().isEmpty()
+                && employee.getTypeOfEmployee() != null;
+    }
+
+    private boolean isValidTask(Task task) {
+        return task.getTaskDescription() != null
+                && !task.getTaskDescription().isEmpty()
+                && !task.getMoney().isNaN()
+                && task.getMoney() != null
+                && task.getScrumMaster() != null
+                && task.getStatus()!= null
+                && task.getTeam() != null
+                && !task.getCreatedDate().isEmpty()
+                && task.getCreatedDate()!=null
+                && !task.getDeadline().isEmpty()
+                && task.getDeadline()!=null
+                && !task.getLastUpdate().isEmpty()
+                && task.getLastUpdate()!=null
+                && task.getTaskType()!=null;
+    }
+
+    private boolean isValidProject(Project project){
+        return project.getTitle() != null
+                && !project.getTitle().isEmpty()
+                && project.getTakeIntoDevelopment()!=null
+                && !project.getTakeIntoDevelopment().isEmpty()
+                && project.getTask()!=null;
+    }
+}

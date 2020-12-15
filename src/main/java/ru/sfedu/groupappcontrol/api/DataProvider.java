@@ -11,6 +11,9 @@ import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
 import java.util.List;
 
+/**
+ *
+ */
 public interface DataProvider {
 
      void initDataSource();
@@ -68,7 +71,7 @@ public interface DataProvider {
       * @param append
       * @return
       */
-     Result<Project> insertGenericProject(List<Project> list, boolean append);
+     Result<Project> insertProject(List<Project> list, boolean append);
 
      /**
       * @param cl
@@ -228,7 +231,7 @@ public interface DataProvider {
       * @param <T>
       * @return
       */
-     <T extends Task> Result<T> getAnyTaskByTaskId(Class cl, long taskId);
+     <T extends Task> Result<T> getAnyTaskByTaskId(Class<T> cl, long taskId);
 
      /**
       * @param project

@@ -6,16 +6,12 @@ import ru.sfedu.groupappcontrol.Constants;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.enums.*;
-import ru.sfedu.groupappcontrol.Constants.*;
-import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import static ru.sfedu.groupappcontrol.Constants.EMPLOYEE_ID;
 import static ru.sfedu.groupappcontrol.utils.ConfigurationUtil.getConfigurationEntry;
 
 public class DataProviderJdbc implements DataProvider {
@@ -28,11 +24,6 @@ public class DataProviderJdbc implements DataProvider {
 
     }
 
-
-    public void insertEmployee(Employee employee) throws SQLException, IOException, ClassNotFoundException {
-        execute(String.format(Constants.INSERT_EMPLOYEE,employee.getClass().getSimpleName().toLowerCase(),employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),employee.getTypeOfEmployee().toString()));
-
-    }
     private Connection getConnection() throws ClassNotFoundException, SQLException, IOException {
         Class.forName(getConfigurationEntry(Constants.JDBC_DRIVER));
         connection = DriverManager.getConnection(
@@ -55,7 +46,7 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
-    public ResultSet select (String sql) {
+    public ResultSet select(String sql) {
         log.info(sql);
         try {
             PreparedStatement statement = getConnection().prepareStatement(sql);
@@ -67,25 +58,12 @@ public class DataProviderJdbc implements DataProvider {
         return null;
     }
 
-    public String getPath(Class<?> cl) {
-        try {
-            String PATH = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH);
-            return PATH + cl.getSimpleName().toLowerCase() + ConfigurationUtil.
-                    getConfigurationEntry(Constants.FILE_EXTENSION_CSV);
-        } catch (IOException e) {
-            log.error(e);
-            return null;
-        }
-    }
-
-    private ResultSet getResultSet(String sql) throws SQLException, IOException, ClassNotFoundException {
-        PreparedStatement statement = getConnection().prepareStatement(sql);
-        ResultSet set = statement.executeQuery();
-        statement.close();
+    public ResultSet setRes(Class cl,long id){
+        ResultSet set = select(String.format(Constants.SELECT_ALL,
+                cl.getSimpleName().toLowerCase(),id));
         return set;
+
     }
-
-
 
     @Override
     public <T> List<T> select(Class<T> cl) {
@@ -94,7 +72,93 @@ public class DataProviderJdbc implements DataProvider {
 
     @Override
     public <T extends Task> Result<T> getTaskByID(Class<T> cl, long id) {
-        return null;
+        switch (cl.getSimpleName().toLowerCase()){
+            case Constants.Task:
+                getBaseTaskByID(id);
+            case Constants.DevelopersTask:
+                getDevelopersTaskByID(id);
+            case Constants.TestersTask:
+                getTestersTaskByID(id);
+            default:
+                return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result getBaseTaskByID(long id){
+        try {
+            ResultSet set = setRes(Task.class,id);
+            if(set!=null && set.next()){
+                Task task = new Task();
+                setBasicTask(set,task);
+                List<Task> taskList = new ArrayList<>();
+                taskList.add(task);
+                return new Result(Outcomes.Complete);
+            }else{
+                return new Result(Outcomes.Fail);
+            }
+        } catch (SQLException e) {
+            log.error(e);
+            return new Result(Outcomes.Fail);
+        }
+    }
+
+    public Result getDevelopersTaskByID(long id){
+        try {
+            ResultSet set = setRes(DevelopersTask.class,id);
+            if(set!=null && set.next()){
+                DevelopersTask developersTask = new DevelopersTask();
+                setBasicTask(set,developersTask);
+                developersTask.setDeveloperComments(set.getString(Constants.DEVELOPERS_TASK_COMMENTS));
+                developersTask.setDeveloperTaskType(DeveloperTaskType.valueOf(set.getString(Constants.DEVELOPERS_TASK_TYPE)));
+                List<DevelopersTask> developersTasks = new ArrayList<>();
+                developersTasks.add(developersTask);
+                return new Result(Outcomes.Complete);
+            }else{
+                return new Result(Outcomes.Fail);
+            }
+        } catch (SQLException e) {
+            log.error(e);
+            return new Result(Outcomes.Fail);
+        }
+    }
+
+    public Result getTestersTaskByID(long id){
+        try {
+            ResultSet set = setRes(DevelopersTask.class,id);
+            if(set!=null && set.next()){
+                TestersTask testersTask = new TestersTask();
+                setBasicTask(set,testersTask);
+                testersTask.setBugStatus(BugStatus.valueOf(set.getString(Constants.TESTERS_BUG_STATUS)));
+                testersTask.setBugDescription(set.getString(Constants.TESTERS_BUG_DESCRIPTION));
+                List<TestersTask> testersTasks = new ArrayList<>();
+                testersTasks.add(testersTask);
+                return new Result(Outcomes.Complete);
+            }else{
+                return new Result(Outcomes.Fail);
+            }
+        } catch (SQLException e) {
+            log.error(e);
+            return new Result(Outcomes.Fail);
+        }
+    }
+
+    @Override
+    public Result getProjectByID(long id) {
+        try {
+            ResultSet set = setRes(Project.class,id);
+            if(set!=null && set.next()){
+                Project project = new Project();
+                setProject(set,project);
+                List<Project> projects = new ArrayList<>();
+                projects.add(project);
+                return new Result(Outcomes.Complete);
+            }else{
+                return new Result(Outcomes.Fail);
+            }
+        } catch (SQLException e) {
+            log.error(e);
+            return new Result(Outcomes.Fail);
+        }
     }
 
     @Override
@@ -109,29 +173,11 @@ public class DataProviderJdbc implements DataProvider {
             default:
                 return new Result<>(Outcomes.Fail);
         }
-
     }
 
-    @Override
-    public Result getProjectByID(long id) {
-        return null;
-    }
-
-    public ResultSet setRes(String command,Class cl,long id){
-        try {
-            ResultSet set = getResultSet(String.format(Constants.SELECT_ALL_EMPLOYEE,
-                    Employee.class.getSimpleName().toLowerCase(),id));
-            return set;
-        } catch (SQLException | IOException| ClassNotFoundException e) {
-            log.error(e);
-            return null;
-        }
-
-    }
     public Result getBaseEmployeeByID(long id){
         try {
-            ResultSet set = getResultSet(String.format(Constants.SELECT_ALL_EMPLOYEE,
-                    Employee.class.getSimpleName().toLowerCase(),id));
+            ResultSet set = setRes(Employee.class, id);
             if(set!=null && set.next()){
                 Employee employee = new Employee();
                 setBasicEmployee(set,employee);
@@ -141,7 +187,7 @@ public class DataProviderJdbc implements DataProvider {
             }else{
                 return new Result(Outcomes.Fail);
             }
-        } catch (SQLException | IOException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             log.error(e);
             return new Result(Outcomes.Fail);
         }
@@ -149,8 +195,7 @@ public class DataProviderJdbc implements DataProvider {
 
     public Result getDeveloperByID(long id){
         try {
-            ResultSet set = getResultSet(String.format(Constants.SELECT_ALL_DEVELOPER,
-                    Developer.class.getSimpleName().toLowerCase(),id));
+            ResultSet set = setRes(Developer.class,id);
             if(set!=null && set.next()){
                 Developer developer = new Developer();
                 setBasicEmployee(set,developer);
@@ -162,7 +207,7 @@ public class DataProviderJdbc implements DataProvider {
             }else{
                 return new Result(Outcomes.Fail);
             }
-        } catch (SQLException | IOException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             log.error(e);
             return new Result(Outcomes.Fail);
         }
@@ -170,8 +215,7 @@ public class DataProviderJdbc implements DataProvider {
 
     public Result getTesterByID(long id){
         try {
-            ResultSet set = getResultSet(String.format(Constants.SELECT_ALL_TESTER,
-                    Tester.class.getSimpleName().toLowerCase(),id));
+            ResultSet set = setRes(Tester.class,id);
             if(set!=null && set.next()){
                 Tester tester = new Tester();
                 setBasicEmployee(set,tester);
@@ -184,13 +228,18 @@ public class DataProviderJdbc implements DataProvider {
             }else{
                 return new Result(Outcomes.Fail);
             }
-        } catch (SQLException | IOException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             log.error(e);
             return new Result(Outcomes.Fail);
         }
     }
 
 
+
+    public void insertEmployee(Employee employee) {
+        execute(String.format(Constants.INSERT_EMPLOYEE,employee.getClass().getSimpleName().toLowerCase(),employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),employee.getTypeOfEmployee().toString()));
+
+    }
 
     @Override
     public <T extends Task> Result<Void> insertGenericTask(Class<T> cl, List<T> list, boolean append) {
@@ -203,7 +252,7 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     @Override
-    public Result<Project> insertGenericProject(List<Project> list, boolean append) {
+    public Result<Project> insertProject(List<Project> list, boolean append) {
         return null;
     }
 
@@ -311,7 +360,7 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     @Override
-    public <T extends Task> Result<T> getAnyTaskByTaskId(Class cl, long taskId) {
+    public <T extends Task> Result<T> getAnyTaskByTaskId(Class<T> cl, long taskId) {
         return null;
     }
 
@@ -402,10 +451,36 @@ public class DataProviderJdbc implements DataProvider {
             employee.setToken(set.getString(Constants.EMPLOYEE_TOKEN));
             employee.setDepartment(set.getString(Constants.EMPLOYEE_DEPARTMENT));
             employee.setTypeOfEmployee(TypeOfEmployee.valueOf(set.getString(Constants.EMPLOYEE_TYPE_OF_EMLPOYEE)));
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException e) {
+            log.error(e);
         }
-
     }
 
+    private void setBasicTask(ResultSet set,Task task){
+        try {
+            task.setId(set.getLong(Constants.TASK_ID));
+            task.setTaskDescription(set.getString(Constants.TASK_DESCRIPTION));
+            task.setMoney(set.getDouble(Constants.TASK_MONEY));
+            task.setScrumMaster(getEmployeeByID(Employee.class, set.getLong(Constants.EMPLOYEE_ID)).getData());
+            task.setStatus(TypeOfCompletion.valueOf(set.getString(Constants.TASK_TYPE_OF_COMPLETION)));
+            //task.setTeam();
+            task.setCreatedDate(set.getString(Constants.TASK_CREATED_DATE));
+            task.setDeadline(set.getString(Constants.TASK_DEADLINE));
+            task.setLastUpdate(set.getString(Constants.TASK_LAST_UPDATE));
+            task.setTaskType(TaskTypes.valueOf(set.getString(Constants.TASK_TASK_TYPES)));
+        } catch (SQLException e) {
+            log.error(e);
+        }
+    }
+
+    private void setProject(ResultSet set,Project project){
+        try {
+            project.setId(set.getLong(Constants.PROJECT_ID));
+            project.setTitle(set.getString(Constants.PROJECT_TITLE));
+            project.setTakeIntoDevelopment(set.getString(Constants.PROJECT_TAKE_INTO_DEVELOPMENT));
+            //project.setTask();
+        } catch (SQLException e) {
+            log.error(e);
+        }
+    }
 }

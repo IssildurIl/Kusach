@@ -1,5 +1,6 @@
 package ru.sfedu.groupappcontrol;
 
+import ru.sfedu.groupappcontrol.models.Employee;
 import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 public class Constants {
@@ -12,7 +13,7 @@ public class Constants {
     public static final String XML_PATH ="XML_PATH";
 
     public static final String JDBC_DRIVER = "db_driver";
-    public static final String DB_CONNECT = "db_connect";
+    public static final String DB_CONNECT = "db_url";
     public static final String DB_USER = "db_user";
     public static final String DB_PASS = "db_pass";
 
@@ -53,29 +54,37 @@ public class Constants {
 
     public static final String DEVELOPERSTASK_ID="Id";
     public static final String TESTERSTASK_ID="Id";
+
+    public static final String TASK_ID = "TaskId";
+    public static final String TASK_DESCRIPTION= "taskDescription";
+    public static final String TASK_MONEY = "money";
+    public static final String TASK_SCRUMMASTER = "scrumMaster";
+    public static final String TASK_TYPE_OF_COMPLETION = "status";
+    public static final String TASK_TEAM = "team";
+    public static final String TASK_CREATED_DATE = "createdDate";
+    public static final String TASK_DEADLINE = "deadline";
+    public static final String TASK_LAST_UPDATE = "lastUpdate";
+    public static final String TASK_TASK_TYPES = "taskType";
+
+    public static final String DEVELOPERS_TASK_COMMENTS = "developerComments";
+    public static final String DEVELOPERS_TASK_TYPE = "developerTaskType";
+
+    public static final String TESTERS_BUG_STATUS = "bugStatus";
+    public static final String TESTERS_BUG_DESCRIPTION = "bugDescription";
+
     public static final String PROJECT_ID="ProjectId";
+    public static final String PROJECT_TITLE = "title";
+    public static final String PROJECT_TAKE_INTO_DEVELOPMENT= "takeIntoDevelopment";
+    public static final String PROJECT_TASK= "task";
 
-    public static final String TASK_TASK_ID = "TaskId";
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-//    public static final String
-
-
-
-    public static final String SELECT_ALL_EMPLOYEE = "SELECT * FROM Employee WHERE EmployeeId=%d";
-    public static final String SELECT_ALL_DEVELOPER = "SELECT * FROM Developer WHERE Id=%d;";
-    public static final String SELECT_ALL_TESTER = "SELECT * FROM Tester WHERE Id=%d;";
-    public static final String SELECT_ALL_TASK = "SELECT * FROM Task WHERE TaskId=%d;";
-    public static final String SELECT_ALL_DEVELOPERS_TASK = "SELECT * FROM DevelopersTask WHERE Id=%d;";
-    public static final String SELECT_ALL_TESTERS_TASK = "SELECT * FROM TestersTask WHERE Id=%d;";
-    public static final String SELECT_ALL_PROJECT = "SELECT * FROM Project WHERE ProjectId=%d;";
+    public static final String SELECT_ALL = "SELECT * FROM '%s' WHERE Id=%d";
+//    public static final String SELECT_ALL_EMPLOYEE = "SELECT * FROM '%s' WHERE Id=%d";
+//    public static final String SELECT_ALL_DEVELOPER = "SELECT * FROM Developer WHERE Id=%d;";
+//    public static final String SELECT_ALL_TESTER = "SELECT * FROM Tester WHERE Id=%d;";
+//    public static final String SELECT_ALL_TASK = "SELECT * FROM Task WHERE Id=%d;";
+//    public static final String SELECT_ALL_DEVELOPERS_TASK = "SELECT * FROM DevelopersTask WHERE Id=%d;";
+//    public static final String SELECT_ALL_TESTERS_TASK = "SELECT * FROM TestersTask WHERE Id=%d;";
+//    public static final String SELECT_ALL_PROJECT = "SELECT * FROM Project WHERE Id=%d;";
 
     public static final String INSERT_EMPLOYEE = "INSERT INTO Employee VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');";
     public static final String INSERT_DEVELOPER = "INSERT INTO Developer VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s');";

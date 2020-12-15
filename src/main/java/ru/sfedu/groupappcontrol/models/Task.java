@@ -170,4 +170,5 @@ public class Task implements Serializable {
   public int hashCode() {
     return Objects.hash(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate, taskType);
   }
+
 }

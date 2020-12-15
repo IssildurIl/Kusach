@@ -8,6 +8,10 @@ import org.simpleframework.xml.Root;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
 import java.io.Serializable;
+import java.sql.SQLData;
+import java.sql.SQLException;
+import java.sql.SQLInput;
+import java.sql.SQLOutput;
 import java.util.Objects;
 @Root(name = "Employee")
 public class Employee implements Serializable {
@@ -38,7 +42,6 @@ public class Employee implements Serializable {
   @Element
   @CsvBindByName
   private TypeOfEmployee typeOfEmployee;
-
 
   public Employee () { };
 
@@ -150,4 +153,24 @@ public class Employee implements Serializable {
             ", typeOfEmployee=" + typeOfEmployee +
             '}';
   }
+
+//  @Override
+//  public String getSQLTypeName() throws SQLException {
+//    return sql_type;
+//  }
+//
+//  @Override
+//  public void readSQL(SQLInput stream, String typeName) throws SQLException {
+//    sql_type = typeName;
+//    firstName = stream.readString();
+//    lastName = stream.readString();
+//    login = stream.readString();
+//  }
+//
+//  @Override
+//  public void writeSQL(SQLOutput stream) throws SQLException {
+//    stream.writeString(firstName);
+//    stream.writeString(lastName);
+//    stream.writeString(login);
+//  }
 }

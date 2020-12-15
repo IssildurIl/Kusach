@@ -139,7 +139,7 @@ class DataProviderCsvTest {
         List<Task> developersTask= (List<Task>) instance.getTaskListByScrumMaster(Task.class,8).getData();
         Outcomes o = instance.getTaskListByScrumMaster(Task.class,8).getStatus();
         log.debug(developersTask);
-        assertEquals(o,Complete);
+        assertEquals(Complete,o);
     }
 
     @Test
@@ -276,7 +276,7 @@ class DataProviderCsvTest {
         List<Project> projectList = new ArrayList<>();
         Project project = (Project) instance.createProject(5,"TestProject","05-12-2020",getListTask()).getData();
         projectList.add(project);
-        instance.insertGenericProject(projectList,true);
+        instance.insertProject(projectList,true);
         List<Project> list = instance.select(Project.class);
         log.debug(list);
         instance.deleteProject(project);
@@ -291,7 +291,7 @@ class DataProviderCsvTest {
         List<Project> projectList = new ArrayList<>();
         Project project = (Project) instance.createProject(5,"TestProject","05-12-2020",getListTask()).getData();
         projectList.add(project);
-        instance.insertGenericProject(projectList,true);
+        instance.insertProject(projectList,true);
         instance.deleteProject(project);
         log.debug(project);
         Outcomes o = instance.getProjectByProjectID(5).getStatus();
@@ -333,6 +333,7 @@ class DataProviderCsvTest {
     public void getProjectByIdFail() throws IOException {
         Employee testdeveloper = (Employee) instance.getEmployeeByID(Employee.class,1).getData();
         Outcomes o = instance.getProjectById(testdeveloper,100).getStatus();
+        log.debug(o);
         assertEquals(Empty,o);
     }
 
@@ -542,7 +543,7 @@ class DataProviderCsvTest {
             project.setTakeIntoDevelopment(createdDate[i-1]);
             project.setTask(getListTask());
             projects.add(project);
-            instance.insertGenericProject(projects,false);
+            instance.insertProject(projects,false);
         }
     }
     private static Employee getScrum(){

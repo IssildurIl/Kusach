@@ -1,7 +1,5 @@
 package ru.sfedu.groupappcontrol;
 
-import ru.sfedu.groupappcontrol.models.Employee;
-import ru.sfedu.groupappcontrol.utils.ConfigurationUtil;
 
 public class Constants {
     public static final String TEST_NAME="test.name";

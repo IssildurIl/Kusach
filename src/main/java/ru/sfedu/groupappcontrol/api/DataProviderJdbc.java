@@ -234,21 +234,60 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
-
-
-    public void insertEmployee(Employee employee) {
-        execute(String.format(Constants.INSERT_EMPLOYEE,employee.getClass().getSimpleName().toLowerCase(),employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),employee.getTypeOfEmployee().toString()));
-
-    }
-
     @Override
     public <T extends Task> Result<Void> insertGenericTask(Class<T> cl, List<T> list, boolean append) {
         return null;
     }
 
+
     @Override
     public <T extends Employee> Result<Void> insertGenericEmployee(Class<T> cl, List<T> list, boolean append) {
         return null;
+    }
+
+    public Result<List<Employee>> insertEmployee(List<Employee> insertedEmployee) {
+        try {
+            boolean exist = insertedEmployee.stream().anyMatch(employee -> (execute(String.format(
+                    Constants.INSERT_EMPLOYEE,employee.getClass().getSimpleName().toLowerCase(),
+                    employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),
+                    employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),
+                    employee.getTypeOfEmployee().toString())).getStatus()==Outcomes.Complete));
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result<List<Developer>> insertDeveloper(List<Developer> insertedDeveloper) {
+        try {
+            boolean exist = insertedDeveloper.stream().anyMatch(developer -> execute(String.format
+                    (Constants.INSERT_DEVELOPER,developer.getClass().getSimpleName().toLowerCase(),
+                            developer.getId(),developer.getFirstName(),developer.getLastName(),
+                            developer.getLogin(),developer.getPassword(),developer.getEmail(),
+                            developer.getToken(),developer.getDepartment(),
+                            developer.getTypeOfEmployee().toString(),developer.getStatus().toString(),
+                            developer.getProgrammingLanguage().toString())).getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result<List<Tester>> insertTester(List<Tester> insertedTester) {
+        try {
+            boolean exist = insertedTester.stream().anyMatch(tester -> execute(String.format(
+                    Constants.INSERT_TESTER,tester.getClass().getSimpleName().toLowerCase(),tester.getId(),
+                    tester.getFirstName(),tester.getLastName(),tester.getLogin(),tester.getPassword(),
+                    tester.getEmail(),tester.getToken(),tester.getDepartment(),
+                    tester.getTypeOfEmployee().toString(),tester.getTypeOfTester().toString())).
+                    getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
     }
 
     @Override
@@ -262,20 +301,143 @@ public class DataProviderJdbc implements DataProvider {
         return null;
     }
 
+    public Result<Task> delTask(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_TASK, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_TASK, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
+
+    public Result<DevelopersTask> delDevelopersTask(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_DEVELOPERS_TASK, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_DEVELOPERS_TASK, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
+
+    public Result<TestersTask> delTestersTask(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_TESTERS_TASK, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_TESTERS_TASK, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
+
+
     @Override
     public <T extends Employee> Result<T> deleteGenericEmployee(Class<T> cl, long id) {
         return null;
     }
+
+    public Result delEmployee(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_EMPLOYEE, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_EMPLOYEE, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
+
+    public Result delDeveloper(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_DEVELOPER, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_DEVELOPER, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
+
+    public Result delTester(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_TESTER, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_TESTER, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
+
 
     @Override
     public Result<Project> deleteGenericProject(long id) {
         return null;
     }
 
+    public Result delProject(long id) {
+        try {
+            boolean a = execute(String.format(Constants.DELETE_PROJECT, id)).getStatus() == Outcomes.Complete;
+            boolean b = execute(String.format(Constants.UPDATE_PROJECT, id)).getStatus() == Outcomes.Complete;
+            if (a == b) return new Result(Outcomes.Complete);
+        } catch (Exception e) {
+            log.error(e);
+        }
+        return new Result(Outcomes.Fail);
+    }
 
     @Override
     public <T extends Task> Result<T> updateGenericTask(Class<T> cl, T updElement) {
         return null;
+    }
+
+    public Result<List<Task>> updTask(List<Task> insertedTask) {
+        try {
+            boolean exist = insertedTask.stream().anyMatch(task -> (execute(String.format(
+                    Constants.UPDATE_TASK,task.getClass().getSimpleName().toLowerCase(),task.getId(),
+                    task.getTaskDescription(),task.getMoney(),task.getScrumMaster(),task.getStatus(),task.getTeam(),
+                    task.getCreatedDate(),task.getDeadline(),task.getLastUpdate(),task.getTaskType().toString()))
+                    .getStatus()==Outcomes.Complete));
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result<List<DevelopersTask>> updateDevelopersTask(List<DevelopersTask> insertedTask) {
+        try {
+            boolean exist = insertedTask.stream().anyMatch(task -> execute(String.format
+                    (Constants.UPDATE_DEVELOPERS_TASK,task.getClass().getSimpleName().toLowerCase(),task.getId(),
+                            task.getTaskDescription(),task.getMoney(),task.getScrumMaster(),task.getStatus(),
+                            task.getTeam(),task.getCreatedDate(),task.getDeadline(),task.getLastUpdate(),
+                            task.getTaskType().toString(),task.getDeveloperComments(),
+                            task.getDeveloperTaskType().toString()))
+                    .getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result<List<TestersTask>> updateTestersTask(List<TestersTask> insertedTask) {
+        try {
+            boolean exist = insertedTask.stream().anyMatch(task -> execute(String.format(
+                    Constants.UPDATE_TESTERS_TASK,task.getClass().getSimpleName().toLowerCase(),task.getId(),
+                    task.getTaskDescription(),task.getMoney(),task.getScrumMaster(),task.getStatus(),task.getTeam(),
+                    task.getCreatedDate(),task.getDeadline(),task.getLastUpdate(),task.getTaskType().toString(),
+                    task.getBugStatus().toString(),task.getBugDescription())).
+                    getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
     }
 
     @Override
@@ -283,10 +445,69 @@ public class DataProviderJdbc implements DataProvider {
         return null;
     }
 
+    public Result<List<Employee>> updEmployee(List<Employee> insertedEmployee) {
+        try {
+            boolean exist = insertedEmployee.stream().anyMatch(employee -> (execute(String.format(
+                    Constants.UPDATE_EMPLOYEE,employee.getClass().getSimpleName().toLowerCase(),
+                    employee.getId(),employee.getFirstName(),employee.getLastName(),employee.getLogin(),
+                    employee.getPassword(),employee.getEmail(),employee.getToken(),employee.getDepartment(),
+                    employee.getTypeOfEmployee().toString())).getStatus()==Outcomes.Complete));
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result<List<Developer>> updateDeveloper(List<Developer> insertedDeveloper) {
+        try {
+            boolean exist = insertedDeveloper.stream().anyMatch(developer -> execute(String.format
+                    (Constants.UPDATE_DEVELOPER,developer.getClass().getSimpleName().toLowerCase(),
+                            developer.getId(),developer.getFirstName(),developer.getLastName(),
+                            developer.getLogin(),developer.getPassword(),developer.getEmail(),
+                            developer.getToken(),developer.getDepartment(),
+                            developer.getTypeOfEmployee().toString(),developer.getStatus().toString(),
+                            developer.getProgrammingLanguage().toString())).getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
+    public Result<List<Tester>> updateTester(List<Tester> insertedTester) {
+        try {
+            boolean exist = insertedTester.stream().anyMatch(tester -> execute(String.format(
+                    Constants.UPDATE_TESTER,tester.getClass().getSimpleName().toLowerCase(),tester.getId(),
+                    tester.getFirstName(),tester.getLastName(),tester.getLogin(),tester.getPassword(),
+                    tester.getEmail(),tester.getToken(),tester.getDepartment(),
+                    tester.getTypeOfEmployee().toString(),tester.getTypeOfTester().toString())).
+                    getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
     @Override
     public Result<Project> updateGenericProject(Project project) {
         return null;
     }
+
+    public Result<List<Project>> updateProject(List<Project> insertedProject) {
+        try {
+            boolean exist = insertedProject.stream().anyMatch(project -> execute(String.format(
+                    Constants.UPDATE_PROJECT,project.getClass().getSimpleName().toLowerCase(),
+                    project.getId(),project.getTitle(),project.getTakeIntoDevelopment(),project.getTask())).
+                    getStatus()==Outcomes.Complete);
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+    }
+
 
 
     @Override

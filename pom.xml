@@ -112,7 +112,6 @@
                     </descriptorRefs>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
-
             </plugin>
         </plugins>
     </build>

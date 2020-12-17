@@ -76,29 +76,39 @@ public class Constants {
     public static final String PROJECT_TASK= "task";
 
     public static final String SELECT_ALL = "SELECT * FROM '%s' WHERE Id=%d";
-//    public static final String SELECT_ALL_EMPLOYEE = "SELECT * FROM '%s' WHERE Id=%d";
-//    public static final String SELECT_ALL_DEVELOPER = "SELECT * FROM Developer WHERE Id=%d;";
+
+    //Mapping
+    public static final String SELECT_EMPLOYEE_FROM_MAPPING = "SELECT * FROM TASKTOEMPLOYEEMAPING WHERE TASKID=%d AND TASKTYPE='%s'";
+    public static final String SELECT_TASK_FROM_MAPPING = "SELECT * FROM TASKTOEMPLOYEEMAPING WHERE EMPLOYEEID=%d AND EMPLOYEETYPE='%s'";
+    public static final String INSERT_EMPLOYEE_TO_MAPPING = "INSERT INTO TASKTOEMPLOYEEMAPING(EMPLOYEEID, EMPLOYEETYPE) VALUES(%d, '%s')";
+    public static final String INSERT_TASK_TO_MAPPING = "INSERT INTO TASKTOEMPLOYEEMAPING(TASKID, TASKTYPE) VALUES(%d, '%s')";
+    public static final String UPDATE_EMPLOYEE_MAPPING = "UPDATE TASKTOEMPLOYEEMAPING SET TASKID=%d, TASKTYPE='%s' EMPLOYEEID=%d AND EMPLOYEETYPE='%s'";
+    public static final String UPDATE_TASK_MAPPING = "UPDATE TASKTOEMPLOYEEMAPING SET EMPLOYEEID=%d, EMPLOYEETYPE='%s' WHERE TASKID=%d AND TASKTYPE='%s'";
+//    public static final String DELETE_EMPLOYEE_FROM_MAPPING = "SELECT * FROM TASKTOEMPLOYEEMAPING WHERE TASKID=%d AND TASKTYPE='%s'";
+//    public static final String DELETE_TASK_FROM_MAPPING = "SELECT * FROM TASKTOEMPLOYEEMAPING WHERE EMPLOYEEID=%d AND EMPLOYEETYPE='%s'";
+
+    public static final String SELECT_EMPLOYEE = "SELECT ID FROM Developer WHERE firstName='%s' AND lastName='%s' AND login='%s' AND password='%s' AND email='%s' AND token='%s' AND department='%s' AND typeOfEmployee ='%s'";
 //    public static final String SELECT_ALL_TESTER = "SELECT * FROM Tester WHERE Id=%d;";
 //    public static final String SELECT_ALL_TASK = "SELECT * FROM Task WHERE Id=%d;";
 //    public static final String SELECT_ALL_DEVELOPERS_TASK = "SELECT * FROM DevelopersTask WHERE Id=%d;";
 //    public static final String SELECT_ALL_TESTERS_TASK = "SELECT * FROM TestersTask WHERE Id=%d;";
 //    public static final String SELECT_ALL_PROJECT = "SELECT * FROM Project WHERE Id=%d;";
 
-    public static final String INSERT_EMPLOYEE = "INSERT INTO Employee VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');";
-    public static final String INSERT_DEVELOPER = "INSERT INTO Developer VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s');";
-    public static final String INSERT_TESTER = "INSERT INTO Tester VALUES (%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s','%s');";
-    public static final String INSERT_TASK = "INSERT INTO Task VALUES (%d, '%s', %f, '%s', '%s', '%s', '%s', '%s', '%s','%s');";
-    public static final String INSERT_DEVELOPERS_TASK = "INSERT INTO DevelopersTask VALUES (%d, '%s', %f, '%s', '%s', '%s', '%s', '%s', '%s','%s','%s','%s');";
-    public static final String INSERT_TESTERS_TASK = "INSERT INTO TestersTask VALUES (%d, '%s', %f, '%s', '%s', '%s', '%s', '%s', '%s','%s','%s','%s');";
-    public static final String INSERT_PROJECT = "INSERT INTO Project VALUES (%d, '%s', '%s', '%s');";
+    public static final String INSERT_EMPLOYEE = "INSERT INTO EMPLOYEE(firstName,lastName,login,password,email,token,department,typeOfEmployee) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s');";
+    public static final String INSERT_DEVELOPER = "INSERT INTO DEVELOPER VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s');";
+    public static final String INSERT_TESTER = "INSERT INTO Tester VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s', '%s','%s');";
+    public static final String INSERT_TASK = "INSERT INTO Task VALUES (%d, %d, %s, '%f', '%s', %d, '%s', '%s', '%s','%s','%s');";
+    public static final String INSERT_DEVELOPERS_TASK = "INSERT INTO DevelopersTask VALUES (%d, %d, %s, '%f', '%s', %d, '%s', '%s', '%s','%s','%s','%s','%s');";
+    public static final String INSERT_TESTERS_TASK = "INSERT INTO TestersTask VALUES (%d, %d, %s, '%f', '%s', %d, '%s', '%s', '%s','%s','%s','%s','%s');";
+    public static final String INSERT_PROJECT = "INSERT INTO Project VALUES (%d, '%s', '%s');";
 
     public static final String UPDATE_EMPLOYEE = "UPDATE Employee SET firstName='%s', lastName='%s', login='%s', password='%s', email='%s',token='%s',department='%s',typeOfEmployee ='%s' WHERE EmployeeId=%d";
     public static final String UPDATE_DEVELOPER = "UPDATE Developer SET firstName='%s', lastName='%s', login='%s', password='%s', email='%s',token='%s',department='%s',typeOfEmployee ='%s',status='%s',programmingLanguage='%s' WHERE Id=%d";
     public static final String UPDATE_TESTER = "UPDATE Tester SET firstName='%s', lastName='%s', login='%s', password='%s', email='%s',token='%s',department='%s',typeOfEmployee ='%s',status='%s',programmingLanguage='%s',typeOfTester='%s' WHERE Id=%d";
-    public static final String UPDATE_TASK = "UPDATE Task SET taskDescription='%s', money=%f, scrumMaster=%d, status='%s', team='%s',createdDate='%s', deadline='%s', lastUpdate='%s', taskType='%s' WHERE TaskId=%d;";
-    public static final String UPDATE_DEVELOPERS_TASK = "UPDATE DevelopersTask SET  taskDescription='%s', money=%f, scrumMaster=%d, status='%s', team='%s',createdDate='%s', deadline='%s', lastUpdate='%s', taskType='%s', developerComments='%s' ,developerTaskType='%s' WHERE Id=%d;";
-    public static final String UPDATE_TESTERS_TASK = "UPDATE TestersTask SET taskDescription='%s', money=%f, scrumMaster=%d, status='%s', team='%s',createdDate='%s', deadline='%s', lastUpdate='%s', taskType='%s',bugStatus='%s',bugDescription='%s' WHERE ProjectId=%d;";
-    public static final String UPDATE_PROJECT = "UPDATE Project SET title='%s' , takeIntoDevelopment='%s', task='%s' WHERE id=%d;";
+    public static final String UPDATE_TASK = "UPDATE Task SET projectId=%d, taskDescription='%s', money=%f, scrumMaster=%d, status='%s', team='%s',createdDate='%s', deadline='%s', lastUpdate='%s', taskType='%s' WHERE TaskId=%d;";
+    public static final String UPDATE_DEVELOPERS_TASK = "UPDATE DevelopersTask SET projectId=%d, taskDescription='%s', money=%f, scrumMaster=%d, status='%s', team='%s',createdDate='%s', deadline='%s', lastUpdate='%s', taskType='%s', developerComments='%s' ,developerTaskType='%s' WHERE Id=%d;";
+    public static final String UPDATE_TESTERS_TASK = "UPDATE TestersTask SET projectId=%d, taskDescription='%s', money=%f, scrumMaster=%d, status='%s', team='%s',createdDate='%s', deadline='%s', lastUpdate='%s', taskType='%s',bugStatus='%s',bugDescription='%s' WHERE ProjectId=%d;";
+    public static final String UPDATE_PROJECT = "UPDATE Project SET title='%s' , takeIntoDevelopment='%s' WHERE id=%d;";
 
     public static final String DELETE_EMPLOYEE = "DELETE FROM Employee WHERE EmployeeId=%d;";
     public static final String DELETE_DEVELOPER = "DELETE FROM Developer WHERE Id=%d;";
@@ -107,9 +117,6 @@ public class Constants {
     public static final String DELETE_DEVELOPERS_TASK = "DELETE FROM DevelopersTask WHERE Id=%d;";
     public static final String DELETE_TESTERS_TASK = "DELETE FROM TestersTask WHERE Id=%d;";
     public static final String DELETE_PROJECT = "DELETE FROM Project WHERE ProjectId=%d;";
-
-    public static final String SPLIT = "\\W+";
-    public static final String GET_ID = "\\d+";
 
     public static final String Employee = "employee";
     public static final String Developer = "developer";

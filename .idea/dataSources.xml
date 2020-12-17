@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="groupappcontrol@localhost" uuid="06e1a482-1012-4491-9c76-565017edfbbc">
-      <driver-ref>postgresql</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
-      <jdbc-url>jdbc:postgresql://localhost:5432/groupappcontrol</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="db" uuid="4053138c-9da8-4fa6-8c1e-c234dc2249f8">
       <driver-ref>h2.unified</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.h2.Driver</jdbc-driver>
-      <jdbc-url>jdbc:h2:$PROJECT_DIR$/src/main/resources/jdbc/db</jdbc-url>
+      <jdbc-url>jdbc:h2:$PROJECT_DIR$/src/main/resources/db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

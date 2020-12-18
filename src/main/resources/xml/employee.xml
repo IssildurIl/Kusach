@@ -1,12 +1,22 @@
 <main>
-   <object class="ru.sfedu.groupappcontrol.models.Employee" id="2">
-      <firstName>Kirill</firstName>
-      <lastName>Medvedev</lastName>
-      <login>employee2</login>
-      <password>1234nimda</password>
-      <email>Medvedev@mail.com</email>
-      <token>9bba8047-f0aa-473d-aef9-6905edcd3f99</token>
-      <department>Team2</department>
+   <object class="ru.sfedu.groupappcontrol.models.Employee" id="20">
+      <firstName>Test_Employee</firstName>
+      <lastName>Employee_sec_name</lastName>
+      <login>Employee_Login</login>
+      <password>employee@sfedu.ru</password>
+      <email>admin</email>
+      <token>Employee_personal_token</token>
+      <department>FullStack</department>
+      <typeOfEmployee>Employee</typeOfEmployee>
+   </object>
+   <object class="ru.sfedu.groupappcontrol.models.Employee" id="3">
+      <firstName>Sergey</firstName>
+      <lastName>Yeremin</lastName>
+      <login>employee3</login>
+      <password>12345</password>
+      <email>Yeremin@mail.com</email>
+      <token>56b52b03-d76f-4105-8c06-3a3efb12633a</token>
+      <department>Team3</department>
       <typeOfEmployee>Employee</typeOfEmployee>
    </object>
    <object class="ru.sfedu.groupappcontrol.models.Employee" id="5">
@@ -79,17 +89,15 @@
       <department>FullStack</department>
       <typeOfEmployee>Employee</typeOfEmployee>
    </object>
-   <object class="ru.sfedu.groupappcontrol.models.Developer" id="3">
-      <firstName>Emp</firstName>
+   <object class="ru.sfedu.groupappcontrol.models.Employee" id="2">
+      <firstName>Test_Employee_2</firstName>
       <lastName>Employee_sec_name</lastName>
       <login>Employee_Login</login>
       <password>employee@sfedu.ru</password>
       <email>admin</email>
       <token>Employee_personal_token</token>
       <department>FullStack</department>
-      <typeOfEmployee>Developer</typeOfEmployee>
-      <status>CUSTOM</status>
-      <programmingLanguage>Custom</programmingLanguage>
+      <typeOfEmployee>Employee</typeOfEmployee>
    </object>
    <object class="ru.sfedu.groupappcontrol.models.Employee" id="1">
       <firstName>Employee6</firstName>

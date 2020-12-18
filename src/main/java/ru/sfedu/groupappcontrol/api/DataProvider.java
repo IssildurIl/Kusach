@@ -2,6 +2,8 @@ package ru.sfedu.groupappcontrol.api;
 
 
 import lombok.NonNull;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
@@ -14,7 +16,7 @@ import java.util.List;
  *
  */
 public interface DataProvider {
-
+     public static final Logger log = LogManager.getLogger(DataProvider.class);
      void initDataSource();
 
      Result<Task> getTaskById(long id);

@@ -125,4 +125,7 @@ public class Constants {
     public static final String DevelopersTask = "developersTask";
     public static final String TestersTask = "testersTask";
 
+    public static final String logInfo = "method is %s";
+    public static final String SPLIT = "\n";
+
 }

@@ -1,4 +1,30 @@
 <main>
+   <object class="ru.sfedu.groupappcontrol.models.Tester" id="21">
+      <firstName>Test_Employee_21</firstName>
+      <lastName>Employee_sec_name</lastName>
+      <login>Employee_Login</login>
+      <password>employee@sfedu.ru</password>
+      <email>admin</email>
+      <token>Employee_personal_token</token>
+      <department>FullStack</department>
+      <typeOfEmployee>Tester</typeOfEmployee>
+      <status>CUSTOM</status>
+      <programmingLanguage>Custom</programmingLanguage>
+      <typeOfTester>Custom</typeOfTester>
+   </object>
+   <object class="ru.sfedu.groupappcontrol.models.Tester" id="20">
+      <firstName>Test_Employee</firstName>
+      <lastName>Employee_sec_name</lastName>
+      <login>Employee_Login</login>
+      <password>employee@sfedu.ru</password>
+      <email>admin</email>
+      <token>Employee_personal_token</token>
+      <department>FullStack</department>
+      <typeOfEmployee>Tester</typeOfEmployee>
+      <status>CUSTOM</status>
+      <programmingLanguage>Custom</programmingLanguage>
+      <typeOfTester>Custom</typeOfTester>
+   </object>
    <object class="ru.sfedu.groupappcontrol.models.Tester" id="11">
       <firstName>Vasily</firstName>
       <lastName>Vasilyev</lastName>
@@ -20,19 +46,6 @@
       <email>Parfenov@mail.com</email>
       <token>e6368342-ae1d-40ef-9bfd-e28eba43aa90</token>
       <department>Team1</department>
-      <typeOfEmployee>Tester</typeOfEmployee>
-      <status>CUSTOM</status>
-      <programmingLanguage>Custom</programmingLanguage>
-      <typeOfTester>Custom</typeOfTester>
-   </object>
-   <object class="ru.sfedu.groupappcontrol.models.Tester" id="2">
-      <firstName>Kirill</firstName>
-      <lastName>Medvedev</lastName>
-      <login>employee2</login>
-      <password>1234nimda</password>
-      <email>Medvedev@mail.com</email>
-      <token>9bba8047-f0aa-473d-aef9-6905edcd3f99</token>
-      <department>Team2</department>
       <typeOfEmployee>Tester</typeOfEmployee>
       <status>CUSTOM</status>
       <programmingLanguage>Custom</programmingLanguage>
@@ -137,6 +150,19 @@
       <email>Hasymov@mail.com</email>
       <token>960651c6-4aa4-4274-9752-c5244a139005</token>
       <department>Team10</department>
+      <typeOfEmployee>Tester</typeOfEmployee>
+      <status>CUSTOM</status>
+      <programmingLanguage>Custom</programmingLanguage>
+      <typeOfTester>Custom</typeOfTester>
+   </object>
+   <object class="ru.sfedu.groupappcontrol.models.Tester" id="2">
+      <firstName>Test_Employee_2</firstName>
+      <lastName>Employee_sec_name</lastName>
+      <login>Employee_Login</login>
+      <password>employee@sfedu.ru</password>
+      <email>admin</email>
+      <token>Employee_personal_token</token>
+      <department>FullStack</department>
       <typeOfEmployee>Tester</typeOfEmployee>
       <status>CUSTOM</status>
       <programmingLanguage>Custom</programmingLanguage>

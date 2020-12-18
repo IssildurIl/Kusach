@@ -15,7 +15,7 @@ public class Constants {
     public static final String DB_USER = "db_user";
     public static final String DB_PASS = "db_pass";
 
-    public static final String EMPLOYEE_ID = "EmployeeId";
+    public static final String EMPLOYEE_ID = "Id";
     public static final String EMPLOYEE_FIRSTNAME = "firstName";
     public static final String EMPLOYEE_LASTNAME = "lastName";
     public static final String EMPLOYEE_LOGIN = "login";
@@ -87,7 +87,7 @@ public class Constants {
 //    public static final String DELETE_EMPLOYEE_FROM_MAPPING = "SELECT * FROM TASKTOEMPLOYEEMAPING WHERE TASKID=%d AND TASKTYPE='%s'";
 //    public static final String DELETE_TASK_FROM_MAPPING = "SELECT * FROM TASKTOEMPLOYEEMAPING WHERE EMPLOYEEID=%d AND EMPLOYEETYPE='%s'";
 
-    public static final String SELECT_EMPLOYEE = "SELECT ID FROM Developer WHERE firstName='%s' AND lastName='%s' AND login='%s' AND password='%s' AND email='%s' AND token='%s' AND department='%s' AND typeOfEmployee ='%s'";
+    public static final String SELECT_EMPLOYEE = "SELECT ID FROM EMPLOYEE WHERE firstName='%s' AND lastName='%s' AND login='%s' AND password='%s' AND email='%s' AND token='%s' AND department='%s' AND typeOfEmployee ='%s'";
 //    public static final String SELECT_ALL_TESTER = "SELECT * FROM Tester WHERE Id=%d;";
 //    public static final String SELECT_ALL_TASK = "SELECT * FROM Task WHERE Id=%d;";
 //    public static final String SELECT_ALL_DEVELOPERS_TASK = "SELECT * FROM DevelopersTask WHERE Id=%d;";

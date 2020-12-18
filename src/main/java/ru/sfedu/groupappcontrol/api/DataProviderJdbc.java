@@ -604,28 +604,6 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
-    public Result<Long> selectEmployee(Employee employee){
-        try {
-            ResultSet set = select(String.format(
-                    Constants.SELECT_EMPLOYEE,employee.getFirstName(),
-                    employee.getLastName(),employee.getLogin(),
-                    employee.getPassword(),employee.getEmail(),
-                    employee.getToken(),employee.getDepartment(),
-                    employee.getTypeOfEmployee()));
-            if(set!=null && set.next()){
-                long id = set.getLong(Constants.EMPLOYEE_ID);
-//                Employee newEmployee = new Employee();
-//                setBasicEmployee(set,newEmployee);
-                return new Result(Outcomes.Complete,id);
-            }else{
-                return new Result(Outcomes.Fail);
-            }
-        } catch (SQLException e) {
-            log.error(e);
-            return new Result(Outcomes.Fail);
-        }
-    }
-
     public Result<Employee> getEmployeeByParam(Employee employee) {
         try {
             ResultSet res = select(String.format(Constants.SELECT_EMPLOYEE, employee.getFirstName(),employee.getLastName(),

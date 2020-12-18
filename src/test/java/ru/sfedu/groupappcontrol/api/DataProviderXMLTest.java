@@ -1,19 +1,19 @@
 package ru.sfedu.groupappcontrol.api;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.jupiter.api.*;
-import ru.sfedu.groupappcontrol.models.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import ru.sfedu.groupappcontrol.Constants;
+import ru.sfedu.groupappcontrol.models.*;
 import ru.sfedu.groupappcontrol.models.enums.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import java.util.ArrayList;
+import java.util.List;
+
 import static ru.sfedu.groupappcontrol.api.Fill.*;
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
-import static ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion.TESTING;
-
-import java.io.IOException;
-import java.util.*;
 
 
 class DataProviderXMLTest {
@@ -805,7 +805,7 @@ class DataProviderXMLTest {
         projectList.add(project);
         log.info(projectList);
         instance.insertProject(projectList, true);
-        Assertions.assertNotNull(instance.getProjectListByScrummasterId(7).getData());
+        Assertions.assertNotNull(instance.getProjectListByScrummasterId(1).getData());
     }
 
     @Test
@@ -941,8 +941,18 @@ class DataProviderXMLTest {
 
     @Test
     public void getProjectListByIdSuccess() {
+        List<Task> task = new ArrayList<>();
+        Task testTask = instance.createTask(15, "Descript", 14553.0, instance.getEmployeeById(1).getData(), TypeOfCompletion.DEVELOPING, getListEmployee(), "04-12-2020", "10-12-2020", "05-12-2020", TaskTypes.BASE_TASK).getData();
+        Task testTask2 = instance.createTask(16, "Descript", 14553.0, instance.getEmployeeById(1).getData(), TypeOfCompletion.DEVELOPING, getListEmployee(), "04-12-2020", "10-12-2020", "05-12-2020", TaskTypes.BASE_TASK).getData();
+        task.add(testTask);
+        task.add(testTask2);
+        List<Project> projectList = new ArrayList<>();
+        Project project = instance.createProject(9, "TestProject8", "05-12-2020", task).getData();
+        projectList.add(project);
+        log.info(projectList);
+        instance.insertProject(projectList, true);
         Outcomes o = instance.getProjectListByScrummasterId(1).getStatus();
-        log.debug(instance.getProjectListByScrummasterId(1).getStatus());
+        log.debug(o);
         Assertions.assertEquals(Complete, o);
     }
 

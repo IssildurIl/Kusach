@@ -771,7 +771,7 @@ class DataProviderCsvTest {
         projectList.add(project);
         log.info(projectList);
         instance.insertProject(projectList,true);
-        Assertions.assertNotNull(instance.getProjectListByScrummasterId(7).getData());
+        Assertions.assertNotNull(instance.getProjectListByScrummasterId(1).getData());
     }
 
     @Test

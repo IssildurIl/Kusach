@@ -1,6 +1,4 @@
 DEPARTMENT,EMAIL,FIRSTNAME,ID,LASTNAME,LOGIN,PASSWORD,PROGRAMMINGLANGUAGE,STATUS,TOKEN,TYPEOFEMPLOYEE
-FullStack,admin,Test_Employee_21,21,Employee_sec_name,Employee_Login,employee@sfedu.ru,Custom,CUSTOM,Employee_personal_token,Developer
-FullStack,admin,Test_Employee,20,Employee_sec_name,Employee_Login,employee@sfedu.ru,Custom,CUSTOM,Employee_personal_token,Developer
 Team1,Parfenov@mail.com,Ivan,1,Parfenov,employee1,123admin,Custom,CUSTOM,e6368342-ae1d-40ef-9bfd-e28eba43aa90,Developer
 Team3,Yeremin@mail.com,Sergey,3,Yeremin,employee3,12345,Custom,CUSTOM,56b52b03-d76f-4105-8c06-3a3efb12633a,Developer
 Team4,Raykin@mail.com,Daniil,4,Raykin,employee4,Raspbery,Custom,CUSTOM,e279d5e5-94be-4984-920b-625f92422865,Developer
@@ -10,4 +8,6 @@ Team7,Shchitov@mail.com,Yevgeny,7,Shchitov,employee6,311220,Custom,CUSTOM,8eff24
 Team8,Kuznetsov@mail.com,Anatoliy,8,Kuznetsov,employee7,@g004,Custom,CUSTOM,0a644ce4-1de9-4e22-a867-072bf4c3b780,Developer
 Team9,Tsvetaeva@mail.com,Anton,9,Tsvetaeva,employee8,password,Custom,CUSTOM,68075f8d-04ef-472a-8cdc-6b896d9ee9da,Developer
 Team10,Hasymov@mail.com,Vladimir,10,Hasymov,employee9,theif,Custom,CUSTOM,960651c6-4aa4-4274-9752-c5244a139005,Developer
+FullStack,admin,Test_Employee,20,Employee_sec_name,Employee_Login,employee@sfedu.ru,Custom,CUSTOM,Employee_personal_token,Developer
+FullStack,admin,Test_Employee_21,21,Employee_sec_name,Employee_Login,employee@sfedu.ru,Custom,CUSTOM,Employee_personal_token,Developer
 FullStack,admin,Test_Employee_2,2,Employee_sec_name,Employee_Login,employee@sfedu.ru,Custom,CUSTOM,Employee_personal_token,Developer

@@ -1,12 +1,12 @@
 <main>
-   <object class="ru.sfedu.groupappcontrol.models.Employee" id="20">
-      <firstName>Test_Employee</firstName>
-      <lastName>Employee_sec_name</lastName>
-      <login>Employee_Login</login>
-      <password>employee@sfedu.ru</password>
-      <email>admin</email>
-      <token>Employee_personal_token</token>
-      <department>FullStack</department>
+   <object class="ru.sfedu.groupappcontrol.models.Employee" id="1">
+      <firstName>Ivan</firstName>
+      <lastName>Parfenov</lastName>
+      <login>employee1</login>
+      <password>123admin</password>
+      <email>Parfenov@mail.com</email>
+      <token>e6368342-ae1d-40ef-9bfd-e28eba43aa90</token>
+      <department>Team1</department>
       <typeOfEmployee>Employee</typeOfEmployee>
    </object>
    <object class="ru.sfedu.groupappcontrol.models.Employee" id="3">
@@ -17,6 +17,16 @@
       <email>Yeremin@mail.com</email>
       <token>56b52b03-d76f-4105-8c06-3a3efb12633a</token>
       <department>Team3</department>
+      <typeOfEmployee>Employee</typeOfEmployee>
+   </object>
+   <object class="ru.sfedu.groupappcontrol.models.Employee" id="4">
+      <firstName>Daniil</firstName>
+      <lastName>Raykin</lastName>
+      <login>employee4</login>
+      <password>Raspbery</password>
+      <email>Raykin@mail.com</email>
+      <token>e279d5e5-94be-4984-920b-625f92422865</token>
+      <department>Team4</department>
       <typeOfEmployee>Employee</typeOfEmployee>
    </object>
    <object class="ru.sfedu.groupappcontrol.models.Employee" id="5">
@@ -79,16 +89,6 @@
       <department>Team10</department>
       <typeOfEmployee>Employee</typeOfEmployee>
    </object>
-   <object class="ru.sfedu.groupappcontrol.models.Employee" id="4">
-      <firstName>Employee4</firstName>
-      <lastName>Employee_sec_name</lastName>
-      <login>Employee_Login</login>
-      <password>employee@sfedu.ru</password>
-      <email>admin</email>
-      <token>Employee_personal_token</token>
-      <department>FullStack</department>
-      <typeOfEmployee>Employee</typeOfEmployee>
-   </object>
    <object class="ru.sfedu.groupappcontrol.models.Employee" id="2">
       <firstName>Test_Employee_2</firstName>
       <lastName>Employee_sec_name</lastName>
@@ -99,8 +99,8 @@
       <department>FullStack</department>
       <typeOfEmployee>Employee</typeOfEmployee>
    </object>
-   <object class="ru.sfedu.groupappcontrol.models.Employee" id="1">
-      <firstName>Employee6</firstName>
+   <object class="ru.sfedu.groupappcontrol.models.Employee" id="20">
+      <firstName>Test_Employee</firstName>
       <lastName>Employee_sec_name</lastName>
       <login>Employee_Login</login>
       <password>employee@sfedu.ru</password>

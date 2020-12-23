@@ -1,28 +1,4 @@
 <main>
-   <object class="ru.sfedu.groupappcontrol.models.Developer" id="21">
-      <firstName>Test_Employee_21</firstName>
-      <lastName>Employee_sec_name</lastName>
-      <login>Employee_Login</login>
-      <password>employee@sfedu.ru</password>
-      <email>admin</email>
-      <token>Employee_personal_token</token>
-      <department>FullStack</department>
-      <typeOfEmployee>Developer</typeOfEmployee>
-      <status>CUSTOM</status>
-      <programmingLanguage>Custom</programmingLanguage>
-   </object>
-   <object class="ru.sfedu.groupappcontrol.models.Developer" id="20">
-      <firstName>Test_Employee</firstName>
-      <lastName>Employee_sec_name</lastName>
-      <login>Employee_Login</login>
-      <password>employee@sfedu.ru</password>
-      <email>admin</email>
-      <token>Employee_personal_token</token>
-      <department>FullStack</department>
-      <typeOfEmployee>Developer</typeOfEmployee>
-      <status>CUSTOM</status>
-      <programmingLanguage>Custom</programmingLanguage>
-   </object>
    <object class="ru.sfedu.groupappcontrol.models.Developer" id="1">
       <firstName>Ivan</firstName>
       <lastName>Parfenov</lastName>
@@ -127,6 +103,30 @@
       <email>Hasymov@mail.com</email>
       <token>960651c6-4aa4-4274-9752-c5244a139005</token>
       <department>Team10</department>
+      <typeOfEmployee>Developer</typeOfEmployee>
+      <status>CUSTOM</status>
+      <programmingLanguage>Custom</programmingLanguage>
+   </object>
+   <object class="ru.sfedu.groupappcontrol.models.Developer" id="20">
+      <firstName>Test_Employee</firstName>
+      <lastName>Employee_sec_name</lastName>
+      <login>Employee_Login</login>
+      <password>employee@sfedu.ru</password>
+      <email>admin</email>
+      <token>Employee_personal_token</token>
+      <department>FullStack</department>
+      <typeOfEmployee>Developer</typeOfEmployee>
+      <status>CUSTOM</status>
+      <programmingLanguage>Custom</programmingLanguage>
+   </object>
+   <object class="ru.sfedu.groupappcontrol.models.Developer" id="21">
+      <firstName>Test_Employee_21</firstName>
+      <lastName>Employee_sec_name</lastName>
+      <login>Employee_Login</login>
+      <password>employee@sfedu.ru</password>
+      <email>admin</email>
+      <token>Employee_personal_token</token>
+      <department>FullStack</department>
       <typeOfEmployee>Developer</typeOfEmployee>
       <status>CUSTOM</status>
       <programmingLanguage>Custom</programmingLanguage>

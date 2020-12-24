@@ -723,7 +723,7 @@ class DataProviderCsvTest {
 
     @Test
     public void getProjectListByScrummasterIdFail() {
-        Assertions.assertNotEquals(0,instance.getProjectListByScrummasterId(1).getData().get(0));
+        Assertions.assertNotEquals(0,instance.getProjectListByScrummasterId(1).getData().get(0).getId());
     }
 
     @Test

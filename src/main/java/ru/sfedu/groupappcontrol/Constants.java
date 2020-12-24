@@ -199,5 +199,7 @@ public class Constants {
     public static final String DevelopersTask = "developersTask";
     public static final String TestersTask = "testersTask";
     public static final String logInfo = "method is %s";
-
+    public static final String POINT_FOR_LOGGER = ",";
+    public static final String Logger_Start="Start %s %s";
+    public static final String Logger_END="End %s %s";
 }

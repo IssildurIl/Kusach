@@ -17,7 +17,7 @@ import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
 
 
 class DataProviderXMLTest {
-    public static DataProviderXML instance = new DataProviderXML();
+    public static DataProvider instance = new DataProviderXML();
 
 
     private static final Logger log = LogManager.getLogger(DataProviderXMLTest.class);
@@ -227,10 +227,10 @@ class DataProviderXMLTest {
     public void deleteTaskSuccess() {
         Task testTask = instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
-        List<Task> taskList = instance.select(Task.class);
+        List<Task> taskList = ((DataProviderXML) instance).select(Task.class);
         log.debug(taskList);
         instance.deleteTask(testTask.getId());
-        List<Task> editedTaskList = instance.select(Task.class);
+        List<Task> editedTaskList = ((DataProviderXML) instance).select(Task.class);
         log.debug(editedTaskList);
         Assertions.assertEquals(Fail,instance.getTaskById(12).getStatus());
     }
@@ -245,10 +245,10 @@ class DataProviderXMLTest {
     public void deleteDevelopersTaskSuccess() {
         DevelopersTask developersTask = (DevelopersTask) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
-        List<DevelopersTask> taskList = instance.select(DevelopersTask.class);
+        List<DevelopersTask> taskList = ((DataProviderXML) instance).select(DevelopersTask.class);
         log.debug(taskList);
         instance.deleteDevelopersTask(developersTask.getId());
-        List<DevelopersTask> editedDevelopersTaskList = instance.select(DevelopersTask.class);
+        List<DevelopersTask> editedDevelopersTaskList = ((DataProviderXML) instance).select(DevelopersTask.class);
         log.debug(editedDevelopersTaskList);
         Assertions.assertEquals(Fail,instance.getDevelopersTaskById(12).getStatus());
     }
@@ -263,10 +263,10 @@ class DataProviderXMLTest {
     public void deleteTestersTaskSuccess() {
         TestersTask testersTask = (TestersTask) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
-        List<TestersTask> taskList = instance.select(TestersTask.class);
+        List<TestersTask> taskList = ((DataProviderXML) instance).select(TestersTask.class);
         log.debug(taskList);
         instance.deleteTestersTask(testersTask.getId());
-        List<TestersTask> editedTestersTaskList = instance.select(TestersTask.class);
+        List<TestersTask> editedTestersTaskList = ((DataProviderXML) instance).select(TestersTask.class);
         log.debug(editedTestersTaskList);
         Assertions.assertEquals(Fail,instance.getTestersTaskById(12).getStatus());
     }
@@ -323,10 +323,10 @@ class DataProviderXMLTest {
     public void deleteProjectSuccess() {
         Project project = instance.createProject(8,"TestProject7","05-12-2020",getListTask()).getData();
         instance.insertProject(project);
-        List<Project> list = instance.select(Project.class);
+        List<Project> list = ((DataProviderXML) instance).select(Project.class);
         log.debug(list);
         instance.deleteProject(8);
-        List<Project> list1 = instance.select(Project.class);
+        List<Project> list1 = ((DataProviderXML) instance).select(Project.class);
         log.debug(list1);
         Outcomes o = instance.getProjectByID(8).getStatus();
         Assertions.assertEquals(Fail,o);
@@ -486,7 +486,7 @@ class DataProviderXMLTest {
         list1.add(employee);
         Task testTask =  instance.createTask(11,"Descript",14553.0,employee,TypeOfCompletion.DEVELOPING,list1,"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
-        List<Task> taskList= instance.select(Task.class);
+        List<Task> taskList= ((DataProviderXML) instance).select(Task.class);
         log.info(taskList);
         log.info(instance.getTasksByUser(1,11).getData());
         Assertions.assertEquals(Complete,instance.getTasksByUser(1,11).getStatus());
@@ -627,7 +627,7 @@ class DataProviderXMLTest {
     @Test
     public void createProjectSuccess() {
         Outcomes o = instance.createProject(5,"TestProject","05-12-2020",getListTask()).getStatus();
-        List<Project> list = instance.select(Project.class);
+        List<Project> list = ((DataProviderXML) instance).select(Project.class);
         log.debug(list);
         Assertions.assertEquals(Complete,o);
     }
@@ -635,7 +635,7 @@ class DataProviderXMLTest {
     @Test
     public void createProjectFail() {
         Outcomes o = instance.createProject(5,"","05-12-2020",getListTask()).getStatus();
-        List<Project> list = instance.select(Project.class);
+        List<Project> list = ((DataProviderXML) instance).select(Project.class);
         log.debug(list);
         Assertions.assertEquals(Fail,o);
     }
@@ -725,7 +725,7 @@ class DataProviderXMLTest {
         Project project = instance.createProject(7,"TestProject8","05-12-2020",task).getData();
         log.info(project);
         instance.insertProject(project);
-        Assertions.assertNotNull(instance.getProjectListByScrummasterId(1).getData());
+        Assertions.assertNotEquals(Empty,instance.getProjectListByScrummasterId(1).getStatus());
     }
 
     @Test
@@ -778,7 +778,7 @@ class DataProviderXMLTest {
             employee.setDepartment(department[i-1]);
             employee.setTypeOfEmployee(TypeOfEmployee.Employee);
             employeeList.add(employee);
-            instance.insertGenericEmployeeForDelete(Employee.class,employeeList,false);
+            ((DataProviderXML) instance).insertGenericEmployeeForDelete(Employee.class,employeeList,false);
         }
         for (int i=1; i<=10; i++) {
             Developer developer = new Developer();
@@ -794,7 +794,7 @@ class DataProviderXMLTest {
             developer.setStatus(TypeOfDevelopers.CUSTOM);
             developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
             developerList.add(developer);
-            instance.insertGenericEmployeeForDelete(Developer.class,developerList,false);
+            ((DataProviderXML) instance).insertGenericEmployeeForDelete(Developer.class,developerList,false);
         }
         for (int i=1; i<=10; i++) {
             Tester tester = new Tester();
@@ -811,7 +811,7 @@ class DataProviderXMLTest {
             tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
             tester.setTypeOfTester(TypeOfTester.Custom);
             testersList.add(tester);
-            instance.insertGenericEmployeeForDelete(Tester.class,testersList,false);
+            ((DataProviderXML) instance).insertGenericEmployeeForDelete(Tester.class,testersList,false);
         }
         for (int i=1; i<=10; i++) {
             Task task = new Task();
@@ -826,7 +826,7 @@ class DataProviderXMLTest {
             task.setLastUpdate(lastUpdate[i-1]);
             task.setTaskType(TaskTypes.BASE_TASK);
             taskList.add(task);
-            instance.insertGenericTaskForDelete(Task.class,taskList,false);
+            ((DataProviderXML) instance).insertGenericTaskForDelete(Task.class,taskList,false);
         }
         for (int i=1; i<=10; i++) {
             DevelopersTask developerTask = new DevelopersTask();
@@ -843,7 +843,7 @@ class DataProviderXMLTest {
             developerTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
             developerTask.setDeveloperComments(Constants.BaseComment);
             developersTasks.add(developerTask);
-            instance.insertGenericTaskForDelete(DevelopersTask.class,developersTasks,false);
+            ((DataProviderXML) instance).insertGenericTaskForDelete(DevelopersTask.class,developersTasks,false);
         }
         for (int i=1; i<=10; i++) {
             TestersTask testersTask = new TestersTask();
@@ -860,7 +860,7 @@ class DataProviderXMLTest {
             testersTask.setBugStatus(BugStatus.IN_WORK);
             testersTask.setBugDescription(Constants.BaseComment);
             testersTasks.add(testersTask);
-            instance.insertGenericTaskForDelete(TestersTask.class,testersTasks,false);
+            ((DataProviderXML) instance).insertGenericTaskForDelete(TestersTask.class,testersTasks,false);
         }
         for (int i=1; i<=4; i++) {
             Project project=new Project();
@@ -869,23 +869,23 @@ class DataProviderXMLTest {
             project.setTakeIntoDevelopment(createdDate[i-1]);
             project.setTask(getListTask());
             projectList.add(project);
-            instance.insertProjectForDelete(projectList,false);
+            ((DataProviderXML) instance).insertProjectForDelete(projectList,false);
         }
     }
     private static Employee getScrum(){
-        List<Employee> listemployee = instance.select(Employee.class);
+        List<Employee> listemployee = ((DataProviderXML) instance).select(Employee.class);
         int max=9; int min=0;
         return listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
     }
     private static List<Employee> getListEmployee(){
-        List<Employee> listemployee = instance.select(Employee.class);
-        List<Developer> developers = instance.select(Developer.class);
+        List<Employee> listemployee = ((DataProviderXML) instance).select(Employee.class);
+        List<Developer> developers = ((DataProviderXML) instance).select(Developer.class);
         int max=9; int min=0;
         for (int i=1;i<=3; i++) {
             Developer developer = developers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             listemployee.add(developer);
         }
-        List<Tester> testers = instance.select(Tester.class);
+        List<Tester> testers = ((DataProviderXML) instance).select(Tester.class);
         for (int i=1;i<=3; i++) {
             Tester tester = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             listemployee.add(tester);
@@ -893,14 +893,14 @@ class DataProviderXMLTest {
         return listemployee;
     }
     private static List<Task> getListTask(){
-        List<Task> listTask = instance.select(Task.class);
-        List<DevelopersTask> developers = instance.select(DevelopersTask.class);
+        List<Task> listTask = ((DataProviderXML) instance).select(Task.class);
+        List<DevelopersTask> developers = ((DataProviderXML) instance).select(DevelopersTask.class);
         int max=9; int min=0;
         for (int i=1;i<=3; i++) {
             DevelopersTask developersTask = developers.get((int)((Math.random() * ((max - min) + 1)) + min));
             listTask.add(developersTask);
         }
-        List<TestersTask> testers = instance.select(TestersTask.class);
+        List<TestersTask> testers = ((DataProviderXML) instance).select(TestersTask.class);
         for (int i=1;i<=3; i++) {
             TestersTask testersTask = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             listTask.add(testersTask);

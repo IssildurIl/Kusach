@@ -1,0 +1,5 @@
+ru\sfedu\groupappcontrol\api\Fill.class
+ru\sfedu\groupappcontrol\api\DataProviderJdbcTest.class
+ru\sfedu\groupappcontrol\api\DataProviderCsvTest.class
+ru\sfedu\groupappcontrol\MainTest.class
+ru\sfedu\groupappcontrol\api\DataProviderXMLTest.class

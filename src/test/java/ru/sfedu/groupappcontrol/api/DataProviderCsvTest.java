@@ -13,7 +13,7 @@ import java.util.*;
 
 
 class DataProviderCsvTest {
-    public static DataProviderCsv instance = new DataProviderCsv();
+    public static DataProvider instance = new DataProviderCsv();
 
     private static final Logger log = LogManager.getLogger(DataProviderCsvTest.class);
 
@@ -132,7 +132,6 @@ class DataProviderCsvTest {
 
     @Test
     public void insertDevelopersTaskFail() {
-        List<DevelopersTask> developersTasks = new ArrayList<>();
         DevelopersTask developersTask = (DevelopersTask) instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
         log.info(instance.getDevelopersTaskById(1).getData().getTaskDescription());
@@ -222,10 +221,10 @@ class DataProviderCsvTest {
     public void deleteTaskSuccess() {
         Task testTask = instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
-        List<Task> taskList = instance.select(Task.class);
+        List<Task> taskList = ((DataProviderCsv) instance).select(Task.class);
         log.debug(taskList);
         instance.deleteTask(testTask.getId());
-        List<Task> editedTaskList = instance.select(Task.class);
+        List<Task> editedTaskList = ((DataProviderCsv) instance).select(Task.class);
         log.debug(editedTaskList);
         Assertions.assertEquals(Fail,instance.getTaskById(12).getStatus());
     }
@@ -240,10 +239,10 @@ class DataProviderCsvTest {
     public void deleteDevelopersTaskSuccess() {
         DevelopersTask developersTask = (DevelopersTask) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
-        List<DevelopersTask> taskList = instance.select(DevelopersTask.class);
+        List<DevelopersTask> taskList = ((DataProviderCsv) instance).select(DevelopersTask.class);
         log.debug(taskList);
         instance.deleteDevelopersTask(developersTask.getId());
-        List<DevelopersTask> editedDevelopersTaskList = instance.select(DevelopersTask.class);
+        List<DevelopersTask> editedDevelopersTaskList = ((DataProviderCsv) instance).select(DevelopersTask.class);
         log.debug(editedDevelopersTaskList);
         Assertions.assertEquals(Fail,instance.getDevelopersTaskById(12).getStatus());
     }
@@ -258,10 +257,10 @@ class DataProviderCsvTest {
     public void deleteTestersTaskSuccess() {
         TestersTask testersTask = (TestersTask) instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
-        List<TestersTask> taskList = instance.select(TestersTask.class);
+        List<TestersTask> taskList = ((DataProviderCsv) instance).select(TestersTask.class);
         log.debug(taskList);
         instance.deleteTestersTask(testersTask.getId());
-        List<TestersTask> editedTestersTaskList = instance.select(TestersTask.class);
+        List<TestersTask> editedTestersTaskList = ((DataProviderCsv) instance).select(TestersTask.class);
         log.debug(editedTestersTaskList);
         Assertions.assertEquals(Fail,instance.getTestersTaskById(12).getStatus());
     }
@@ -318,10 +317,10 @@ class DataProviderCsvTest {
     public void deleteProjectSuccess() {
         Project project = instance.createProject(8,"TestProject7","05-12-2020",getListTask()).getData();
         instance.insertProject(project);
-        List<Project> list = instance.select(Project.class);
+        List<Project> list = ((DataProviderCsv) instance).select(Project.class);
         log.debug(list);
         instance.deleteProject(8);
-        List<Project> list1 = instance.select(Project.class);
+        List<Project> list1 = ((DataProviderCsv) instance).select(Project.class);
         log.debug(list1);
         Outcomes o = instance.getProjectByID(8).getStatus();
         Assertions.assertEquals(Fail,o);
@@ -476,12 +475,11 @@ class DataProviderCsvTest {
     @Test
     public void getTasksByUserSuccess() {
         Employee employee = instance.getEmployeeById(1).getData();
-        List<Task> list = new ArrayList<>();
         List<Employee> list1 = getListEmployee();
         list1.add(employee);
         Task testTask =  instance.createTask(11,"Descript",14553.0,employee,TypeOfCompletion.DEVELOPING,list1,"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
-        List<Task> taskList= instance.select(Task.class);
+        List<Task> taskList= ((DataProviderCsv) instance).select(Task.class);
         log.info(taskList);
         log.info(instance.getTasksByUser(1,11).getData());
         Assertions.assertEquals(Complete,instance.getTasksByUser(1,11).getStatus());
@@ -622,7 +620,7 @@ class DataProviderCsvTest {
     @Test
     public void createProjectSuccess() {
         Outcomes o = instance.createProject(5,"TestProject","05-12-2020",getListTask()).getStatus();
-        List<Project> list = instance.select(Project.class);
+        List<Project> list = ((DataProviderCsv) instance).select(Project.class);
         log.debug(list);
         Assertions.assertEquals(Complete,o);
     }
@@ -630,7 +628,7 @@ class DataProviderCsvTest {
     @Test
     public void createProjectFail() {
         Outcomes o = instance.createProject(5,"","05-12-2020",getListTask()).getStatus();
-        List<Project> list = instance.select(Project.class);
+        List<Project> list = ((DataProviderCsv) instance).select(Project.class);
         log.debug(list);
         Assertions.assertEquals(Fail,o);
     }
@@ -679,7 +677,7 @@ class DataProviderCsvTest {
         Project testProject =  instance.createProject(6,"TEST_PROJECT","18-12-2020",getListTask()).getData();
         long time = instance.calculateProjectTime(testProject).getData();
         log.info(time);
-        Assertions.assertNotNull(time);
+        Assertions.assertNotEquals(0,time);
     }
 
     @Test
@@ -725,7 +723,7 @@ class DataProviderCsvTest {
 
     @Test
     public void getProjectListByScrummasterIdFail() {
-        Assertions.assertNotEquals(0,instance.getProjectListByScrummasterId(1).getData());
+        Assertions.assertNotEquals(0,instance.getProjectListByScrummasterId(1).getData().get(0));
     }
 
     @Test
@@ -853,19 +851,19 @@ class DataProviderCsvTest {
         }
     }
     private static Employee getScrum(){
-        List<Employee> listemployee = instance.select(Employee.class);
+        List<Employee> listemployee = ((DataProviderCsv) instance).select(Employee.class);
         int max=9; int min=0;
         return listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
     }
     private static List<Employee> getListEmployee(){
-        List<Employee> listemployee = instance.select(Employee.class);
-        List<Developer> developers = instance.select(Developer.class);
+        List<Employee> listemployee = ((DataProviderCsv) instance).select(Employee.class);
+        List<Developer> developers = ((DataProviderCsv) instance).select(Developer.class);
         int max=9; int min=0;
         for (int i=1;i<=3; i++) {
             Developer developer = developers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             listemployee.add(developer);
         }
-        List<Tester> testers = instance.select(Tester.class);
+        List<Tester> testers = ((DataProviderCsv) instance).select(Tester.class);
         for (int i=1;i<=3; i++) {
             Tester tester = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             listemployee.add(tester);
@@ -873,14 +871,14 @@ class DataProviderCsvTest {
         return listemployee;
     }
     private static List<Task> getListTask(){
-        List<Task> listTask = instance.select(Task.class);
-        List<DevelopersTask> developers = instance.select(DevelopersTask.class);
+        List<Task> listTask = ((DataProviderCsv) instance).select(Task.class);
+        List<DevelopersTask> developers = ((DataProviderCsv) instance).select(DevelopersTask.class);
         int max=9; int min=0;
         for (int i=1;i<=3; i++) {
             DevelopersTask developersTask = developers.get((int)((Math.random() * ((max - min) + 1)) + min));
             listTask.add(developersTask);
         }
-        List<TestersTask> testers = instance.select(TestersTask.class);
+        List<TestersTask> testers = ((DataProviderCsv) instance).select(TestersTask.class);
         for (int i=1;i<=3; i++) {
             TestersTask testersTask = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             listTask.add(testersTask);

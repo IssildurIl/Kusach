@@ -17,12 +17,12 @@ import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
 
 class DataProviderJdbcTest{
     private static final Logger log = LogManager.getLogger(DataProviderJdbcTest.class);
-    public static DataProviderJdbc instance = new DataProviderJdbc();
+    public static DataProvider instance = new DataProviderJdbc();
 
     @BeforeAll
     static void setJDBCEnv() {
         instance.deleteAllRecord();
-        instance.createTables();
+        ((DataProviderJdbc) instance).createTables();
         addRecord();
     }
 
@@ -119,8 +119,7 @@ class DataProviderJdbcTest{
                 "04-12-2020","10-12-2020","05-12-2020",
                 TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
-        long id = instance.getTaskByParam(task).getData();
-        log.info(id);
+        long id =  ((DataProviderJdbc) instance).getTaskByParam(task).getData();
         Assertions.assertEquals(instance.getDevelopersTaskById(id).getData().getTaskDescription(),"insertDevelopersTaskSuccess");
     }
 
@@ -139,8 +138,7 @@ class DataProviderJdbcTest{
     public void insertDevelopersTaskSuccess() {
         DevelopersTask developersTask = (DevelopersTask) instance.createTask(20,"insertDevelopersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
-        long id = instance.getDevelopersTaskByParam(developersTask).getData();
-        log.info(id);
+        long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(developersTask).getData();
         Assertions.assertEquals(instance.getDevelopersTaskById(id).getData().getTaskDescription(),"insertDevelopersTaskSuccess");
     }
 
@@ -155,8 +153,7 @@ class DataProviderJdbcTest{
     public void insertTestersTaskSuccess() {
         TestersTask testersTask = (TestersTask) instance.createTask(20,"insertTestersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
-        long id = instance.getTestersTaskByParam(testersTask).getData();
-        log.info(id);
+        long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testersTask).getData();
         Assertions.assertEquals(instance.getTestersTaskById(id).getData().getTaskDescription(),"insertTestersTaskSuccess");
     }
 
@@ -171,8 +168,7 @@ class DataProviderJdbcTest{
     public void insertEmployeeSuccess() {
         Employee employee =  instance.createEmployee(20,"insertEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
         instance.insertEmployee(employee);
-        long id = instance.getEmployeeByParam(employee).getData();
-        log.debug(employee);
+        long id = ((DataProviderJdbc) instance).getEmployeeByParam(employee).getData();
         Assertions.assertEquals("insertEmployeeSuccess",instance.getEmployeeById(id).getData().getFirstName());
     }
 
@@ -187,8 +183,7 @@ class DataProviderJdbcTest{
     public void insertDeveloperSuccess() {
         Developer developer = (Developer) instance.createEmployee(11,"insertDeveloperSuccess","Vasilyev","vas1ly","vasyan","VasLy@","9bba8047-f0aa-473d-aef9-6905edcd3f99","Team13",TypeOfEmployee.Developer).getData();
         instance.insertDeveloper(developer);
-        long id = instance.getDeveloperByParam(developer).getData();
-        log.debug(developer);
+        long id = ((DataProviderJdbc) instance).getDeveloperByParam(developer).getData();
         Assertions.assertEquals("insertDeveloperSuccess",instance.getDeveloperById(id).getData().getFirstName());
     }
 
@@ -203,8 +198,7 @@ class DataProviderJdbcTest{
     public void insertTesterSuccess() {
         Tester tester = (Tester) instance.createEmployee(20,"insertTesterSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Tester).getData();
         instance.insertTester(tester);
-        long id = instance.getTesterByParam(tester).getData();
-        log.debug(tester);
+        long id = ((DataProviderJdbc) instance).getTesterByParam(tester).getData();
         Assertions.assertEquals("insertTesterSuccess",instance.getTesterById(id).getData().getFirstName());
     }
 
@@ -233,9 +227,9 @@ class DataProviderJdbcTest{
     public void deleteTaskSuccess() {
         Task testTask = instance.createTask(12,"deleteTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
-        long id = instance.getTaskByParam(testTask).getData();
+        long id = ((DataProviderJdbc) instance).getTaskByParam(testTask).getData();
         instance.deleteTask(id);
-        Assertions.assertNull(instance.getTaskByParam(testTask).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getTaskByParam(testTask).getData());
     }
 
     @Test
@@ -247,9 +241,9 @@ class DataProviderJdbcTest{
     public void deleteDevelopersTaskSuccess() {
         DevelopersTask testTask = (DevelopersTask) instance.createTask(12,"deleteDevelopersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(testTask);
-        long id = instance.getDevelopersTaskByParam(testTask).getData();
+        long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(testTask).getData();
         instance.deleteDevelopersTask(id);
-        Assertions.assertNull(instance.getDevelopersTaskByParam(testTask).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getDevelopersTaskByParam(testTask).getData());
     }
 
     @Test
@@ -261,9 +255,9 @@ class DataProviderJdbcTest{
     public void deleteTestersTaskSuccess() {
         TestersTask testTask = (TestersTask) instance.createTask(12,"deleteDevelopersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testTask);
-        long id = instance.getTestersTaskByParam(testTask).getData();
+        long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testTask).getData();
         instance.deleteTestersTask(id);
-        Assertions.assertNull(instance.getTestersTaskByParam(testTask).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getTestersTaskByParam(testTask).getData());
     }
 
     @Test
@@ -276,9 +270,9 @@ class DataProviderJdbcTest{
     public void deleteEmployeeSuccess() {
         Employee employee =  instance.createEmployee(1,"deleteEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
         instance.insertEmployee(employee);
-        long id = instance.getEmployeeByParam(employee).getData();
+        long id = ((DataProviderJdbc) instance).getEmployeeByParam(employee).getData();
         instance.deleteEmployee(id);
-        Assertions.assertNull(instance.getEmployeeByParam(employee).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getEmployeeByParam(employee).getData());
     }
 
     @Test
@@ -291,9 +285,9 @@ class DataProviderJdbcTest{
     public void deleteDeveloperSuccess() {
         Developer developer =  (Developer) instance.createEmployee(21,"Test_Employee_21","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
         instance.insertDeveloper(developer);
-        long id = instance.getDeveloperByParam(developer).getData();
+        long id = ((DataProviderJdbc) instance).getDeveloperByParam(developer).getData();
         instance.deleteDeveloper(id);
-        Assertions.assertNull(instance.getDeveloperByParam(developer).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getDeveloperByParam(developer).getData());
     }
 
     @Test
@@ -306,9 +300,9 @@ class DataProviderJdbcTest{
     public void deleteTesterSuccess() {
         Tester tester =  (Tester) instance.createEmployee(21,"Test_Employee_21","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Tester).getData();
         instance.insertTester(tester);
-        long id = instance.getTesterByParam(tester).getData();
+        long id = ((DataProviderJdbc) instance).getTesterByParam(tester).getData();
         instance.deleteTester(id);
-        Assertions.assertNull(instance.getTesterByParam(tester).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getTesterByParam(tester).getData());
     }
 
     @Test
@@ -321,9 +315,9 @@ class DataProviderJdbcTest{
     public void deleteProjectSuccess() {
         Project project = instance.createProject(8,"TestProject7","05-12-2020",getListTask()).getData();
         instance.insertProject(project);
-        long id = instance.getProjectByParam(project).getData();
+        long id = ((DataProviderJdbc) instance).getProjectByParam(project).getData();
         instance.deleteProject(id);
-        Assertions.assertNull(instance.getProjectByParam(project).getData());
+        Assertions.assertNull(((DataProviderJdbc) instance).getProjectByParam(project).getData());
     }
 
     @Test
@@ -482,7 +476,7 @@ class DataProviderJdbcTest{
         list1.add(employee);
         Task testTask =  instance.createTask(11,"getTasksByUserSuccess",14553.0,employee,TypeOfCompletion.DEVELOPING,list1,"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
-        long id = instance.getTaskByParam(testTask).getData();
+        long id = ((DataProviderJdbc) instance).getTaskByParam(testTask).getData();
         Assertions.assertEquals(id,instance.getTasksByUser(1,id).getData().getId());
     }
 
@@ -495,14 +489,11 @@ class DataProviderJdbcTest{
     public void changeTaskStatusSuccess() {
         instance.changeTaskStatus(10, String.valueOf(TypeOfCompletion.TESTING));
         Task task =  instance.getTaskById(10).getData();
-        log.debug(task);
         Assertions.assertEquals(TypeOfCompletion.TESTING, task.getStatus());
     }
 
     @Test
     public void changeTaskStatusFail() {
-        Task task = instance.getTaskById(1).getData();
-        log.debug(task);
         Assertions.assertEquals(Fail,instance.changeTaskStatus(1,"").getStatus());
     }
 
@@ -515,7 +506,6 @@ class DataProviderJdbcTest{
     @Test
     public void calculateTaskCostFail() {
         Task testTask = instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
-        log.debug(instance.calculateTaskCost(testTask).getData());
         Assertions.assertNotEquals(instance.calculateTaskCost(testTask).getData(),1.0);
     }
 
@@ -523,7 +513,7 @@ class DataProviderJdbcTest{
     public void writeBaseTaskCommentSuccess() {
         Task task = instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
-        long id = instance.getTaskByParam(task).getData();
+        long id = ((DataProviderJdbc) instance).getTaskByParam(task).getData();
         instance.writeBaseTaskComment(id,"writeBaseTaskCommentSuccess");
         Assertions.assertEquals("writeBaseTaskCommentSuccess",instance.getTaskById(id).getData().getTaskDescription());
     }
@@ -532,7 +522,7 @@ class DataProviderJdbcTest{
     public void writeBaseTaskCommentFail() {
         Task task = instance.createTask(14,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
-        long id = instance.getTaskByParam(task).getData();
+        long id = ((DataProviderJdbc) instance).getTaskByParam(task).getData();
         Assertions.assertEquals(Fail,instance.writeBaseTaskComment(id,"").getStatus());
     }
 
@@ -540,7 +530,7 @@ class DataProviderJdbcTest{
     public void writeDevelopersTaskCommentSuccess() {
         DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
-        long id = instance.getDevelopersTaskByParam(developersTask).getData();
+        long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(developersTask).getData();
         instance.writeDevelopersTaskComment(id,"writeDevelopersTaskCommentSuccess");
         Assertions.assertEquals("writeDevelopersTaskCommentSuccess",instance.getDevelopersTaskById(id).getData().getTaskDescription());
     }
@@ -549,7 +539,7 @@ class DataProviderJdbcTest{
     public void writeDevelopersTaskCommentFail() {
         DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
-        long id = instance.getDevelopersTaskByParam(developersTask).getData();
+        long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(developersTask).getData();
         Assertions.assertEquals(Fail,instance.writeDevelopersTaskComment(id,"").getStatus());
     }
 
@@ -557,7 +547,7 @@ class DataProviderJdbcTest{
     public void writeTestersTaskCommentSuccess() {
         TestersTask testersTask = (TestersTask) instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
-        long id = instance.getTestersTaskByParam(testersTask).getData();
+        long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testersTask).getData();
         instance.writeTestersTaskComment(id,"writeTestersTaskCommentSuccess");
         Assertions.assertEquals("writeTestersTaskCommentSuccess",instance.getTestersTaskById(id).getData().getTaskDescription());
     }
@@ -566,7 +556,7 @@ class DataProviderJdbcTest{
     public void writeTestersTaskCommentFail() {
         TestersTask testersTask = (TestersTask) instance.createTask(14,"writeTestersTaskCommentFail",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
-        long id = instance.getTestersTaskByParam(testersTask).getData();
+        long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testersTask).getData();
         Assertions.assertEquals(Fail,instance.writeTestersTaskComment(id,"").getStatus());
     }
 
@@ -574,7 +564,6 @@ class DataProviderJdbcTest{
     public void getTaskListByScrumMasterSuccess() {
         Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
-        log.info(instance.getTaskListByScrumMaster(1).getData());
         Assertions.assertNotNull(instance.getTaskListByScrumMaster(1).getData());
     }
 
@@ -582,15 +571,13 @@ class DataProviderJdbcTest{
     public void getTaskListByScrumMasterFail() {
         Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(6).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
-        log.info(instance.getTaskListByScrumMaster(6));
         Assertions.assertNotEquals(0,instance.getTaskListByScrumMaster(6).getData().get(0).getId());
     }
 
     @Test
     public void getDevelopersTaskListByScrumMasterSuccess() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(20,"getDevelopersTaskListByScrumMasterSuccess",14553.0,instance.getEmployeeById(7).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,instance.getEmployeeById(7).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
-        log.info(instance.getDevelopersTaskListByScrumMaster(7).getData());
         Assertions.assertNotNull(instance.getDevelopersTaskListByScrumMaster(7).getData());
     }
 
@@ -598,7 +585,6 @@ class DataProviderJdbcTest{
     public void getDevelopersTaskListByScrumMasterFail() {
         Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(6).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
-        log.info(instance.getTaskListByScrumMaster(6));
         Assertions.assertNotEquals(0,instance.getTaskListByScrumMaster(6).getData().get(0).getId());
     }
 
@@ -606,7 +592,6 @@ class DataProviderJdbcTest{
     public void getTestersTaskListByScrumMasterSuccess() {
         TestersTask task = (TestersTask) instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(8).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(task);
-        log.info(instance.getTestersTaskListByScrumMaster(8).getData());
         Assertions.assertNotNull(instance.getTestersTaskListByScrumMaster(8).getData());
     }
 
@@ -614,7 +599,6 @@ class DataProviderJdbcTest{
     public void getTestersTaskListByScrumMasterFail() {
         TestersTask task = (TestersTask)  instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(8).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(task);
-        log.info(instance.getTestersTaskListByScrumMaster(1));
         Assertions.assertNotEquals(0,instance.getTestersTaskListByScrumMaster(8).getData().get(0).getId());
 
     }
@@ -635,7 +619,6 @@ class DataProviderJdbcTest{
     public void getProjectByIdSuccess(){
         Employee testdeveloper = instance.getEmployeeById(1).getData();
         Outcomes o = instance.getProjectById(testdeveloper.getId(),1).getStatus();
-        log.debug(testdeveloper);
         Assertions.assertEquals(Complete,o);
     }
 
@@ -643,7 +626,6 @@ class DataProviderJdbcTest{
     public void getProjectByIdFail() {
         Employee employee =  instance.getEmployeeById(1).getData();
         Outcomes o = instance.getProjectById(employee.getId(),100).getStatus();
-        log.debug(o);
         Assertions.assertNotEquals(Fail,o);
     }
 
@@ -651,7 +633,6 @@ class DataProviderJdbcTest{
     public void calculateProjectCostSuccess() {
         Project testProject= instance.getProjectByID(1).getData();
         double cost = (double) instance.calculateProjectCost(testProject).getData();
-        log.debug(cost);
         Assertions.assertNotEquals(cost,5.0);
     }
 
@@ -710,7 +691,6 @@ class DataProviderJdbcTest{
         task.add(testTask);
         task.add(testTask2);
         Project project = instance.createProject(7,"TestProject8","05-12-2020",task).getData();
-        log.info(project);
         instance.insertProject(project);
         Assertions.assertNotNull(instance.getProjectListByScrummasterId(1).getData());
     }
@@ -723,8 +703,7 @@ class DataProviderJdbcTest{
     @Test
     public void getProjectListByIdSuccess() {
         Outcomes o = instance.getProjectListByScrummasterId(1).getStatus();
-        log.debug(instance.getProjectListByScrummasterId(1).getStatus());
-        Assertions.assertEquals(Complete,o);
+        Assertions.assertNotEquals(Empty,o);
     }
 
     @Test
@@ -838,24 +817,24 @@ class DataProviderJdbcTest{
         }
     }
     private static Employee getScrum(){
-        List<Employee> listemployee = instance.getListEmployees(Employee.class);
+        List<Employee> listemployee = ((DataProviderJdbc) instance).getListEmployees(Employee.class);
         int max=9; int min=0;
         return listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
     }
     private static List<Employee> getListEmployee(){
         List<Employee> fullList = new ArrayList<>();
         int max=9; int min=0;
-        List<Employee> listemployee = instance.getListEmployees(Employee.class);
+        List<Employee> listemployee = ((DataProviderJdbc) instance).getListEmployees(Employee.class);
         for (int i=1;i<=3; i++) {
             Employee employee = listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
             fullList.add(employee);
         }
-        List<Developer> developers = instance.getListEmployees(Developer.class);
+        List<Developer> developers = ((DataProviderJdbc) instance).getListEmployees(Developer.class);
         for (int i=1;i<=3; i++) {
             Developer developer = developers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             fullList.add(developer);
         }
-        List<Tester> testers = instance.getListEmployees(Tester.class);
+        List<Tester> testers = ((DataProviderJdbc) instance).getListEmployees(Tester.class);
         for (int i=1;i<=3; i++) {
             Tester tester = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             fullList.add(tester);
@@ -864,18 +843,18 @@ class DataProviderJdbcTest{
     }
     private static List<Task> getListTask(){
         List<Task> fullList = new ArrayList<>();
-        List<Task> listTask = instance.getListTasks(Task.class);
+        List<Task> listTask = ((DataProviderJdbc) instance).getListTasks(Task.class);
         int max=9; int min=0;
         for (int i=0;i<=4; i++) {
             Task task = listTask.get((int)((Math.random() * ((max - min) + 1)) + min));
             fullList.add(task);
         }
-        List<DevelopersTask> developers = instance.getListTasks(DevelopersTask.class);
+        List<DevelopersTask> developers = ((DataProviderJdbc) instance).getListTasks(DevelopersTask.class);
         for (int i=0;i<=4; i++) {
             DevelopersTask developersTask = developers.get((int)((Math.random() * ((max - min) + 1)) + min));
             fullList.add(developersTask);
         }
-        List<TestersTask> testers = instance.getListTasks(TestersTask.class);
+        List<TestersTask> testers = ((DataProviderJdbc) instance).getListTasks(TestersTask.class);
         for (int i=0;i<=4; i++) {
             TestersTask testersTask = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
             fullList.add(testersTask);

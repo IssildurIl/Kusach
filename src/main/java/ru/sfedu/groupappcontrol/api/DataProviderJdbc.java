@@ -164,6 +164,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> insertTask(Task task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             boolean exist = execute(String.format(
                     Constants.INSERT_TASK, task.getTaskDescription(),
                     task.getMoney(), task.getScrumMaster().getId(), task.getStatus(), task.getCreatedDate(), task.getDeadline(),
@@ -196,6 +199,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> insertDevelopersTask(DevelopersTask task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             boolean exist = execute(String.format(
                     Constants.INSERT_DEVELOPERS_TASK, task.getTaskDescription(),
                     task.getMoney(), task.getScrumMaster().getId(), task.getStatus(), task.getCreatedDate(), task.getDeadline(),
@@ -230,6 +236,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> insertTestersTask(TestersTask task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             boolean exist = execute(String.format(
                     Constants.INSERT_TESTERS_TASK,
                     task.getTaskDescription(),
@@ -340,6 +349,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Project> insertProject(Project project) {
         try {
+            if(!isValidProject(project)){
+                return new Result<>(Fail);
+            }
             boolean exist = execute(String.format(
                     Constants.INSERT_PROJECT,
                     project.getTitle(),
@@ -441,6 +453,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> updateTask(Task task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_TASK,
                     task.getTaskDescription(),
                     task.getMoney(),
@@ -462,6 +477,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> updateDevelopersTask(DevelopersTask developersTask) {
         try {
+            if(!isValidTask(developersTask)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_DEVELOPERS_TASK,
                     developersTask.getTaskDescription(),
                     developersTask.getMoney(),
@@ -485,6 +503,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> updateTestersTask(TestersTask testersTask) {
         try {
+            if(!isValidTask(testersTask)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_TESTERS_TASK,
                     testersTask.getTaskDescription(),
                     testersTask.getMoney(),
@@ -508,6 +529,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> updateEmployee(Employee employee) {
         try {
+            if(!isValidEmployee(employee)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_EMPLOYEE,
                     employee.getFirstName(),
                     employee.getLastName(),
@@ -529,6 +553,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> updateDeveloper(Developer developer) {
         try {
+            if(!isValidEmployee(developer)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_DEVELOPER,
                     developer.getFirstName(),
                     developer.getLastName(),
@@ -552,6 +579,9 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Void> updateTester(Tester tester) {
         try {
+            if(!isValidEmployee(tester)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_TESTER,
                     tester.getFirstName(),
                     tester.getLastName(),
@@ -576,9 +606,13 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Project> updateProject(Project project) {
         try {
+            if(!isValidProject(project)){
+                return new Result<>(Fail);
+            }
             boolean a = execute(String.format(Constants.UPDATE_PROJECT,
                     project.getTitle(),
-                    project.getTakeIntoDevelopment()))
+                    project.getTakeIntoDevelopment(),
+                    project.getId()))
                     .getStatus() == Outcomes.Complete;
             if (a) return new Result(Outcomes.Complete);
         } catch (Exception e) {
@@ -601,17 +635,17 @@ public class DataProviderJdbc implements DataProvider {
         switch (taskType) {
             case BASE_TASK:
                 Task baseTask = createBaseTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, baseTask);
+                return isValidTask(baseTask) ? new Result<>(Complete, baseTask): new Result<>(Fail);
             case DEVELOPERS_TASK:
                 DevelopersTask developersTask = createDevelopersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
                 developersTask.setDeveloperComments(Constants.BaseComment);
                 developersTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
-                return new Result<>(Complete, developersTask);
+                return isValidTask(developersTask) ? new Result<>(Complete, developersTask): new Result<>(Fail);
             case TESTERS_TASK:
                 TestersTask testersTask = createTestersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
                 testersTask.setBugStatus(BugStatus.FIND_BUGS);
                 testersTask.setBugDescription(Constants.BaseComment);
-                return new Result<>(Complete, testersTask);
+                return isValidTask(testersTask) ? new Result<>(Complete, testersTask): new Result<>(Fail);
             default:
                 return new Result<>(Fail);
         }
@@ -650,7 +684,7 @@ public class DataProviderJdbc implements DataProvider {
                 setBasicTask(res, task);
             }
             return new Result<>(Complete, task);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error(e);
             return new Result<>(Fail);
         }
@@ -658,14 +692,25 @@ public class DataProviderJdbc implements DataProvider {
 
     @Override
     public Result<Void> changeTaskStatus(long id, String status) {
-        boolean exist = execute(String.format(Constants.UPDATE_TASK_STATUS,
-                status, id)).getStatus() == Complete;
-        return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        try {
+            if(stringIsValid(status)){
+                return new Result<>(Fail);
+            }
+            boolean exist = execute(String.format(Constants.UPDATE_TASK_STATUS,
+                    status, id)).getStatus() == Complete;
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
     }
 
     @Override
     public Result<Double> calculateTaskCost(Task task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             java.util.Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
             Date secondDate = sdf.parse(String.valueOf(task.getDeadline()));
@@ -685,6 +730,9 @@ public class DataProviderJdbc implements DataProvider {
 
     @Override
     public Result<Void> writeBaseTaskComment(long id, String comment) {
+        if(stringIsValid(comment)){
+         return new Result<>(Outcomes.Fail);
+        }
         boolean exist = execute(String.format(Constants.UPDATE_TASK_COMMENT,
                 comment, id)).getStatus() == Complete;
         return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
@@ -692,17 +740,33 @@ public class DataProviderJdbc implements DataProvider {
 
     @Override
     public Result<Void> writeDevelopersTaskComment(long id, String comment) {
-        boolean exist = execute(String.format(Constants.UPDATE_DEVELOPERSTASK_COMMENT,
-                comment, id)).getStatus() == Complete;
-        return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
-
+        try {
+            if(stringIsValid(comment)){
+                return new Result<>(Fail);
+            }
+            boolean exist = execute(String.format(Constants.UPDATE_DEVELOPERSTASK_COMMENT,
+                    comment, id)).getStatus() == Complete;
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Fail);
+        }
     }
 
     @Override
     public Result<Void> writeTestersTaskComment(long id, String comment) {
-        boolean exist = execute(String.format(Constants.UPDATE_TESTERSTASK_COMMENT,
-                comment, id)).getStatus() == Complete;
-        return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        try {
+            if(stringIsValid(comment)){
+                return new Result<>(Fail);
+            }
+            boolean exist = execute(String.format(Constants.UPDATE_TESTERSTASK_COMMENT,
+                    comment, id)).getStatus() == Complete;
+            return (exist) ? new Result<>(Outcomes.Complete) : new Result<>(Outcomes.Fail);
+        } catch (Exception e) {
+            log.error(e);
+            return new Result<>(Outcomes.Fail);
+        }
+
 
     }
 
@@ -775,10 +839,11 @@ public class DataProviderJdbc implements DataProvider {
                                          @NonNull String takeIntoDevelopment,
                                          @NonNull List<Task> tasks) {
         Project project = new Project();
+        project.setId(id);
         project.setTitle(title);
         project.setTakeIntoDevelopment(takeIntoDevelopment);
         project.setTask(tasks);
-        return new Result<>(Complete, project);
+        return !isValidProject(project) ? new Result<>(Fail) : new Result<>(Complete, project);
     }
 
     @Override
@@ -802,10 +867,19 @@ public class DataProviderJdbc implements DataProvider {
     @Override
     public Result<Long> calculateProjectCost(Project project) {
         try {
-            stringIsValid(project.getTakeIntoDevelopment());
-            List<Task> taskList = project.getTask();
+            if(!isValidProject(project)){
+                return new Result<>(Fail);
+            }
+            ResultSet set = getTaskRecords(String.format(Constants.GetTaskList,
+                    project.getId()));
+            List<Task> tasks = new ArrayList<>();
+            if (set != null && set.next()) {
+                Task task = new Task();
+                setTask(set, task);
+                tasks.add(task);
+            }
             double projectCost = 0.0;
-            for (Task task : taskList) {
+            for (Task task : tasks) {
                 projectCost = projectCost + (double) calculateTaskCost(task).getData();
             }
             log.info(projectCost);
@@ -818,13 +892,28 @@ public class DataProviderJdbc implements DataProvider {
 
     @Override
     public Result<Long> calculateProjectTime(Project project) {
-        List<Task> taskList = project.getTask();
-        long resulttime = 0;
-        for (Task task : taskList) {
-            resulttime = resulttime + (long) calculatePrice(task).getData();
+        try {
+            if(!isValidProject(project)){
+                return new Result<>(Fail);
+            }
+            ResultSet set = getTaskRecords(String.format(Constants.GetTaskList,
+                    project.getId()));
+            List<Task> tasks = new ArrayList<>();
+            if (set != null && set.next()) {
+                Task task = new Task();
+                setTask(set, task);
+                tasks.add(task);
+            }
+            long resulttime = 0;
+            for (Task task : tasks) {
+                resulttime = resulttime + (long) calculatePrice(task).getData();
+            }
+            log.info(resulttime);
+            return new Result<>(Complete, resulttime);
+        } catch (SQLException e) {
+            log.error(e);
+            return new Result<>(Fail);
         }
-        log.info(resulttime);
-        return new Result<>(Complete, resulttime);
     }
 
 
@@ -841,24 +930,24 @@ public class DataProviderJdbc implements DataProvider {
         switch (typeOfEmployee) {
             case Employee:
                 Employee employee = new Employee();
-                setBasicEmployeeParams(employee, firstName, lastName, login,
+                setBasicEmployeeParams(employee,id, firstName, lastName, login,
                         password, email, token, department, typeOfEmployee);
-                return new Result<>(Complete, employee);
+                return isValidEmployee(employee) ? new Result<>(Complete, employee): new Result<>(Fail);
             case Developer:
                 Developer developer = new Developer();
-                setBasicEmployeeParams(developer, firstName, lastName, login,
+                setBasicEmployeeParams(developer,id, firstName, lastName, login,
                         password, email, token, department, typeOfEmployee);
                 developer.setStatus(TypeOfDevelopers.CUSTOM);
                 developer.setProgrammingLanguage(ProgrammingLanguage.JAVA);
-                return new Result<>(Complete, developer);
+                return isValidEmployee(developer) ? new Result<>(Complete, developer): new Result<>(Fail);
             case Tester:
                 Tester tester = new Tester();
-                setBasicEmployeeParams(tester, firstName, lastName, login,
+                setBasicEmployeeParams(tester,id, firstName, lastName, login,
                         password, email, token, department, typeOfEmployee);
                 tester.setStatus(TypeOfDevelopers.CUSTOM);
                 tester.setProgrammingLanguage(ProgrammingLanguage.JAVA);
                 tester.setTypeOfTester(TypeOfTester.Custom);
-                return new Result<>(Complete, tester);
+                return isValidEmployee(tester) ? new Result<>(Complete, tester): new Result<>(Fail);
             default:
                 return new Result<>(Fail);
         }
@@ -907,8 +996,9 @@ public class DataProviderJdbc implements DataProvider {
               Project project = new Project();
               setProject(set, project);
               projects.add(project);
+              return new Result<>(Complete,projects);
           }
-          return new Result<>(Complete,projects);
+          return new Result<>(Fail,new ArrayList<Project>());
       } catch (SQLException e) {
           log.error(e);
           return new Result<>(Fail);
@@ -1016,6 +1106,7 @@ public class DataProviderJdbc implements DataProvider {
      * @param typeOfEmployee
      */
     public void setBasicEmployeeParams(Employee employee,
+                                 long id,
                                  String firstName,
                                  String lastName,
                                  String login,
@@ -1024,6 +1115,7 @@ public class DataProviderJdbc implements DataProvider {
                                  String token,
                                  String department,
                                  TypeOfEmployee typeOfEmployee){
+        employee.setId(id);
         employee.setFirstName(firstName);
         employee.setLastName(lastName);
         employee.setLogin(login);
@@ -1194,18 +1286,61 @@ public class DataProviderJdbc implements DataProvider {
         task.setDeadline(deadline);
         task.setLastUpdate(lastUpdate);
         task.setTaskType(taskType);
-        isValidTask(task);
+        if(!isValidTask(task)){
+            return;
+        };
     }
+
 
     /**
      * @param task
      */
-    private void isValidTask(Task task) {
-        if (task.getTaskDescription() != null
+    public boolean isValidTask(Task task) {
+        return task.getTaskDescription() != null
                 && !task.getTaskDescription().isEmpty()
-                && !task.getMoney().isNaN()) {
-            task.getMoney();
-        }
+                && !task.getMoney().isNaN()
+                && !task.getStatus().toString().isEmpty()
+                && task.getStatus().toString()!=null
+                && !task.getCreatedDate().isEmpty()
+                && task.getCreatedDate() != null
+                && !task.getDeadline().isEmpty()
+                && task.getDeadline() != null
+                && !task.getLastUpdate().isEmpty()
+                && task.getLastUpdate() != null
+                && !task.getTaskType().toString().isEmpty()
+                && task.getTaskType().toString()!=null;
+    }
+
+    /**
+     * @param project
+     * @return
+     */
+    public boolean isValidProject(Project project){
+        return  !project.getTitle().isEmpty()
+                && project.getTitle() != null
+                && !project.getTakeIntoDevelopment().isEmpty()
+                && project.getTakeIntoDevelopment() != null;
+    }
+
+    /**
+     * @param employee
+     */
+    private boolean isValidEmployee(Employee employee) {
+        return employee.getFirstName() != null
+                && !employee.getFirstName().isEmpty()
+                && employee.getLastName() != null
+                && !employee.getLastName().isEmpty()
+                && employee.getLogin() != null
+                && !employee.getLogin().isEmpty()
+                && employee.getPassword() != null
+                && !employee.getPassword().isEmpty()
+                && employee.getEmail() != null
+                && !employee.getEmail().isEmpty()
+                && employee.getToken() != null
+                && !employee.getToken().isEmpty()
+                && employee.getDepartment() != null
+                && !employee.getDepartment().isEmpty()
+                && employee.getTypeOfEmployee() != null;
     }
 
     /**
@@ -1281,8 +1416,8 @@ public class DataProviderJdbc implements DataProvider {
      * @param str
      * @throws Exception
      */
-    private void stringIsValid(String str) throws Exception {
-        if (str.isEmpty()) throw new Exception(String.valueOf(Fail));
+    private boolean stringIsValid(String str) {
+        return str.isEmpty();
     }
 
     /**
@@ -1535,38 +1670,6 @@ public class DataProviderJdbc implements DataProvider {
             return new ArrayList<>();
         }
     }
-    public <T extends Employee> List<T> getEmployeeRecords(Class<T> cl){
-        try {
-            List<T> employeeList = new ArrayList<>();
-            ResultSet setEmployee = getTaskRecords(String.format(Constants.SELECT_FOR_ALL,
-                    cl.getSimpleName().toUpperCase()));
-            while (setEmployee.next()) {
-                T employee = (T) new Employee();
-                setBasicEmployee(setEmployee, employee);
-                employeeList.add(employee);
-            }
-            return employeeList;
-        } catch (SQLException e) {
-            log.error(e);
-            return new ArrayList<>();
-        }
-    }
-    public List<Project> getProjectRecords(){
-        try {
-            List<Project> taskList = new ArrayList<>();
-            ResultSet setProject = getTaskRecords(String.format(Constants.SELECT_FOR_ALL,
-                    Project.class.getSimpleName().toUpperCase()));
-            while (setProject.next()) {
-                Project project =  new Project();
-                setProject(setProject, project);
-                taskList.add(project);
-            }
-            return taskList;
-        } catch (SQLException e) {
-            log.error(e);
-            return new ArrayList<>();
-        }
-    }
 
     /**
      * @return
@@ -1626,6 +1729,10 @@ public class DataProviderJdbc implements DataProvider {
         return set;
     }
 
+    /**
+     * @param employee
+     * @return
+     */
     public Result<Long> getEmployeeByParam(Employee employee) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_EMPLOYEE,
@@ -1649,6 +1756,10 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
+    /**
+     * @param developer
+     * @return
+     */
     public Result<Long> getDeveloperByParam(Developer developer) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_DEVELOPER,
@@ -1674,6 +1785,10 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
+    /**
+     * @param tester
+     * @return
+     */
     public Result<Long> getTesterByParam(Tester tester) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_TESTER,
@@ -1700,6 +1815,10 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
+    /**
+     * @param project
+     * @return
+     */
     public Result<Long> getProjectByParam(Project project) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_PROJECT,
@@ -1717,10 +1836,10 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
-
-
-
-
+    /**
+     * @param task
+     * @return
+     */
     public Result<Long> getTaskByParam(Task task) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_TASK, task.getTaskDescription(),
@@ -1738,7 +1857,10 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
-
+    /**
+     * @param developersTask
+     * @return
+     */
     public Result<Long> getDevelopersTaskByParam(DevelopersTask developersTask) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_DEVELOPERSTASK, developersTask.getTaskDescription(),
@@ -1756,6 +1878,10 @@ public class DataProviderJdbc implements DataProvider {
         }
     }
 
+    /**
+     * @param task
+     * @return
+     */
     public Result<Long> getTestersTaskByParam(TestersTask task) {
         try {
             ResultSet set = getTaskRecords(String.format(Constants.SELECT_TESTERSTASK, task.getTaskDescription(),

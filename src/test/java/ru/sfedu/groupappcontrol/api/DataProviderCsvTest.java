@@ -729,35 +729,6 @@ class DataProviderCsvTest {
     }
 
     @Test
-    public void writeCommentSuccess() {
-        instance.writeDevelopersTaskComment(1,"i wrote this comment now");
-        DevelopersTask developersTask = instance.getDevelopersTaskById(1).getData();
-        log.debug(developersTask);
-        Assertions.assertEquals("i wrote this comment now",developersTask.getTaskDescription());
-    }
-
-    @Test
-    public void writeCommentFail() {
-        DevelopersTask developersTask = instance.getDevelopersTaskById(1).getData();
-        log.debug(developersTask);
-        Assertions.assertEquals(Fail,instance.writeDevelopersTaskComment(1,"").getStatus());
-    }
-
-    @Test
-    public void getTaskInfoSuccess() {
-        Outcomes o = instance. getDevelopersTaskById(1).getStatus();
-        log.info(instance. getDevelopersTaskById(1).getData());
-        Assertions.assertEquals(Complete,o);
-    }
-
-    @Test
-    public void getTaskInfoFail() {
-        Outcomes o = instance.getDevelopersTaskById(45).getStatus();
-        log.info(instance. getDevelopersTaskById(45).getData());
-        Assertions.assertEquals(Fail,o);
-    }
-
-    @Test
     public void getAnyTaskByTaskIdSuccess() {
         Task task = instance.getTaskById(1).getData();
         log.debug(task);
@@ -769,30 +740,6 @@ class DataProviderCsvTest {
         Task task = instance.getTaskById(1).getData();
         log.debug(task);
         Assertions.assertNotEquals(2,task.getId());
-    }
-
-    @Test
-    public void getProjectListByIdSuccess() {
-        Outcomes o = instance.getProjectListByScrummasterId(1).getStatus();
-        log.debug(instance.getProjectListByScrummasterId(1).getStatus());
-        Assertions.assertEquals(Complete,o);
-    }
-
-    @Test
-    public void getProjectListByIdFail(){
-        Assertions.assertNull(instance.getProjectListByScrummasterId(100).getData());
-    }
-
-    @Test
-    public void getTaskInfoGenericSuccess(){
-        log.error(instance.getTestersTaskById(1).getData());
-        Assertions.assertEquals(1,instance.getTestersTaskById(1).getData().getId());
-    }
-
-    @Test
-    public void getTaskInfoGenericFail(){
-        log.error(instance.getTestersTaskById(1).getData());
-        Assertions.assertNotEquals(2,instance.getTestersTaskById(1).getData().getId());
     }
 
     @Test

@@ -98,6 +98,9 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> insertTask(Task task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,insertGenericTask(Task.class,task)
                 .getStatus().toString()));
         return insertGenericTask(Task.class,task);
@@ -105,6 +108,9 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> insertDevelopersTask(DevelopersTask task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,insertGenericTask(DevelopersTask.class,task)
                 .getStatus().toString()));
         return insertGenericTask(DevelopersTask.class,task);
@@ -112,6 +118,9 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> insertTestersTask(TestersTask task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,insertGenericTask(TestersTask.class,task)
                 .getStatus().toString()));
         return insertGenericTask(TestersTask.class,task);
@@ -215,6 +224,9 @@ public class DataProviderCsv implements DataProvider {
 
     @Override
     public Result<Void> updateTask(Task task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,updateGenericTask(Task.class,task)
                 .getStatus().toString()));
         return updateGenericTask(Task.class,task);
@@ -281,16 +293,16 @@ public class DataProviderCsv implements DataProvider {
                                    @NonNull List<Employee> team,@NonNull String createdDate,
                                    @NonNull String deadline,@NonNull String lastUpdate,
                                    @NonNull TaskTypes taskType) {
-        switch(taskType){
+        switch (taskType) {
             case BASE_TASK:
                 Task baseTask = createBaseTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, baseTask);
+                return isValidTask(baseTask) ? new Result<>(Complete, baseTask): new Result<>(Fail);
             case DEVELOPERS_TASK:
                 DevelopersTask developersTask = createDevelopersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, developersTask);
+                return isValidTask(developersTask) ? new Result<>(Complete, developersTask): new Result<>(Fail);
             case TESTERS_TASK:
                 TestersTask testersTask = createTestersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, testersTask);
+                return isValidTask(testersTask) ? new Result<>(Complete, testersTask): new Result<>(Fail);
             default:
                 return new Result<>(Fail);
         }
@@ -982,6 +994,9 @@ public class DataProviderCsv implements DataProvider {
      */
     private <T extends Task> Result<Void> updateGenericTask(Class<T> cl, T updElement){
         try{
+            if(!isValidTask(updElement)){
+                return new Result<>(Fail);
+            }
             List<T> userList = select(cl);
             Optional<T> optionalUser = searchTask(userList,updElement.getId());
             optionalIsValid(optionalUser);
@@ -1004,6 +1019,9 @@ public class DataProviderCsv implements DataProvider {
      */
     private <T extends Employee> Result<Void> updateGenericEmployee(Class<T> cl, T updElement)  {
         try{
+            if(!isValidEmployee(updElement)){
+                return new Result<>(Fail);
+            }
             List<T> userList = select(cl);
             Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
             optionalIsValid(optionalUser);
@@ -1079,8 +1097,8 @@ public class DataProviderCsv implements DataProvider {
         task.setDeadline(deadline);
         task.setLastUpdate(lastUpdate);
         task.setTaskType(taskType);
-        if(isValidTask(task)){
-           return;
+        if(!isValidTask(task)){
+            return;
         };
     }
 
@@ -1113,7 +1131,7 @@ public class DataProviderCsv implements DataProvider {
                 lastUpdate,
                 TaskTypes.BASE_TASK);
         log.debug(task);
-        return new Result<>(Complete,task);
+        return isValidTask(task)? new Result<>(Complete,task) : new Result<>(Fail);
     }
 
     /**
@@ -1312,6 +1330,9 @@ public class DataProviderCsv implements DataProvider {
      */
     private Result<Long> calculatePrice(Task task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             long resulttime = 0;
             SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
@@ -1352,11 +1373,40 @@ public class DataProviderCsv implements DataProvider {
     }
 
     /**
-     * @param employee
+     * @param task
+     */
+    public boolean isValidTask(Task task) {
+        return task.getTaskDescription() != null
+                && !task.getTaskDescription().isEmpty()
+                && !task.getMoney().isNaN()
+                && !task.getStatus().toString().isEmpty()
+                && task.getStatus().toString()!=null
+                && !task.getCreatedDate().isEmpty()
+                && task.getCreatedDate() != null
+                && !task.getDeadline().isEmpty()
+                && task.getDeadline() != null
+                && !task.getLastUpdate().isEmpty()
+                && task.getLastUpdate() != null
+                && !task.getTaskType().toString().isEmpty()
+                && task.getTaskType().toString()!=null;
+    }
+
+    /**
+     * @param project
      * @return
      */
+    public boolean isValidProject(Project project){
+        return  !project.getTitle().isEmpty()
+                && project.getTitle() != null
+                && !project.getTakeIntoDevelopment().isEmpty()
+                && project.getTakeIntoDevelopment() != null;
+    }
+
+    /**
+     * @param employee
+     */
     private boolean isValidEmployee(Employee employee) {
-            return employee.getFirstName() != null
+        return employee.getFirstName() != null
                 && !employee.getFirstName().isEmpty()
                 && employee.getLastName() != null
                 && !employee.getLastName().isEmpty()
@@ -1372,26 +1422,6 @@ public class DataProviderCsv implements DataProvider {
                 && !employee.getDepartment().isEmpty()
                 && employee.getTypeOfEmployee() != null;
     }
-
-    /**
-     * @param task
-     * @return
-     */
-    private boolean isValidTask(Task task) {
-         return task.getTaskDescription() != null
-                && !task.getTaskDescription().isEmpty()
-                && !task.getMoney().isNaN()
-                && !task.getStatus().toString().isEmpty()
-                && task.getStatus().toString()!=null
-                && !task.getCreatedDate().isEmpty()
-                && task.getCreatedDate() != null
-                && !task.getDeadline().isEmpty()
-                && task.getDeadline() != null
-                && !task.getLastUpdate().isEmpty()
-                && task.getLastUpdate() != null
-                && !task.getTaskType().toString().isEmpty()
-                && task.getTaskType().toString()!=null;
-        }
 
     /**
      * @param list

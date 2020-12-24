@@ -38,6 +38,7 @@ public class DataProviderXML implements DataProvider {
 
     }
 
+
     @Override
     public Result<Task> getTaskById(long id){
         log.info(String.format(Constants.logInfo,getTaskByID(Task.class,id)
@@ -96,6 +97,9 @@ public class DataProviderXML implements DataProvider {
 
     @Override
     public Result<Void> insertTask(Task task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,insertGenericTask(Task.class,task)
                 .getStatus().toString()));
         return insertGenericTask(Task.class,task);
@@ -103,6 +107,9 @@ public class DataProviderXML implements DataProvider {
 
     @Override
     public Result<Void> insertDevelopersTask(DevelopersTask task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,insertGenericTask(DevelopersTask.class,task)
                 .getStatus().toString()));
         return insertGenericTask(DevelopersTask.class,task);
@@ -110,6 +117,9 @@ public class DataProviderXML implements DataProvider {
 
     @Override
     public Result<Void> insertTestersTask(TestersTask task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,insertGenericTask(TestersTask.class,task)
                 .getStatus().toString()));
         return insertGenericTask(TestersTask.class,task);
@@ -213,6 +223,9 @@ public class DataProviderXML implements DataProvider {
 
     @Override
     public Result<Void> updateTask(Task task){
+        if(!isValidTask(task)){
+            return new Result<>(Fail);
+        }
         log.info(String.format(Constants.logInfo,updateGenericTask(Task.class,task)
                 .getStatus().toString()));
         return updateGenericTask(Task.class,task);
@@ -279,16 +292,16 @@ public class DataProviderXML implements DataProvider {
                                    @NonNull List<Employee> team,@NonNull String createdDate,
                                    @NonNull String deadline,@NonNull String lastUpdate,
                                    @NonNull TaskTypes taskType) {
-        switch(taskType){
+        switch (taskType) {
             case BASE_TASK:
                 Task baseTask = createBaseTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, baseTask);
+                return isValidTask(baseTask) ? new Result<>(Complete, baseTask): new Result<>(Fail);
             case DEVELOPERS_TASK:
                 DevelopersTask developersTask = createDevelopersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, developersTask);
+                return isValidTask(developersTask) ? new Result<>(Complete, developersTask): new Result<>(Fail);
             case TESTERS_TASK:
                 TestersTask testersTask = createTestersTask(id, taskDescription, money, scrumMaster, status, team, createdDate, deadline, lastUpdate).getData();
-                return new Result<>(Complete, testersTask);
+                return isValidTask(testersTask) ? new Result<>(Complete, testersTask): new Result<>(Fail);
             default:
                 return new Result<>(Fail);
         }
@@ -515,7 +528,6 @@ public class DataProviderXML implements DataProvider {
         }
     }
 
-
     @Override
     public List<Employee> getAllEmployee(){
         List<Employee> employees = new ArrayList<>();
@@ -540,7 +552,6 @@ public class DataProviderXML implements DataProvider {
                 return new Result<>(Fail);
         }
     }
-
 
     @Override
     public Result<List<Project>> getProjectListByScrummasterId(long id) {
@@ -688,6 +699,7 @@ public class DataProviderXML implements DataProvider {
         return new Result<>(Complete,tester);
     }
 
+    //Optional
 
     /**
      * @param cl
@@ -700,9 +712,12 @@ public class DataProviderXML implements DataProvider {
             FileReader file = new FileReader(path);
             Serializer serializer = new Persister();
             WrapperXML<T> xml = serializer.read(WrapperXML.class, file);
-            if (xml.getList() == null) xml.setList(Collections.emptyList());
+            List<T> list = xml.getList();
+            if (list.size()>0){
+                return list;
+            }
             file.close();
-            return xml.getList();
+            return Collections.emptyList();
         } catch (Exception e) {
             log.error(e);
             return Collections.emptyList();
@@ -751,9 +766,8 @@ public class DataProviderXML implements DataProvider {
      * @param <T>
      * @return
      */
-    private  <T> Result<T> writer(String path,List<T> list) {
+    public <T> Result<T> writer(String path,List<T> list) {
         try {
-            createFile(path);
             Writer writer = new FileWriter(path);
             Serializer serializer = new Persister();
             WrapperXML<T> xml = new WrapperXML<>(list);
@@ -764,7 +778,6 @@ public class DataProviderXML implements DataProvider {
             return new Result<>(Fail);
         }
     }
-
     //CRUD
 
     /**
@@ -868,7 +881,7 @@ public class DataProviderXML implements DataProvider {
      * @param <T>
      * @return
      */
-    protected  <T extends Employee> Result<Void> insertGenericEmployeeForDelete(Class<T> cl,
+    private <T extends Employee> Result<Void> insertGenericEmployeeForDelete(Class<T> cl,
                                                                              @NonNull List<T> list,
                                                                              boolean append) {
         try{
@@ -904,7 +917,7 @@ public class DataProviderXML implements DataProvider {
      * @param <T>
      * @return
      */
-    protected  <T extends Task> Result<Void> insertGenericTaskForDelete(Class<T> cl,
+    private <T extends Task> Result<Void> insertGenericTaskForDelete(Class<T> cl,
                                                                      @NonNull List<T> list,
                                                                      boolean append) {
         try{
@@ -976,6 +989,9 @@ public class DataProviderXML implements DataProvider {
      */
     private <T extends Task> Result<Void> updateGenericTask(Class<T> cl, T updElement){
         try{
+            if(!isValidTask(updElement)){
+                return new Result<>(Fail);
+            }
             List<T> userList = select(cl);
             Optional<T> optionalUser = searchTask(userList,updElement.getId());
             optionalIsValid(optionalUser);
@@ -998,6 +1014,9 @@ public class DataProviderXML implements DataProvider {
      */
     private <T extends Employee> Result<Void> updateGenericEmployee(Class<T> cl, T updElement)  {
         try{
+            if(!isValidEmployee(updElement)){
+                return new Result<>(Fail);
+            }
             List<T> userList = select(cl);
             Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
             optionalIsValid(optionalUser);
@@ -1073,11 +1092,10 @@ public class DataProviderXML implements DataProvider {
         task.setDeadline(deadline);
         task.setLastUpdate(lastUpdate);
         task.setTaskType(taskType);
-        if(isValidTask(task)){
+        if(!isValidTask(task)){
             return;
         };
     }
-
 
     /**
      * @param id
@@ -1108,7 +1126,7 @@ public class DataProviderXML implements DataProvider {
                 lastUpdate,
                 TaskTypes.BASE_TASK);
         log.debug(task);
-        return new Result<>(Complete,task);
+        return isValidTask(task)? new Result<>(Complete,task) : new Result<>(Fail);
     }
 
     /**
@@ -1307,6 +1325,9 @@ public class DataProviderXML implements DataProvider {
      */
     private Result<Long> calculatePrice(Task task) {
         try {
+            if(!isValidTask(task)){
+                return new Result<>(Fail);
+            }
             long resulttime = 0;
             SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
@@ -1347,8 +1368,37 @@ public class DataProviderXML implements DataProvider {
     }
 
     /**
-     * @param employee
+     * @param task
+     */
+    public boolean isValidTask(Task task) {
+        return task.getTaskDescription() != null
+                && !task.getTaskDescription().isEmpty()
+                && !task.getMoney().isNaN()
+                && !task.getStatus().toString().isEmpty()
+                && task.getStatus().toString()!=null
+                && !task.getCreatedDate().isEmpty()
+                && task.getCreatedDate() != null
+                && !task.getDeadline().isEmpty()
+                && task.getDeadline() != null
+                && !task.getLastUpdate().isEmpty()
+                && task.getLastUpdate() != null
+                && !task.getTaskType().toString().isEmpty()
+                && task.getTaskType().toString()!=null;
+    }
+
+    /**
+     * @param project
      * @return
+     */
+    public boolean isValidProject(Project project){
+        return  !project.getTitle().isEmpty()
+                && project.getTitle() != null
+                && !project.getTakeIntoDevelopment().isEmpty()
+                && project.getTakeIntoDevelopment() != null;
+    }
+
+    /**
+     * @param employee
      */
     private boolean isValidEmployee(Employee employee) {
         return employee.getFirstName() != null
@@ -1366,26 +1416,6 @@ public class DataProviderXML implements DataProvider {
                 && employee.getDepartment() != null
                 && !employee.getDepartment().isEmpty()
                 && employee.getTypeOfEmployee() != null;
-    }
-
-    /**
-     * @param task
-     * @return
-     */
-    private boolean isValidTask(Task task) {
-        return task.getTaskDescription() != null
-                && !task.getTaskDescription().isEmpty()
-                && !task.getMoney().isNaN()
-                && !task.getStatus().toString().isEmpty()
-                && task.getStatus().toString()!=null
-                && !task.getCreatedDate().isEmpty()
-                && task.getCreatedDate() != null
-                && !task.getDeadline().isEmpty()
-                && task.getDeadline() != null
-                && !task.getLastUpdate().isEmpty()
-                && task.getLastUpdate() != null
-                && !task.getTaskType().toString().isEmpty()
-                && task.getTaskType().toString()!=null;
     }
 
     /**

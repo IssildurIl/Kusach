@@ -10,6 +10,7 @@ import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
 import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -88,7 +89,8 @@ public interface DataProvider {
       * @param id the id
       * @return the project by id
       */
-     Result<Project> getProjectByID( long id);
+     Result<Project> getProjectByID(long id);
+
 
      /**
       * Insert task result.
@@ -124,6 +126,7 @@ public interface DataProvider {
       * @return the result
       */
      Result<Void> insertEmployee(Employee employee);
+
 
      /**
       * Insert developer result.
@@ -220,6 +223,7 @@ public interface DataProvider {
       * @return the result
       */
      Result<Void> updateTask(Task task);
+
 
      /**
       * Update developers task result.
@@ -322,6 +326,7 @@ public interface DataProvider {
       */
      Result<Task> getTasksByUser(long userId, long taskId);
 
+
      /**
       * Change task status result.
       *
@@ -335,10 +340,11 @@ public interface DataProvider {
      /**
       * Calculate task cost result.
       *
-      * @param task the task
+      * @param id the id
       * @return the result
       */
-     Result<Double> calculateTaskCost(Task task);
+     Result<Double> calculateTaskCost(long id);
+
 
      /**
       * Write base task comment result.
@@ -417,24 +423,24 @@ public interface DataProvider {
       * @param projectId the project id
       * @return the project by id
       */
-     Result<List<Project>> getProjectById(long empId, long projectId);
+     Result<List<Project>> getProjectByScrumMasterId(long empId, long projectId);
 
 
      /**
       * Calculate project cost result.
       *
-      * @param project the project
+      * @param id the id
       * @return the result
       */
-     Result<Long> calculateProjectCost(Project project);
+     Result<Long> calculateProjectCost(long id);
 
      /**
       * Calculate project time result.
       *
-      * @param project the project
+      * @param id the id
       * @return the result
       */
-     Result<Long> calculateProjectTime(Project project);
+     Result<Long> calculateProjectTime(long id);
 
 
      /**

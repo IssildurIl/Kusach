@@ -6,7 +6,15 @@ import org.apache.logging.log4j.Logger;
 import ru.sfedu.groupappcontrol.Constants;
 import ru.sfedu.groupappcontrol.Result;
 import ru.sfedu.groupappcontrol.models.*;
-import ru.sfedu.groupappcontrol.models.enums.*;
+import ru.sfedu.groupappcontrol.models.enums.BugStatus;
+import ru.sfedu.groupappcontrol.models.enums.DeveloperTaskType;
+import ru.sfedu.groupappcontrol.models.enums.Outcomes;
+import ru.sfedu.groupappcontrol.models.enums.ProgrammingLanguage;
+import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfDevelopers;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfTester;
 import ru.sfedu.groupappcontrol.utils.CustomLogger;
 
 import java.io.IOException;
@@ -64,9 +72,7 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 DevelopersTask developersTask = new DevelopersTask();
                 setBasicTask(set, developersTask);
-                log.debug(developersTask);
                 developersTask.setDeveloperComments(set.getString(Constants.DEVELOPERS_TASK_COMMENTS));
-                log.debug(developersTask);
                 developersTask.setDeveloperTaskType(DeveloperTaskType.valueOf(set.getString(Constants.DEVELOPERS_TASK_TYPE)));
                 log.debug(developersTask);
                 log.info(CustomLogger.endFunc(developersTask));
@@ -91,9 +97,7 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 TestersTask testersTask = new TestersTask();
                 setBasicTask(set, testersTask);
-                log.debug(testersTask);
                 testersTask.setBugStatus(BugStatus.valueOf(set.getString(Constants.TESTERSTASK_BUGSTATUS)));
-                log.debug(testersTask);
                 testersTask.setBugDescription(set.getString(Constants.TESTERSTASK_DESCRIPTION));
                 log.debug(testersTask);
                 log.info(CustomLogger.endFunc(testersTask));
@@ -141,9 +145,7 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 Developer developer = new Developer();
                 setBasicEmployee(set, developer);
-                log.debug(developer);
                 developer.setStatus(TypeOfDevelopers.valueOf(set.getString(Constants.DEVELOPER_TYPE_OF_DEVELOPER)));
-                log.debug(developer);
                 developer.setProgrammingLanguage(ProgrammingLanguage.valueOf(set.getString(Constants.DEVELOPER_TYPE_OF_PROGRAMMING_LANGUAGE)));
                 log.debug(developer);
                 log.info(CustomLogger.endFunc(developer));
@@ -168,9 +170,7 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 Tester tester = new Tester();
                 setBasicEmployee(set, tester);
-                log.debug(tester);
                 tester.setStatus(TypeOfDevelopers.valueOf(set.getString(Constants.TESTER_TYPE_OF_DEVELOPER)));
-                log.debug(tester);
                 tester.setProgrammingLanguage(ProgrammingLanguage.valueOf(set.getString(Constants.TESTER_TYPE_OF_PROGRAMMING_LANGUAGE)));
                 log.debug(tester);
                 tester.setTypeOfTester(TypeOfTester.valueOf(set.getString(Constants.TESTER_TYPE_OF_TESTER)));
@@ -232,21 +232,13 @@ public class DataProviderJdbc implements DataProvider {
             task1.setId(set.getLong(Constants.TASK_ID));
             log.info(task1.getId());
             task1.setTaskDescription(task.getTaskDescription());
-            log.debug(task1);
             task1.setMoney(task.getMoney());
-            log.debug(task1);
             task1.setScrumMaster(task.getScrumMaster());
-            log.debug(task1);
             task1.setStatus(task.getStatus());
-            log.debug(task1);
             task1.setCreatedDate(task.getCreatedDate());
-            log.debug(task1);
             task1.setDeadline(task.getDeadline());
-            log.debug(task1);
             task1.setLastUpdate(task.getLastUpdate());
-            log.debug(task1);
             task1.setTaskType(task.getTaskType());
-            log.debug(task1);
             task1.setTeam(task.getTeam());
             log.debug(task1);
             log.info(task);
@@ -281,27 +273,16 @@ public class DataProviderJdbc implements DataProvider {
             set.next();
             DevelopersTask developersTask = new DevelopersTask();
             developersTask.setId(set.getLong(Constants.TASK_ID));
-            log.debug(developersTask);
             developersTask.setTaskDescription(task.getTaskDescription());
-            log.debug(developersTask);
             developersTask.setMoney(task.getMoney());
-            log.debug(developersTask);
             developersTask.setScrumMaster(task.getScrumMaster());
-            log.debug(developersTask);
             developersTask.setStatus(task.getStatus());
-            log.debug(developersTask);
             developersTask.setCreatedDate(task.getCreatedDate());
-            log.debug(developersTask);
             developersTask.setDeadline(task.getDeadline());
-            log.debug(developersTask);
             developersTask.setLastUpdate(task.getLastUpdate());
-            log.debug(developersTask);
             developersTask.setTaskType(task.getTaskType());
-            log.debug(developersTask);
             developersTask.setTeam(task.getTeam());
-            log.debug(developersTask);
             developersTask.setDeveloperComments(task.getDeveloperComments());
-            log.debug(developersTask);
             developersTask.setDeveloperTaskType(task.getDeveloperTaskType());
             log.debug(developersTask);
             log.info(task);
@@ -344,27 +325,16 @@ public class DataProviderJdbc implements DataProvider {
             set.next();
             TestersTask testersTask = new TestersTask();
             testersTask.setId(set.getLong(Constants.TASK_ID));
-            log.debug(testersTask);
             testersTask.setTaskDescription(task.getTaskDescription());
-            log.debug(testersTask);
             testersTask.setMoney(task.getMoney());
-            log.debug(testersTask);
             testersTask.setScrumMaster(task.getScrumMaster());
-            log.debug(testersTask);
             testersTask.setStatus(task.getStatus());
-            log.debug(testersTask);
             testersTask.setCreatedDate(task.getCreatedDate());
-            log.debug(testersTask);
             testersTask.setDeadline(task.getDeadline());
-            log.debug(testersTask);
             testersTask.setLastUpdate(task.getLastUpdate());
-            log.debug(testersTask);
             testersTask.setTaskType(task.getTaskType());
-            log.debug(testersTask);
             testersTask.setTeam(task.getTeam());
-            log.debug(testersTask);
             testersTask.setBugStatus(task.getBugStatus());
-            log.debug(testersTask);
             testersTask.setBugDescription(task.getBugDescription());
             log.debug(testersTask);
             log.info(task);
@@ -493,15 +463,10 @@ public class DataProviderJdbc implements DataProvider {
             log.debug(set);
             set.next();
             Project project1 = new Project();
-            log.debug(project1);
             project1.setId(set.getLong(Constants.PROJECT_ID));
-            log.debug(project1);
             project1.setTitle(project.getTitle());
-            log.debug(project1);
             project1.setTakeIntoDevelopment(project.getTakeIntoDevelopment());
-            log.debug(project1);
             project1.setTask(project.getTask());
-            log.debug(project1);
             updTask(project1);
             log.debug(project1);
             log.info(CustomLogger.endFunc(project1));
@@ -866,11 +831,8 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(getTaskRecords(Task.class));
-        log.debug(taskList);
         taskList.addAll(getTaskRecords(DevelopersTask.class));
-        log.debug(taskList);
         taskList.addAll(getTaskRecords(TestersTask.class));
-        log.debug(taskList);
         Optional<Task> optTask = taskList.stream().filter(el -> el.getId() == id).findAny();
         log.debug(optTask);
         log.info(CustomLogger.endFunc(optTask));
@@ -883,9 +845,7 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(getTaskRecords(Task.class));
-        log.debug(taskList);
         taskList.addAll(getTaskRecords(DevelopersTask.class));
-        log.debug(taskList);
         taskList.addAll(getTaskRecords(TestersTask.class));
         log.debug(taskList);
         log.info(CustomLogger.endFunc(taskList));
@@ -934,12 +894,10 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     @Override
-    public Result<Double> calculateTaskCost(Task task) {
+    public Result<Double> calculateTaskCost(long id) {
         try {
             log.info(CustomLogger.startFunc());
-            if(!isValidTask(task)){
-                return new Result<>(Fail);
-            }
+            Task task = getTaskById(id).getData();
             SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             java.util.Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
             log.debug(firstDate);
@@ -1029,7 +987,6 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 Task task = new Task();
                 setBasicTask(set, task);
-                log.debug(task);
                 List<Task> taskList = new ArrayList<>();
                 taskList.add(task);
                 log.debug(taskList);
@@ -1056,11 +1013,8 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 DevelopersTask developersTask = new DevelopersTask();
                 setBasicTask(set, developersTask);
-                log.debug(developersTask);
                 developersTask.setDeveloperComments(set.getString(Constants.DEVELOPERS_TASK_COMMENTS));
-                log.debug(developersTask);
                 developersTask.setDeveloperTaskType(DeveloperTaskType.valueOf(set.getString(Constants.DEVELOPERS_TASK_TYPE)));
-                log.debug(developersTask);
                 List<DevelopersTask> developersTasks = new ArrayList<>();
                 developersTasks.add(developersTask);
                 log.debug(developersTasks);
@@ -1087,11 +1041,8 @@ public class DataProviderJdbc implements DataProvider {
             if (set != null && set.next()) {
                 TestersTask testersTask = new TestersTask();
                 setBasicTask(set, testersTask);
-                log.debug(testersTask);
                 testersTask.setBugStatus(BugStatus.valueOf(set.getString(Constants.TESTERSTASK_BUGSTATUS)));
-                log.debug(testersTask);
                 testersTask.setBugDescription(set.getString(Constants.TESTERSTASK_DESCRIPTION));
-                log.debug(testersTask);
                 List<TestersTask> testersTasks = new ArrayList<>();
                 testersTasks.add(testersTask);
                 log.debug(testersTasks);
@@ -1115,19 +1066,15 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         Project project = new Project();
         project.setId(id);
-        log.debug(project);
         project.setTitle(title);
-        log.debug(project);
         project.setTakeIntoDevelopment(takeIntoDevelopment);
-        log.debug(project);
         project.setTask(tasks);
-        log.debug(project);
         log.info(CustomLogger.endFunc(project));
         return !isValidProject(project) ? new Result<>(Fail) : new Result<>(Complete, project);
     }
 
     @Override
-    public Result<List<Project>> getProjectById(long employeeId, long projectId) {
+    public Result<List<Project>> getProjectByScrumMasterId(long employeeId, long projectId) {
         log.info(CustomLogger.startFunc());
         try {
             ResultSet set = getTaskRecords(String.format(Constants.GETPROJECTLISTBYWORKERID,
@@ -1150,13 +1097,10 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     @Override
-    public Result<Long> calculateProjectCost(Project project) {
+    public Result<Long> calculateProjectCost(long id) {
         log.info(CustomLogger.startFunc());
         try {
-            if(!isValidProject(project)){
-                log.info(CustomLogger.endFunc());
-                return new Result<>(Fail);
-            }
+            Project project = getProjectByID(id).getData();
             ResultSet set = getTaskRecords(String.format(Constants.GetTaskList,
                     project.getId()));
             log.debug(set);
@@ -1169,7 +1113,7 @@ public class DataProviderJdbc implements DataProvider {
             }
             double projectCost = 0.0;
             for (Task task : tasks) {
-                projectCost = projectCost + (double) calculateTaskCost(task).getData();
+                projectCost = projectCost + (double) calculateTaskCost(task.getId()).getData();
             }
             log.info(CustomLogger.endFunc(projectCost));
             return new Result<>(Complete, (long) projectCost);
@@ -1181,12 +1125,10 @@ public class DataProviderJdbc implements DataProvider {
     }
 
     @Override
-    public Result<Long> calculateProjectTime(Project project) {
+    public Result<Long> calculateProjectTime(long id) {
         log.info(CustomLogger.startFunc());
         try {
-            if(!isValidProject(project)){
-                return new Result<>(Fail);
-            }
+            Project project = getProjectByID(id).getData();
             ResultSet set = getTaskRecords(String.format(Constants.GetTaskList,
                     project.getId()));
             log.debug(set);
@@ -1224,7 +1166,7 @@ public class DataProviderJdbc implements DataProvider {
                                            @NonNull TypeOfEmployee typeOfEmployee) {
         log.info(CustomLogger.startFunc());
         switch (typeOfEmployee) {
-            case Employee:
+            case EMPLOYEE:
                 Employee employee = new Employee();
                 setBasicEmployeeParams(employee,id, firstName, lastName, login,
                         password, email, token, department, typeOfEmployee);
@@ -1267,9 +1209,7 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         List<Employee> emplList = new ArrayList<>();
         emplList.addAll(getBaseEmployee(Employee.class));
-        log.debug(emplList);
         emplList.addAll(getBaseEmployee(Developer.class));
-        log.debug(emplList);
         emplList.addAll(getBaseEmployee(Tester.class));
         log.debug(emplList);
         log.info(CustomLogger.endFunc(emplList));
@@ -1362,23 +1302,14 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         try {
             task.setId(set.getLong(Constants.TASK_ID));
-            log.debug(task);
             task.setTaskDescription(set.getString(Constants.TASK_DESCRIPTION));
-            log.debug(task);
             task.setMoney(set.getDouble(Constants.TASK_MONEY));
-            log.debug(task);
             task.setScrumMaster(getEmployeeById(set.getLong(Constants.TASK_SCRUMMASTER)).getData());
-            log.debug(task);
             task.setStatus(TypeOfCompletion.valueOf(set.getString(Constants.TASK_TYPE_OF_COMPLETION)));
-            log.debug(task);
             task.setTaskType(TaskTypes.valueOf(set.getString(Constants.TASK_TASK_TYPES)));
-            log.debug(task);
             task.setTeam(getEmployeeListFromTask(task));
-            log.debug(task);
             task.setCreatedDate(set.getString(Constants.TASK_CREATED_DATE));
-            log.debug(task);
             task.setDeadline(set.getString(Constants.TASK_DEADLINE));
-            log.debug(task);
             task.setLastUpdate(set.getString(Constants.TASK_LAST_UPDATE));
             log.debug(task);
             log.info(CustomLogger.endFunc(task));
@@ -1401,7 +1332,7 @@ public class DataProviderJdbc implements DataProvider {
             List<Employee> list = new ArrayList<>();
             while(res.next()) {
                 switch (TypeOfEmployee.valueOf(res.getString(Constants.EMPLOYEE_TYPE_OF_EMLPOYEE))){
-                    case Employee:
+                    case EMPLOYEE:
                         list.add(getEmployeeById(res.getLong(Constants.MAP_EMPLOYEE_ID)).getData());
                         log.debug(list);
                         log.info(CustomLogger.endFunc(list));
@@ -1530,7 +1461,7 @@ public class DataProviderJdbc implements DataProvider {
             List<Employee> list = new ArrayList<>();
             while (set.next()) {
                 switch (TypeOfEmployee.valueOf(set.getString(Constants.EMPLOYEE_TYPE_OF_EMLPOYEE))) {
-                    case Employee:
+                    case EMPLOYEE:
                         Employee employee =new Employee();
                         setBasicEmployee(set,employee);
                         log.debug(employee);
@@ -1574,9 +1505,7 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         try {
             project.setId(set.getLong(Constants.PROJECT_ID));
-            log.debug(project);
             project.setTitle(set.getString(Constants.PROJECT_TITLE));
-            log.debug(project);
             project.setTakeIntoDevelopment(set.getString(Constants.PROJECT_TAKE_INTO_DEVELOPMENT));
             log.debug(project);
             log.info(CustomLogger.endFunc(project));
@@ -1594,23 +1523,14 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         try {
             task.setId(set.getLong(Constants.TASK_ID));
-            log.debug(task);
             task.setTaskDescription(set.getString(Constants.TASK_DESCRIPTION));
-            log.debug(task);
             task.setMoney(set.getDouble(Constants.TASK_MONEY));
-            log.debug(task);
             task.setScrumMaster(getEmployeeById(set.getLong(Constants.TASK_SCRUMMASTER)).getData());
-            log.debug(task);
             task.setStatus(TypeOfCompletion.valueOf(set.getString(Constants.TASK_TYPE_OF_COMPLETION)));
-            log.debug(task);
             task.setTaskType(TaskTypes.valueOf(set.getString(Constants.TASK_TASK_TYPES)));
-            log.debug(task);
             task.setTeam(getEmployeeListFromTask(task));
-            log.debug(task);
             task.setCreatedDate(set.getString(Constants.TASK_CREATED_DATE));
-            log.debug(task);
             task.setDeadline(set.getString(Constants.TASK_DEADLINE));
-            log.debug(task);
             task.setLastUpdate(set.getString(Constants.TASK_LAST_UPDATE));
             log.debug(task);
             log.info(CustomLogger.endFunc(task));
@@ -1628,27 +1548,16 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         try {
             task.setId(set.getLong(Constants.TASK_ID));
-            log.debug(task);
             task.setTaskDescription(set.getString(Constants.TASK_DESCRIPTION));
-            log.debug(task);
             task.setMoney(set.getDouble(Constants.TASK_MONEY));
-            log.debug(task);
             task.setScrumMaster(getEmployeeById(set.getLong(Constants.TASK_SCRUMMASTER)).getData());
-            log.debug(task);
             task.setStatus(TypeOfCompletion.valueOf(set.getString(Constants.TASK_TYPE_OF_COMPLETION)));
-            log.debug(task);
             task.setTaskType(TaskTypes.valueOf(set.getString(Constants.TASK_TASK_TYPES)));
-            log.debug(task);
             task.setTeam(getEmployeeListFromTask(task));
-            log.debug(task);
             task.setCreatedDate(set.getString(Constants.TASK_CREATED_DATE));
-            log.debug(task);
             task.setDeadline(set.getString(Constants.TASK_DEADLINE));
-            log.debug(task);
             task.setLastUpdate(set.getString(Constants.TASK_LAST_UPDATE));
-            log.debug(task);
             task.setDeveloperComments(set.getString(Constants.DEVELOPERS_TASK_COMMENTS));
-            log.debug(task);
             task.setDeveloperTaskType(DeveloperTaskType.valueOf(set.getString(Constants.DEVELOPERS_TASK_TYPE)));
             log.debug(task);
             log.info(CustomLogger.endFunc(task));
@@ -1666,27 +1575,16 @@ public class DataProviderJdbc implements DataProvider {
         log.info(CustomLogger.startFunc());
         try {
             task.setId(set.getLong(Constants.TASK_ID));
-            log.debug(task);
             task.setTaskDescription(set.getString(Constants.TASK_DESCRIPTION));
-            log.debug(task);
             task.setMoney(set.getDouble(Constants.TASK_MONEY));
-            log.debug(task);
             task.setScrumMaster(getEmployeeById(set.getLong(Constants.TASK_SCRUMMASTER)).getData());
-            log.debug(task);
             task.setStatus(TypeOfCompletion.valueOf(set.getString(Constants.TASK_TYPE_OF_COMPLETION)));
-            log.debug(task);
             task.setTaskType(TaskTypes.valueOf(set.getString(Constants.TASK_TASK_TYPES)));
-            log.debug(task);
             task.setTeam(getEmployeeListFromTask(task));
-            log.debug(task);
             task.setCreatedDate(set.getString(Constants.TASK_CREATED_DATE));
-            log.debug(task);
             task.setDeadline(set.getString(Constants.TASK_DEADLINE));
-            log.debug(task);
             task.setLastUpdate(set.getString(Constants.TASK_LAST_UPDATE));
-            log.debug(task);
             task.setBugStatus(BugStatus.valueOf(set.getString(Constants.TESTERSTASK_BUGSTATUS)));
-            log.debug(task);
             task.setBugDescription(set.getString(Constants.TESTERSTASK_DESCRIPTION));
             log.debug(task);
             log.info(CustomLogger.endFunc(task));
@@ -1712,25 +1610,15 @@ public class DataProviderJdbc implements DataProvider {
                                String createdDate, String deadline,String lastUpdate,TaskTypes taskType ){
         log.info(CustomLogger.startFunc());
         task.setId(id);
-        log.debug(task);
         task.setTaskDescription(taskDescription);
-        log.debug(task);
         task.setMoney(money);
-        log.debug(task);
         task.setScrumMaster(scrumMaster);
-        log.debug(task);
         task.setStatus(status);
-        log.debug(task);
         task.setTeam(team);
-        log.debug(task);
         task.setCreatedDate(createdDate);
-        log.debug(task);
         task.setDeadline(deadline);
-        log.debug(task);
         task.setLastUpdate(lastUpdate);
-        log.debug(task);
         task.setTaskType(taskType);
-        log.debug(task);
         log.info(CustomLogger.endFunc(task));
         if(!isValidTask(task)){
             log.info(CustomLogger.endFunc());
@@ -1808,7 +1696,6 @@ public class DataProviderJdbc implements DataProvider {
                     case BASE_TASK:
                         Task task =new Task();
                         setBasicTask(set,task);
-                        log.debug(task);
                         ResultSet set1 = getTaskRecords(String.format(Constants.SELECT_TASK, task.getTaskDescription(),
                                 task.getMoney(), task.getScrumMaster().getId(), task.getStatus(), task.getCreatedDate(), task.getDeadline(),
                                 task.getLastUpdate(), task.getTaskType().toString()));
@@ -1822,11 +1709,8 @@ public class DataProviderJdbc implements DataProvider {
                     case DEVELOPERS_TASK:
                         DevelopersTask developersTask =new DevelopersTask();
                         setBasicTask(set,developersTask);
-                        log.debug(developersTask);
                         developersTask.setDeveloperComments(set.getString(Constants.DEVELOPERS_TASK_COMMENTS));
-                        log.debug(developersTask);
                         developersTask.setDeveloperTaskType(DeveloperTaskType.valueOf(set.getString(Constants.DEVELOPERS_TASK_TYPE)));
-                        log.debug(developersTask);
                         ResultSet set2 = getTaskRecords(String.format(Constants.SELECT_DEVELOPERSTASK,
                                 developersTask.getTaskDescription(),
                                 developersTask.getMoney(),
@@ -1848,11 +1732,8 @@ public class DataProviderJdbc implements DataProvider {
                     case TESTERS_TASK:
                         TestersTask testersTask = new TestersTask();
                         setBasicTask(set,testersTask);
-                        log.debug(testersTask);
                         testersTask.setBugStatus(BugStatus.valueOf(set.getString(Constants.TESTERSTASK_BUGSTATUS)));
-                        log.debug(testersTask);
                         testersTask.setBugDescription(set.getString(Constants.TESTERSTASK_DESCRIPTION));
-                        log.debug(testersTask);
                         ResultSet set3 = getTaskRecords(String.format(Constants.SELECT_TESTERSTASK,
                                 testersTask.getTaskDescription(),
                                 testersTask.getMoney(),
@@ -1882,7 +1763,6 @@ public class DataProviderJdbc implements DataProvider {
 
     /**
      * @param str
-     * @throws Exception
      */
     private boolean stringIsValid(String str) {
         log.info(CustomLogger.startFunc());
@@ -2080,7 +1960,6 @@ public class DataProviderJdbc implements DataProvider {
                 lastUpdate,
                 TaskTypes.DEVELOPERS_TASK);
         developersTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
-        log.debug(developersTask);
         developersTask.setDeveloperComments(Constants.BaseComment);
         log.debug(developersTask);
         log.info(CustomLogger.endFunc(developersTask));
@@ -2120,7 +1999,6 @@ public class DataProviderJdbc implements DataProvider {
                 lastUpdate,
                 TaskTypes.TESTERS_TASK);
         testersTask.setBugStatus(BugStatus.IN_WORK);
-        log.debug(testersTask);
         testersTask.setBugDescription(Constants.BaseComment);
         log.debug(testersTask);
         log.info(CustomLogger.endFunc(testersTask));
@@ -2175,17 +2053,20 @@ public class DataProviderJdbc implements DataProvider {
 
     /**
      * @return
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     * @throws IOException
      */
-    private Connection getConnection() throws ClassNotFoundException, SQLException, IOException {
-        connection = DriverManager.getConnection(
-                getConfigurationEntry(Constants.DB_CONNECT),
-                getConfigurationEntry(Constants.DB_USER),
-                getConfigurationEntry(Constants.DB_PASS)
-        );
-        return connection;
+    private Connection getConnection() {
+        try {
+            connection = DriverManager.getConnection(
+                    getConfigurationEntry(Constants.DB_CONNECT),
+                    getConfigurationEntry(Constants.DB_USER),
+                    getConfigurationEntry(Constants.DB_PASS)
+            );
+            return connection;
+        } catch (SQLException | IOException e) {
+           log.error(e);
+           return null;
+        }
+
     }
 
     /**
@@ -2198,7 +2079,7 @@ public class DataProviderJdbc implements DataProvider {
             statement.executeUpdate();
             getConnection().close();
             return new Result(Outcomes.Complete);
-        } catch (SQLException | IOException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             log.error(e);
             return new Result(Outcomes.Fail);
         }
@@ -2214,7 +2095,7 @@ public class DataProviderJdbc implements DataProvider {
             PreparedStatement statement = getConnection().prepareStatement(sql);
             getConnection().close();
             return statement.executeQuery();
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (SQLException e) {
             log.info(e);
         }
         return null;

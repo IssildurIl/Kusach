@@ -14,6 +14,7 @@ ru\sfedu\groupappcontrol\api\DataProviderCsv$1.class
 ru\sfedu\groupappcontrol\models\enums\DeveloperTaskType.class
 ru\sfedu\groupappcontrol\models\enums\TaskTypes.class
 ru\sfedu\groupappcontrol\utils\EmployeeConverter.class
+ru\sfedu\groupappcontrol\utils\Fill.class
 ru\sfedu\groupappcontrol\models\enums\TypeOfTester.class
 ru\sfedu\groupappcontrol\utils\ConfigurationUtil.class
 ru\sfedu\groupappcontrol\models\TestersTask.class

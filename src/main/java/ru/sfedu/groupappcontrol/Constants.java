@@ -2,6 +2,7 @@ package ru.sfedu.groupappcontrol;
 
 
 public class Constants {
+    public static final String CONFIG_PATH = "config.path";
     public static final String TEST_NAME="test.name";
     public static final String DATE_FORMAT = "dd-mm-yyyy";
     public static final String FILE_EXTENSION_CSV = "FILE_EXTENSION_CSV";
@@ -186,12 +187,17 @@ public class Constants {
             ");";
     public static final String TASKTOEMPLOYEEMAPING="create table TASKTOEMPLOYEEMAPING\n" +
             "(\n" +
-            "    ID BIGINT auto_increment primary key,\n" +
-            "    TASKID          BIGINT,\n" +
-            "    TASKTYPE        VARCHAR(40),\n" +
-            "    EMPLOYEEID      BIGINT,\n" +
-            "    EMPLOYEETYPE        VARCHAR(40)\n" +
-            ");";
+            "\tID BIGINT auto_increment\n" +
+            "\t\tprimary key,\n" +
+            "\tTASKID BIGINT,\n" +
+            "\tTASKTYPE VARCHAR(40),\n" +
+            "\tEMPLOYEEID BIGINT,\n" +
+            "\tEMPLOYEETYPE VARCHAR(40),\n" +
+            "\tconstraint TASKTOEMPLOYEEMAPING_EMPLOYEE_ID_TYPEOFEMPLOYEE_FK\n" +
+            "\t\tforeign key (EMPLOYEEID, EMPLOYEETYPE) references EMPLOYEE (ID, TYPEOFEMPLOYEE)\n" +
+            "\t\t\ton update cascade on delete cascade\n" +
+            ");\n" +
+            "\n";
     public static final String Employee = "employee";
     public static final String Developer = "developer";
     public static final String Tester = "tester";

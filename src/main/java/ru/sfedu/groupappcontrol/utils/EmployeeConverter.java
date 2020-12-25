@@ -6,18 +6,19 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.groupappcontrol.models.Employee;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeConverter extends AbstractBeanField<Employee, Integer> {
-    private static final Logger log = LogManager.getLogger(EmployeeConverter.class);
     @Override
-    protected Object convert(String s) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
+    protected Object convert(String s) {
         String indexString = s.substring(1, s.length() - 1);
         Employee employee = new Employee();
             if (!indexString.isEmpty()) {
                 employee.setId(Long.parseLong(indexString));
+                employee.setTypeOfEmployee(TypeOfEmployee.valueOf(""));
             }
         return employee;
     }

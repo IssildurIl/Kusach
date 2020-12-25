@@ -81,7 +81,6 @@ public class DataProviderXML implements DataProvider {
         try{
             log.info(CustomLogger.startFunc());
             List<Project> listRes = select(Project.class);
-            log.debug(listRes);
             Optional<Project> optional = listRes.stream().filter(el -> el.getId() == id).findFirst();
             log.debug(optional);
             log.info(CustomLogger.startFunc(optional));
@@ -174,7 +173,6 @@ public class DataProviderXML implements DataProvider {
                 }
                 oldList.add(project);
             }
-            log.debug(oldList);
             writer(path,oldList);
             return new Result<>(Complete);
         } catch (IndexOutOfBoundsException e) {
@@ -225,7 +223,6 @@ public class DataProviderXML implements DataProvider {
     public Result<Void> deleteProject(long id){
         log.info(CustomLogger.startFunc());
         List<Project> listData = select(Project.class);
-        log.debug(listData);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         log.debug(listData);
         insertProjectForDelete(listData, false);
@@ -301,7 +298,6 @@ public class DataProviderXML implements DataProvider {
                 return new Result<>(Fail);
             }
             List<Project> userList = select(Project.class);
-            log.debug(userList);
             Optional<Project> optionalUser = searchProject(userList,project.getId());
             log.debug(optionalUser);
             if(optionalIsValid(optionalUser)){
@@ -312,7 +308,6 @@ public class DataProviderXML implements DataProvider {
             userList.remove(optionalUser.get());
             log.debug(optionalUser);
             userList.add(project);
-            log.debug(userList);
             insertProjectForDelete(userList, false);
             log.info(CustomLogger.endFunc());
             return new Result<>(Complete);
@@ -359,9 +354,7 @@ public class DataProviderXML implements DataProvider {
         log.info(CustomLogger.startFunc());
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(select(Task.class));
-        log.debug(taskList);
         taskList.addAll(select(TestersTask.class));
-        log.debug(taskList);
         taskList.addAll(select(DevelopersTask.class));
         log.debug(taskList);
         Optional<Task> optTask = taskList.stream().filter(el -> el.getId() == id).findAny();
@@ -375,9 +368,7 @@ public class DataProviderXML implements DataProvider {
         log.info(CustomLogger.startFunc());
         List<Task> taskList = new ArrayList<>();
         taskList.addAll(select(Task.class));
-        log.debug(taskList);
         taskList.addAll(select(TestersTask.class));
-        log.debug(taskList);
         taskList.addAll(select(DevelopersTask.class));
         log.debug(taskList);
         log.info(CustomLogger.endFunc(taskList));
@@ -389,7 +380,6 @@ public class DataProviderXML implements DataProvider {
         try {
             log.info(CustomLogger.startFunc());
             List<Task> list = select(Task.class);
-            log.debug(list);
             Task task = searchTask(list,taskId).get();
             log.debug(task);
             if(listIsValid(task.getTeam())){
@@ -416,7 +406,6 @@ public class DataProviderXML implements DataProvider {
                 return new Result<>(Fail);
             }
             List<Task> listRes = select(Task.class);
-            log.debug(listRes);
             Optional<Task> optionalTask = searchTask(listRes, id);
             if(optionalIsValid(optionalTask)){
                 log.info(CustomLogger.endFunc());
@@ -428,7 +417,6 @@ public class DataProviderXML implements DataProvider {
             editedTask.setStatus(TypeOfCompletion.valueOf(status));
             log.debug(editedTask);
             listRes.add(editedTask);
-            log.debug(listRes);
             log.info(CustomLogger.endFunc(listRes));
             insertGenericTaskForDelete(Task.class, listRes, false);
             return new Result<>(Complete);
@@ -441,9 +429,10 @@ public class DataProviderXML implements DataProvider {
     }
 
     @Override
-    public Result<Double> calculateTaskCost(Task task) {
+    public Result<Double> calculateTaskCost(long id) {
         try {
             log.info(CustomLogger.startFunc());
+            Task task = getTaskById(id).getData();
             SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT, Locale.ENGLISH);
             Date firstDate = sdf.parse(String.valueOf(task.getCreatedDate()));
             log.debug(firstDate);
@@ -542,13 +531,9 @@ public class DataProviderXML implements DataProvider {
             log.info(CustomLogger.startFunc());
             Project project=new Project();
             project.setId(id);
-            log.debug(project);
             project.setTitle(title);
-            log.debug(project);
             project.setTakeIntoDevelopment(takeIntoDevelopment);
-            log.debug(project);
             project.setTask(tasks);
-            log.debug(project);
             if(listIsValid(tasks)){
                 log.info(CustomLogger.endFunc());
                 return new Result<>(Fail);
@@ -564,17 +549,15 @@ public class DataProviderXML implements DataProvider {
     }
 
     @Override
-    public Result<List<Project>> getProjectById(long empId, long projectId) {
+    public Result<List<Project>> getProjectByScrumMasterId(long empId, long projectId) {
         log.info(CustomLogger.startFunc());
         List<Task> listRes = select(Task.class);
-        log.debug(listRes);
         List<Task> findedTaskList = listRes.stream()
                 .filter(task -> task.getTeam().stream().anyMatch(employee1 ->
                         employee1.getId() == empId))
                 .collect(Collectors.toList());
         log.debug(findedTaskList);
         List<Project> listProject = select(Project.class);
-        log.debug(listProject);
         List<Project> optionalProject = listProject.stream()
                 .filter(project -> {
                     boolean isContains=false;
@@ -594,18 +577,14 @@ public class DataProviderXML implements DataProvider {
     }
 
     @Override
-    public Result<Long> calculateProjectCost(Project project) {
+    public Result<Long> calculateProjectCost(long id) {
         try {
             log.info(CustomLogger.startFunc());
-            if (stringIsValid(project.getTakeIntoDevelopment())) {
-                log.info(CustomLogger.endFunc());
-                return new Result<>(Fail);
-            }
+            Project project = getProjectByID(id).getData();
             List<Task> taskList = project.getTask();
-            log.debug(taskList);
             double projectCost = 0.0;
             for (Task task: taskList) {
-                projectCost = projectCost + (double) calculateTaskCost(task).getData();
+                projectCost = projectCost + (double) calculateTaskCost(task.getId()).getData();
             }
             log.info(projectCost);
             log.info(CustomLogger.endFunc(projectCost));
@@ -619,8 +598,9 @@ public class DataProviderXML implements DataProvider {
     }
 
     @Override
-    public Result<Long> calculateProjectTime(Project project) {
+    public Result<Long> calculateProjectTime(long id) {
         log.info(CustomLogger.startFunc());
+        Project project = getProjectByID(id).getData();
         List<Task> taskList = project.getTask();
         long resulttime = 0;
         for (Task task: taskList) {
@@ -639,7 +619,7 @@ public class DataProviderXML implements DataProvider {
                                            @NonNull TypeOfEmployee typeOfEmployee){
         log.info(CustomLogger.startFunc());
         switch (typeOfEmployee){
-            case Employee:
+            case EMPLOYEE:
                 Employee baseEmployee = (Employee) createBaseEmployee(id,firstName, lastName, login, password, email, token, department).getData();
                 log.debug(baseEmployee);
                 log.info(CustomLogger.endFunc(baseEmployee));
@@ -665,9 +645,7 @@ public class DataProviderXML implements DataProvider {
         log.info(CustomLogger.startFunc());
         List<Employee> employees = new ArrayList<>();
         employees.addAll(select(Employee.class));
-        log.debug(employees);
         employees.addAll(select(Tester.class));
-        log.debug(employees);
         employees.addAll(select(Developer.class));
         log.debug(employees);
         log.info(CustomLogger.endFunc(employees));
@@ -700,13 +678,11 @@ public class DataProviderXML implements DataProvider {
         try {
             log.info(CustomLogger.startFunc());
             List<Task> listRes = select(Task.class);
-            log.debug(listRes);
             List<Task> findedTaskList = listRes.stream()
                     .filter(el -> el.getScrumMaster().getId()==id)
                     .collect(Collectors.toList());
             log.debug(findedTaskList);
             List<Project> listProject = select(Project.class);
-            log.debug(listProject);
             List<Project> optionalProject = listProject.stream()
                     .filter(project -> {
                         boolean isContains=false;
@@ -741,7 +717,6 @@ public class DataProviderXML implements DataProvider {
         File file = new File(path);
         log.debug(file);
         file.delete();
-        log.debug(file);
         log.info(CustomLogger.endFunc());
         return new Result<>(Complete);
 
@@ -786,7 +761,7 @@ public class DataProviderXML implements DataProvider {
                 email,
                 token,
                 department,
-                TypeOfEmployee.Employee);
+                TypeOfEmployee.EMPLOYEE);
         log.debug(employee);
         log.info(CustomLogger.endFunc(employee));
         return new Result<>(Complete,employee);
@@ -820,7 +795,6 @@ public class DataProviderXML implements DataProvider {
                 department,
                 TypeOfEmployee.Developer);
         developer.setStatus(TypeOfDevelopers.CUSTOM);
-        log.debug(developer);
         developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
         log.debug(developer);
         log.info(CustomLogger.endFunc(developer));
@@ -855,9 +829,7 @@ public class DataProviderXML implements DataProvider {
                 department,
                 TypeOfEmployee.Tester);
         tester.setStatus(TypeOfDevelopers.CUSTOM);
-        log.debug(tester);
         tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
-        log.debug(tester);
         tester.setTypeOfTester(TypeOfTester.Custom);
         log.debug(tester);
         log.info(CustomLogger.endFunc(tester));
@@ -874,6 +846,7 @@ public class DataProviderXML implements DataProvider {
     public <T> List<T> select(Class<T> cl) {
         try {
             String path = getPath(cl);
+            createFile(path);
             FileReader file = new FileReader(path);
             Serializer serializer = new Persister();
             WrapperXML<T> xml = serializer.read(WrapperXML.class, file);
@@ -892,7 +865,6 @@ public class DataProviderXML implements DataProvider {
     /**
      * @param cl
      * @return
-     * @throws IOException
      */
     private String getPath(Class<?> cl) {
         try {
@@ -907,7 +879,6 @@ public class DataProviderXML implements DataProvider {
 
     /**
      * @param path
-     * @throws IOException
      */
     private void createFile(String path)  {
         try {
@@ -1000,7 +971,6 @@ public class DataProviderXML implements DataProvider {
             log.debug(path);
             createFile(path);
             List<T> oldList = this.select(cl);
-            log.debug(path);
             if (oldList != null) {
                 long id = element.getId();
                 if (oldList.stream().anyMatch(el -> el.getId() == id)) {
@@ -1034,7 +1004,6 @@ public class DataProviderXML implements DataProvider {
             log.debug(path);
             createFile(path);
             List<T> oldList = this.select(cl);
-            log.debug(path);
             if (oldList != null) {
                 long id = element.getId();
                 if (oldList.stream().anyMatch(el -> el.getId() == id)) {
@@ -1071,7 +1040,6 @@ public class DataProviderXML implements DataProvider {
             log.debug(path);
             createFile(path);
             List<T> oldList = this.select(cl);
-            log.debug(path);
             if (append){
                 if (oldList != null && oldList.size() > 0) {
                     long id = list.get(0).getId();
@@ -1112,7 +1080,6 @@ public class DataProviderXML implements DataProvider {
             log.debug(path);
             createFile(path);
             List<T> oldList = this.select(cl);
-            log.debug(path);
             if (append) {
                 if (oldList != null && oldList.size() > 0) {
                     long id = list.get(0).getId();
@@ -1147,9 +1114,7 @@ public class DataProviderXML implements DataProvider {
         try {
             log.info(CustomLogger.startFunc());
             List<T> listData = select(cl);
-            log.debug(listData);
             listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
-            log.debug(listData);
             if(listIsValid(listData)){
                 log.info(CustomLogger.endFunc());
                 return new Result<>(Fail);
@@ -1175,7 +1140,6 @@ public class DataProviderXML implements DataProvider {
     private <T extends Employee> Result<Void> deleteGenericEmployee(Class<T> cl, long id) {
         log.info(CustomLogger.startFunc());
         List<T> listData = select(cl);
-        log.debug(listData);
         listData = listData.stream().filter(el -> el.getId() != id).collect(Collectors.toList());
         log.debug(listData);
         insertGenericEmployeeForDelete(cl, listData, false);
@@ -1228,15 +1192,12 @@ public class DataProviderXML implements DataProvider {
                 return new Result<>(Fail);
             }
             List<T> userList = select(cl);
-            log.debug(userList);
             Optional<T> optionalUser = searchEmployee(userList,updElement.getId());
             if(optionalIsValid(optionalUser)){
                 log.info(CustomLogger.endFunc());
                 return new Result<>(Fail);
             }
-            log.debug(optionalUser);
             userList.remove(optionalUser.get());
-            log.debug(userList);
             userList.add(updElement);
             log.debug(userList);
             log.info(CustomLogger.endFunc(userList));
@@ -1389,7 +1350,6 @@ public class DataProviderXML implements DataProvider {
                 lastUpdate,
                 TaskTypes.DEVELOPERS_TASK);
         developersTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
-        log.debug(developersTask);
         developersTask.setDeveloperComments(Constants.BaseComment);
         log.debug(developersTask);
         log.info(CustomLogger.endFunc());
@@ -1431,7 +1391,6 @@ public class DataProviderXML implements DataProvider {
                 lastUpdate,
                 TaskTypes.TESTERS_TASK);
         testersTask.setBugStatus(BugStatus.IN_WORK);
-        log.debug(testersTask);
         testersTask.setBugDescription(Constants.BaseComment);
         log.debug(testersTask);
         log.info(CustomLogger.endFunc());
@@ -1483,7 +1442,6 @@ public class DataProviderXML implements DataProvider {
         try {
             log.info(CustomLogger.startFunc());
             List<T> listRes = select(cl);
-            log.debug(listRes);
             List<T> optionalRes = listRes.stream()
                     .filter(el -> el.getScrumMaster().getId() == userId)
                     .collect(Collectors.toList());
@@ -1580,26 +1538,23 @@ public class DataProviderXML implements DataProvider {
 
     /**
      * @param list
-     * @throws Exception
      */
-    private boolean listIsValid(List<?> list) throws Exception {
+    private boolean listIsValid(List<?> list) {
         return list.isEmpty();
     }
 
     /**
      * @param optional
-     * @throws Exception
      */
-    private boolean optionalIsValid(Optional<?> optional) throws Exception {
+    private boolean optionalIsValid(Optional<?> optional){
         return optional.isEmpty();
     }
 
     /**
      * @param str
-     * @throws Exception
      * @return
      */
-    private boolean stringIsValid(String str) throws Exception {
+    private boolean stringIsValid(String str){
         return str.isEmpty();
     }
 
@@ -1666,7 +1621,6 @@ public class DataProviderXML implements DataProvider {
             log.debug(path);
             createFile(path);
             List<Project> oldList = this.select(Project.class);
-            log.debug(oldList);
             if(append){
                 if (oldList != null) {
                     long id = list.get(0).getId();

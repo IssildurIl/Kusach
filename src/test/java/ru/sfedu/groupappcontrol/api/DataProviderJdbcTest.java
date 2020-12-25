@@ -1,29 +1,28 @@
 package ru.sfedu.groupappcontrol.api;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ru.sfedu.groupappcontrol.Constants;
 import ru.sfedu.groupappcontrol.models.*;
-import ru.sfedu.groupappcontrol.models.enums.*;
+import ru.sfedu.groupappcontrol.models.enums.Outcomes;
+import ru.sfedu.groupappcontrol.models.enums.TaskTypes;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfCompletion;
+import ru.sfedu.groupappcontrol.models.enums.TypeOfEmployee;
+import ru.sfedu.groupappcontrol.utils.JdbcGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.sfedu.groupappcontrol.api.Fill.*;
 import static ru.sfedu.groupappcontrol.models.enums.Outcomes.*;
 
 class DataProviderJdbcTest{
-    private static final Logger log = LogManager.getLogger(DataProviderJdbcTest.class);
     public static DataProvider instance = new DataProviderJdbc();
 
     @BeforeAll
     static void setJDBCEnv() {
         instance.deleteAllRecord();
-        ((DataProviderJdbc) instance).createTables();
-        addRecord();
+        ((DataProviderJdbc)instance).createTables();
+        JdbcGenerator.addRecord();
     }
 
 
@@ -114,8 +113,8 @@ class DataProviderJdbcTest{
     @Test
     public void insertTaskSuccess() {
         Task task =  instance.createTask(20,
-                "insertDevelopersTaskSuccess",14553.0,getScrum(),
-                TypeOfCompletion.DEVELOPING,getListEmployee(),
+                "insertDevelopersTaskSuccess",14553.0,JdbcGenerator.getScrum(),
+                TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),
                 "04-12-2020","10-12-2020","05-12-2020",
                 TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
@@ -126,8 +125,8 @@ class DataProviderJdbcTest{
     @Test
     public void insertTaskFail() {
         Task task =  instance.createTask(20,
-                "",14553.0,getScrum(),
-                TypeOfCompletion.DEVELOPING,getListEmployee(),
+                "",14553.0,JdbcGenerator.getScrum(),
+                TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),
                 "","10-12-2020","05-12-2020",
                 TaskTypes.BASE_TASK).getData();
         Outcomes o = instance.insertTask(task).getStatus();
@@ -136,7 +135,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void insertDevelopersTaskSuccess() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(20,"insertDevelopersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(20,"insertDevelopersTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
         long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(developersTask).getData();
         Assertions.assertEquals(instance.getDevelopersTaskById(id).getData().getTaskDescription(),"insertDevelopersTaskSuccess");
@@ -144,14 +143,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void insertDevelopersTaskFail() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(20,"",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(20,"",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         Outcomes o = instance.insertDevelopersTask(developersTask).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
     @Test
     public void insertTestersTaskSuccess() {
-        TestersTask testersTask = (TestersTask) instance.createTask(20,"insertTestersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testersTask = (TestersTask) instance.createTask(20,"insertTestersTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
         long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testersTask).getData();
         Assertions.assertEquals(instance.getTestersTaskById(id).getData().getTaskDescription(),"insertTestersTaskSuccess");
@@ -159,14 +158,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void insertTestersTaskFail() {
-        TestersTask testersTask = (TestersTask) instance.createTask(1,"",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testersTask = (TestersTask) instance.createTask(1,"",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         Outcomes o = instance.insertTestersTask(testersTask).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
     @Test
     public void insertEmployeeSuccess() {
-        Employee employee =  instance.createEmployee(20,"insertEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        Employee employee =  instance.createEmployee(20,"insertEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
         instance.insertEmployee(employee);
         long id = ((DataProviderJdbc) instance).getEmployeeByParam(employee).getData();
         Assertions.assertEquals("insertEmployeeSuccess",instance.getEmployeeById(id).getData().getFirstName());
@@ -174,7 +173,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void insertEmployeeFail() {
-        Employee employee =  instance.createEmployee(1,"","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        Employee employee =  instance.createEmployee(1,"","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
         Outcomes o = instance.insertEmployee(employee).getStatus();
         Assertions.assertEquals(Fail,o);
     }
@@ -211,21 +210,21 @@ class DataProviderJdbcTest{
 
     @Test
     public void insertFProjectSuccess(){
-        Project project = instance.createProject(6,"TEST_PROJECT","18-12-2020",getListTask()).getData();
+        Project project = instance.createProject(6,"TEST_PROJECT","18-12-2020",JdbcGenerator.getListTask()).getData();
         instance.insertProject(project);
         Assertions.assertEquals("TEST_PROJECT",instance.getProjectByID(6).getData().getTitle());
     }
 
     @Test
     public void insertGProjectFail(){
-        Project project = instance.createProject(6,"","18-12-2020",getListTask()).getData();
+        Project project = instance.createProject(6,"","18-12-2020",JdbcGenerator.getListTask()).getData();
         Outcomes o = instance.insertProject(project).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
     @Test
     public void deleteTaskSuccess() {
-        Task testTask = instance.createTask(12,"deleteTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task testTask = instance.createTask(12,"deleteTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
         long id = ((DataProviderJdbc) instance).getTaskByParam(testTask).getData();
         instance.deleteTask(id);
@@ -239,7 +238,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void deleteDevelopersTaskSuccess() {
-        DevelopersTask testTask = (DevelopersTask) instance.createTask(12,"deleteDevelopersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask testTask = (DevelopersTask) instance.createTask(12,"deleteDevelopersTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(testTask);
         long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(testTask).getData();
         instance.deleteDevelopersTask(id);
@@ -253,7 +252,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void deleteTestersTaskSuccess() {
-        TestersTask testTask = (TestersTask) instance.createTask(12,"deleteDevelopersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testTask = (TestersTask) instance.createTask(12,"deleteDevelopersTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testTask);
         long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testTask).getData();
         instance.deleteTestersTask(id);
@@ -268,7 +267,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void deleteEmployeeSuccess() {
-        Employee employee =  instance.createEmployee(1,"deleteEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        Employee employee =  instance.createEmployee(1,"deleteEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
         instance.insertEmployee(employee);
         long id = ((DataProviderJdbc) instance).getEmployeeByParam(employee).getData();
         instance.deleteEmployee(id);
@@ -283,7 +282,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void deleteDeveloperSuccess() {
-        Developer developer =  (Developer) instance.createEmployee(21,"Test_Employee_21","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
+        Developer developer =  (Developer) instance.createEmployee(21,"Test_Employee_21","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
         instance.insertDeveloper(developer);
         long id = ((DataProviderJdbc) instance).getDeveloperByParam(developer).getData();
         instance.deleteDeveloper(id);
@@ -313,7 +312,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void deleteProjectSuccess() {
-        Project project = instance.createProject(8,"TestProject7","05-12-2020",getListTask()).getData();
+        Project project = instance.createProject(8,"TestProject7","05-12-2020",JdbcGenerator.getListTask()).getData();
         instance.insertProject(project);
         long id = ((DataProviderJdbc) instance).getProjectByParam(project).getData();
         instance.deleteProject(id);
@@ -328,14 +327,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void updateTaskSuccess(){
-        Task task = instance.createTask(2,"updateTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(2,"updateTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.updateTask(task);
         Assertions.assertEquals("updateTaskSuccess",instance.getTaskById(2).getData().getTaskDescription());
     }
 
     @Test
     public void updateTaskFail() {
-        Task task = instance.createTask(100,"updateTaskFail",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(100,"updateTaskFail",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         task.setTaskDescription("");
         instance.updateTask(task);
         Assertions.assertEquals(Fail,instance.updateTask(task).getStatus());
@@ -343,14 +342,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void updateDevelopersTaskSuccess() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(2,"Description_2",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(2,"Description_2",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.updateDevelopersTask(developersTask);
         Assertions.assertEquals("Description_2",instance.getDevelopersTaskById(2).getData().getTaskDescription());
     }
 
     @Test
     public void updateDevelopersTaskFail() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(100,"updateDevelopersTaskFail",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(100,"updateDevelopersTaskFail",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         developersTask.setTaskDescription("");
         instance.updateDevelopersTask(developersTask);
         Assertions.assertEquals(Fail,instance.updateDevelopersTask(developersTask).getStatus());
@@ -358,14 +357,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void updateTestersTaskSuccess() {
-        TestersTask testersTask = (TestersTask) instance.createTask(2,"updateTestersTaskSuccess",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testersTask = (TestersTask) instance.createTask(2,"updateTestersTaskSuccess",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.updateTestersTask(testersTask);
         Assertions.assertEquals("updateTestersTaskSuccess",instance.getTestersTaskById(2).getData().getTaskDescription());
     }
 
     @Test
     public void updateTestersTaskFail() {
-        TestersTask testersTask = (TestersTask) instance.createTask(100,"Description_2",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testersTask = (TestersTask) instance.createTask(100,"Description_2",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         testersTask.setTaskDescription("");
         instance.updateTestersTask(testersTask);
         Assertions.assertEquals(Fail,instance.updateTestersTask(testersTask).getStatus());
@@ -373,14 +372,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void updateEmployeeSuccess() {
-        Employee employee = instance.createEmployee(2,"updateEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        Employee employee = instance.createEmployee(2,"updateEmployeeSuccess","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
         instance.updateEmployee(employee);
         Assertions.assertEquals("updateEmployeeSuccess",instance.getEmployeeById(2).getData().getFirstName());
     }
 
     @Test
     public void updateEmployeeFail() {
-        Employee employee =  instance.createEmployee(100,"Test_Employee_2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Employee).getData();
+        Employee employee =  instance.createEmployee(100,"Test_Employee_2","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
         employee.setFirstName("");
         instance.updateEmployee(employee);
         Assertions.assertEquals(Fail,instance.updateEmployee(employee).getStatus());
@@ -418,14 +417,14 @@ class DataProviderJdbcTest{
 
     @Test
     public void updateProjectSuccess() {
-        Project project = instance.createProject(4,"updateProjectSuccess","05-12-2020",getListTask()).getData();
+        Project project = instance.createProject(4,"updateProjectSuccess","05-12-2020",JdbcGenerator.getListTask()).getData();
         instance.updateProject(project);
         Assertions.assertEquals("updateProjectSuccess",instance.getProjectByID(4).getData().getTitle());
     }
 
     @Test
     public void updateProjectFail() {
-        Project project = instance.createProject(4,"updateProjectSuccess","05-12-2020",getListTask()).getData();
+        Project project = instance.createProject(4,"updateProjectSuccess","05-12-2020",JdbcGenerator.getListTask()).getData();
         project.setTitle("");
         instance.updateProject(project);
         Assertions.assertEquals(Fail,instance.updateProject(project).getStatus());
@@ -433,13 +432,13 @@ class DataProviderJdbcTest{
 
     @Test
     public void createTaskSuccess() {
-        Outcomes o = instance.createTask(12,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getStatus();
+        Outcomes o = instance.createTask(12,"Descript",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getStatus();
         Assertions.assertEquals(Complete,o);
     }
 
     @Test
     public void createTaskFail() {
-        Outcomes o = instance.createTask(12,"",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getStatus();
+        Outcomes o = instance.createTask(12,"",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
@@ -459,7 +458,7 @@ class DataProviderJdbcTest{
     public void getAllTaskSuccess() {
         List<Task> taskList = instance.getAllTask();
         int size=taskList.size();
-        Assertions.assertEquals(34,size);
+        Assertions.assertEquals(35,size);
     }
 
     @Test
@@ -472,7 +471,7 @@ class DataProviderJdbcTest{
     @Test
     public void getTasksByUserSuccess() {
         Employee employee = instance.getEmployeeById(1).getData();
-        List<Employee> list1 = getListEmployee();
+        List<Employee> list1 = JdbcGenerator.getListEmployee();
         list1.add(employee);
         Task testTask =  instance.createTask(11,"getTasksByUserSuccess",14553.0,employee,TypeOfCompletion.DEVELOPING,list1,"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(testTask);
@@ -499,19 +498,17 @@ class DataProviderJdbcTest{
 
     @Test
     public void calculateTaskCostSuccess() {
-        Task testTask = instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
-        Assertions.assertEquals(instance.calculateTaskCost(testTask).getData().longValue(), 87318.0);
+        Assertions.assertEquals(instance.calculateTaskCost(1).getData().longValue(), 731000.0);
     }
 
     @Test
     public void calculateTaskCostFail() {
-        Task testTask = instance.createTask(1,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
-        Assertions.assertNotEquals(instance.calculateTaskCost(testTask).getData(),1.0);
+        Assertions.assertNotEquals(instance.calculateTaskCost(1).getData(),1.0);
     }
 
     @Test
     public void writeBaseTaskCommentSuccess() {
-        Task task = instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(13,"Descript",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
         long id = ((DataProviderJdbc) instance).getTaskByParam(task).getData();
         instance.writeBaseTaskComment(id,"writeBaseTaskCommentSuccess");
@@ -520,7 +517,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void writeBaseTaskCommentFail() {
-        Task task = instance.createTask(14,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(14,"Descript",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
         long id = ((DataProviderJdbc) instance).getTaskByParam(task).getData();
         Assertions.assertEquals(Fail,instance.writeBaseTaskComment(id,"").getStatus());
@@ -528,7 +525,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void writeDevelopersTaskCommentSuccess() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
         long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(developersTask).getData();
         instance.writeDevelopersTaskComment(id,"writeDevelopersTaskCommentSuccess");
@@ -537,7 +534,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void writeDevelopersTaskCommentFail() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
         long id = ((DataProviderJdbc) instance).getDevelopersTaskByParam(developersTask).getData();
         Assertions.assertEquals(Fail,instance.writeDevelopersTaskComment(id,"").getStatus());
@@ -545,7 +542,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void writeTestersTaskCommentSuccess() {
-        TestersTask testersTask = (TestersTask) instance.createTask(13,"Descript",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testersTask = (TestersTask) instance.createTask(13,"Descript",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
         long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testersTask).getData();
         instance.writeTestersTaskComment(id,"writeTestersTaskCommentSuccess");
@@ -554,7 +551,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void writeTestersTaskCommentFail() {
-        TestersTask testersTask = (TestersTask) instance.createTask(14,"writeTestersTaskCommentFail",14553.0,getScrum(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask testersTask = (TestersTask) instance.createTask(14,"writeTestersTaskCommentFail",14553.0,JdbcGenerator.getScrum(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(testersTask);
         long id = ((DataProviderJdbc) instance).getTestersTaskByParam(testersTask).getData();
         Assertions.assertEquals(Fail,instance.writeTestersTaskComment(id,"").getStatus());
@@ -562,42 +559,42 @@ class DataProviderJdbcTest{
 
     @Test
     public void getTaskListByScrumMasterSuccess() {
-        Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
         Assertions.assertNotNull(instance.getTaskListByScrumMaster(1).getData());
     }
 
     @Test
     public void getTaskListByScrumMasterFail() {
-        Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(6).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(6).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
         Assertions.assertNotEquals(0,instance.getTaskListByScrumMaster(6).getData().get(0).getId());
     }
 
     @Test
     public void getDevelopersTaskListByScrumMasterSuccess() {
-        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,instance.getEmployeeById(7).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
+        DevelopersTask developersTask = (DevelopersTask) instance.createTask(13,"Descript",14553.0,instance.getEmployeeById(7).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.DEVELOPERS_TASK).getData();
         instance.insertDevelopersTask(developersTask);
         Assertions.assertNotNull(instance.getDevelopersTaskListByScrumMaster(7).getData());
     }
 
     @Test
     public void getDevelopersTaskListByScrumMasterFail() {
-        Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(6).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task task = instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(6).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         instance.insertTask(task);
         Assertions.assertNotEquals(0,instance.getTaskListByScrumMaster(6).getData().get(0).getId());
     }
 
     @Test
     public void getTestersTaskListByScrumMasterSuccess() {
-        TestersTask task = (TestersTask) instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(8).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask task = (TestersTask) instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(8).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(task);
         Assertions.assertNotNull(instance.getTestersTaskListByScrumMaster(8).getData());
     }
 
     @Test
     public void getTestersTaskListByScrumMasterFail() {
-        TestersTask task = (TestersTask)  instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(8).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
+        TestersTask task = (TestersTask)  instance.createTask(15,"Descript",14553.0,instance.getEmployeeById(8).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.TESTERS_TASK).getData();
         instance.insertTestersTask(task);
         Assertions.assertNotEquals(0,instance.getTestersTaskListByScrumMaster(8).getData().get(0).getId());
 
@@ -605,55 +602,51 @@ class DataProviderJdbcTest{
 
     @Test
     public void createProjectSuccess() {
-        Outcomes o = instance.createProject(5,"TestProject","05-12-2020",getListTask()).getStatus();
+        Outcomes o = instance.createProject(5,"TestProject","05-12-2020",JdbcGenerator.getListTask()).getStatus();
         Assertions.assertEquals(Complete,o);
     }
 
     @Test
     public void createProjectFail() {
-        Outcomes o = instance.createProject(5,"","05-12-2020",getListTask()).getStatus();
+        Outcomes o = instance.createProject(5,"","05-12-2020",JdbcGenerator.getListTask()).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
     @Test
     public void getProjectByIdSuccess(){
         Employee testdeveloper = instance.getEmployeeById(1).getData();
-        Outcomes o = instance.getProjectById(testdeveloper.getId(),1).getStatus();
+        Outcomes o = instance.getProjectByScrumMasterId(testdeveloper.getId(),1).getStatus();
         Assertions.assertEquals(Complete,o);
     }
 
     @Test
     public void getProjectByIdFail() {
         Employee employee =  instance.getEmployeeById(1).getData();
-        Outcomes o = instance.getProjectById(employee.getId(),100).getStatus();
+        Outcomes o = instance.getProjectByScrumMasterId(employee.getId(),100).getStatus();
         Assertions.assertNotEquals(Fail,o);
     }
 
     @Test
     public void calculateProjectCostSuccess() {
-        Project testProject= instance.getProjectByID(1).getData();
-        double cost = (double) instance.calculateProjectCost(testProject).getData();
+        double cost = (double) instance.calculateProjectCost(1).getData();
         Assertions.assertNotEquals(cost,5.0);
     }
 
     @Test
     public void calculateProjectCostFail() {
-        Project testProject= instance.createProject(6,"","18-12-2020",getListTask()).getData();
-        Outcomes o = instance.calculateProjectCost(testProject).getStatus();
+        Outcomes o = instance.calculateProjectCost(100).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
     @Test
     public void calculateProjectTimeSuccess() {
-        Project testProject = instance.getProjectByID(1).getData();
-        Outcomes o = instance.calculateProjectTime(testProject).getStatus();
+        Outcomes o = instance.calculateProjectTime(1).getStatus();
         Assertions.assertEquals(Complete,o);
     }
 
     @Test
     public void calculateProjectTimeFail() {
-        Project testProject= instance.createProject(6,"","18-12-2020",getListTask()).getData();
-        Outcomes o = instance.calculateProjectCost(testProject).getStatus();
+        Outcomes o = instance.calculateProjectCost(100).getStatus();
         Assertions.assertEquals(Fail,o);
     }
 
@@ -673,7 +666,7 @@ class DataProviderJdbcTest{
     public void getAllEmployeeSuccess() {
         List<Employee> list = instance.getAllEmployee();
         long size = list.size();
-        Assertions.assertEquals(32,size);
+        Assertions.assertNotEquals(0,size);
     }
 
     @Test
@@ -686,8 +679,8 @@ class DataProviderJdbcTest{
     @Test
     public void getProjectListByScrummasterIdSuccess() {
         List<Task> task = new ArrayList<>();
-        Task testTask = instance.createTask(17,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
-        Task testTask2 = instance.createTask(18,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task testTask = instance.createTask(17,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
+        Task testTask2 = instance.createTask(18,"Descript",14553.0,instance.getEmployeeById(1).getData(),TypeOfCompletion.DEVELOPING,JdbcGenerator.getListEmployee(),"04-12-2020","10-12-2020","05-12-2020",TaskTypes.BASE_TASK).getData();
         task.add(testTask);
         task.add(testTask2);
         Project project = instance.createProject(7,"TestProject8","05-12-2020",task).getData();
@@ -722,143 +715,5 @@ class DataProviderJdbcTest{
     }
 
 
-    public static void addRecord() {
-        for (int i=1; i<=10; i++) {
-            Employee employee = new Employee();
-            employee.setFirstName(firstName[i-1]);
-            employee.setLastName(lastName[i-1]);
-            employee.setLogin(login[i-1]);
-            employee.setPassword(password[i-1]);
-            employee.setEmail(email[i-1]);
-            employee.setToken(token[i-1]);
-            employee.setDepartment(department[i-1]);
-            employee.setTypeOfEmployee(TypeOfEmployee.Employee);
-            instance.insertEmployee(employee);
-        }
-        for (int i=1; i<=10; i++) {
-            Developer developer = new Developer();
-            developer.setFirstName(firstName[i-1]);
-            developer.setLastName(lastName[i-1]);
-            developer.setLogin(login[i-1]);
-            developer.setPassword(password[i-1]);
-            developer.setEmail(email[i-1]);
-            developer.setToken(token[i-1]);
-            developer.setDepartment(department[i-1]);
-            developer.setTypeOfEmployee(TypeOfEmployee.Developer);
-            developer.setStatus(TypeOfDevelopers.CUSTOM);
-            developer.setProgrammingLanguage(ProgrammingLanguage.Custom);
-            instance.insertDeveloper(developer);
-        }
-        for (int i=1; i<=10; i++) {
-            Tester tester = new Tester();
-            tester.setFirstName(firstName[i-1]);
-            tester.setLastName(lastName[i-1]);
-            tester.setLogin(login[i-1]);
-            tester.setPassword(password[i-1]);
-            tester.setEmail(email[i-1]);
-            tester.setToken(token[i-1]);
-            tester.setDepartment(department[i-1]);
-            tester.setTypeOfEmployee(TypeOfEmployee.Tester);
-            tester.setStatus(TypeOfDevelopers.CUSTOM);
-            tester.setProgrammingLanguage(ProgrammingLanguage.Custom);
-            tester.setTypeOfTester(TypeOfTester.Custom);
-            instance.insertTester(tester);
-        }
-        for (int i=1; i<=10; i++) {
-            Task task = new Task();
-            task.setTaskDescription(taskDescription[i-1]);
-            task.setMoney(money[i-1]);
-            task.setScrumMaster(getScrum());
-            task.setStatus(TypeOfCompletion.CUSTOM);
-            task.setTeam(getListEmployee());
-            task.setCreatedDate(createdDate[i-1]);
-            task.setDeadline(deadline[i-1]);
-            task.setLastUpdate(lastUpdate[i-1]);
-            task.setTaskType(TaskTypes.BASE_TASK);
-            instance.insertTask(task);
-        }
-        for (int i=1; i<=10; i++) {
-            DevelopersTask developerTask = new DevelopersTask();
-            developerTask.setTaskDescription(taskDescription[i-1]);
-            developerTask.setMoney(money[i-1]);
-            developerTask.setScrumMaster(getScrum());
-            developerTask.setStatus(TypeOfCompletion.CUSTOM);
-            developerTask.setTeam(getListEmployee());
-            developerTask.setCreatedDate(createdDate[i-1]);
-            developerTask.setDeadline(deadline[i-1]);
-            developerTask.setLastUpdate(lastUpdate[i-1]);
-            developerTask.setTaskType(TaskTypes.DEVELOPERS_TASK);
-            developerTask.setDeveloperTaskType(DeveloperTaskType.DEVELOPMENT);
-            developerTask.setDeveloperComments(Constants.BaseComment);
-            instance.insertDevelopersTask(developerTask);
-        }
-        for (int i=1; i<=10; i++) {
-            TestersTask testersTask = new TestersTask();
-            testersTask.setTaskDescription(taskDescription[i-1]);
-            testersTask.setMoney(money[i-1]);
-            testersTask.setScrumMaster(getScrum());
-            testersTask.setStatus(TypeOfCompletion.CUSTOM);
-            testersTask.setTeam(getListEmployee());
-            testersTask.setCreatedDate(createdDate[i-1]);
-            testersTask.setDeadline(deadline[i-1]);
-            testersTask.setLastUpdate(lastUpdate[i-1]);
-            testersTask.setTaskType(TaskTypes.TESTERS_TASK);
-            testersTask.setBugStatus(BugStatus.IN_WORK);
-            testersTask.setBugDescription(Constants.BaseComment);
-            instance.insertTestersTask(testersTask);
-        }
-        for (int i=1; i<=4; i++) {
-            Project project=new Project();
-            project.setId(i-1);
-            project.setTitle(title[i-1]);
-            project.setTakeIntoDevelopment(createdDate[i-1]);
-            project.setTask(getListTask());
-            instance.insertProject(project);
-        }
-    }
-    private static Employee getScrum(){
-        List<Employee> listemployee = ((DataProviderJdbc) instance).getListEmployees(Employee.class);
-        int max=9; int min=0;
-        return listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
-    }
-    private static List<Employee> getListEmployee(){
-        List<Employee> fullList = new ArrayList<>();
-        int max=9; int min=0;
-        List<Employee> listemployee = ((DataProviderJdbc) instance).getListEmployees(Employee.class);
-        for (int i=1;i<=3; i++) {
-            Employee employee = listemployee.get((int) ((Math.random() * ((max - min) + 1)) + min));
-            fullList.add(employee);
-        }
-        List<Developer> developers = ((DataProviderJdbc) instance).getListEmployees(Developer.class);
-        for (int i=1;i<=3; i++) {
-            Developer developer = developers.get((int) ((Math.random() * ((max - min) + 1)) + min));
-            fullList.add(developer);
-        }
-        List<Tester> testers = ((DataProviderJdbc) instance).getListEmployees(Tester.class);
-        for (int i=1;i<=3; i++) {
-            Tester tester = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
-            fullList.add(tester);
-        }
-        return listemployee;
-    }
-    private static List<Task> getListTask(){
-        List<Task> fullList = new ArrayList<>();
-        List<Task> listTask = ((DataProviderJdbc) instance).getListTasks(Task.class);
-        int max=9; int min=0;
-        for (int i=0;i<=4; i++) {
-            Task task = listTask.get((int)((Math.random() * ((max - min) + 1)) + min));
-            fullList.add(task);
-        }
-        List<DevelopersTask> developers = ((DataProviderJdbc) instance).getListTasks(DevelopersTask.class);
-        for (int i=0;i<=4; i++) {
-            DevelopersTask developersTask = developers.get((int)((Math.random() * ((max - min) + 1)) + min));
-            fullList.add(developersTask);
-        }
-        List<TestersTask> testers = ((DataProviderJdbc) instance).getListTasks(TestersTask.class);
-        for (int i=0;i<=4; i++) {
-            TestersTask testersTask = testers.get((int) ((Math.random() * ((max - min) + 1)) + min));
-            fullList.add(testersTask);
-        }
-        return fullList;
-    }
+
 }

@@ -1,5 +1,6 @@
 DEPARTMENT,EMAIL,FIRSTNAME,ID,LASTNAME,LOGIN,PASSWORD,TOKEN,TYPEOFEMPLOYEE
 Team1,Parfenov@mail.com,Ivan,1,Parfenov,employee1,123admin,e6368342-ae1d-40ef-9bfd-e28eba43aa90,EMPLOYEE
+Team2,Medvedev@mail.com,Kirill,2,Medvedev,employee2,1234nimda,9bba8047-f0aa-473d-aef9-6905edcd3f99,EMPLOYEE
 Team3,Yeremin@mail.com,Sergey,3,Yeremin,employee3,12345,56b52b03-d76f-4105-8c06-3a3efb12633a,EMPLOYEE
 Team4,Raykin@mail.com,Daniil,4,Raykin,employee4,Raspbery,e279d5e5-94be-4984-920b-625f92422865,EMPLOYEE
 Team5,Zhirnov@mail.com,Denis,5,Zhirnov,employee5,31415,2e61fe24-15b5-458f-aaac-2e8b4c80218f,EMPLOYEE
@@ -8,5 +9,3 @@ Team7,Shchitov@mail.com,Yevgeny,7,Shchitov,employee6,311220,8eff243f-46cb-4532-8
 Team8,Kuznetsov@mail.com,Anatoliy,8,Kuznetsov,employee7,@g004,0a644ce4-1de9-4e22-a867-072bf4c3b780,EMPLOYEE
 Team9,Tsvetaeva@mail.com,Anton,9,Tsvetaeva,employee8,password,68075f8d-04ef-472a-8cdc-6b896d9ee9da,EMPLOYEE
 Team10,Hasymov@mail.com,Vladimir,10,Hasymov,employee9,theif,960651c6-4aa4-4274-9752-c5244a139005,EMPLOYEE
-FullStack,admin,Test_Employee_2,2,Employee_sec_name,Employee_Login,employee@sfedu.ru,Employee_personal_token,Developer
-FullStack,admin,Test_Employee,20,Employee_sec_name,Employee_Login,employee@sfedu.ru,Employee_personal_token,Developer

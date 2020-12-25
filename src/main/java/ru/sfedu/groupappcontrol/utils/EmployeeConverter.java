@@ -18,7 +18,7 @@ public class EmployeeConverter extends AbstractBeanField<Employee, Integer> {
         Employee employee = new Employee();
             if (!indexString.isEmpty()) {
                 employee.setId(Long.parseLong(indexString));
-                employee.setTypeOfEmployee(TypeOfEmployee.valueOf(""));
+                employee.setTypeOfEmployee(TypeOfEmployee.EMPLOYEE);
             }
         return employee;
     }

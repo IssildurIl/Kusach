@@ -20,6 +20,7 @@ import static ru.sfedu.groupappcontrol.models.enums.Outcomes.Fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 class DataProviderCsvTest {
@@ -721,7 +722,9 @@ class DataProviderCsvTest {
         Project project = instance.createProject(7,"TestProject8","05-12-2020",task).getData();
         log.info(project);
         instance.insertProject(project);
-        Assertions.assertNotEquals(0,instance.getProjectListByScrummasterId(1).getData().get(0).getId());
+        List<Project> projects = instance.getProjectListByScrummasterId(1).getData();
+        List<Project> projects1= projects.stream().filter(el->el.getId()==7).collect(Collectors.toList());
+        Assertions.assertNotNull(projects1);
     }
 
     @Test

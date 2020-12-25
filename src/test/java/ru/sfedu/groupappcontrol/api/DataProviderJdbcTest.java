@@ -282,7 +282,7 @@ class DataProviderJdbcTest{
 
     @Test
     public void deleteDeveloperSuccess() {
-        Developer developer =  (Developer) instance.createEmployee(21,"Test_Employee_21","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.EMPLOYEE).getData();
+        Developer developer =  (Developer) instance.createEmployee(21,"Test_Employee_21","Employee_sec_name","Employee_Login","admin","employee@sfedu.ru","Employee_personal_token","FullStack", TypeOfEmployee.Developer).getData();
         instance.insertDeveloper(developer);
         long id = ((DataProviderJdbc) instance).getDeveloperByParam(developer).getData();
         instance.deleteDeveloper(id);

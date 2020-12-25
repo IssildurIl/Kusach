@@ -17,7 +17,7 @@ public class EmployeeListConverter extends AbstractBeanField<Employee, Integer> 
     private static final Logger log = LogManager.getLogger(EmployeeListConverter.class);
 
     @Override
-    protected Object convert(String s) throws CsvDataTypeMismatchException, CsvConstraintViolationException {
+    protected Object convert(String s) {
         String indexString;
         indexString = s.substring(1, s.length() - 1);
         String[] unparsedIndexList = indexString.split(",");

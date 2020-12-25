@@ -42,6 +42,8 @@ public class Main {
             XmlGenerator.addRecord();
         } else if (args[0].equals("DataProviderJdbc")) {
             dataProvider = new DataProviderJdbc();
+            dataProvider.deleteAllRecord();
+            ((DataProviderJdbc)dataProvider).createTables();
             JdbcGenerator.addRecord();
         } else dataProvider = null;
 
